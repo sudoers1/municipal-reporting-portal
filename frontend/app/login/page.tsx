@@ -10,12 +10,12 @@ export default function LoginPage() {
         onClick={() =>
           authClient.signIn.social({
             //REPLACE WITH YOUR PROVIDER
-            provider: "facebook",
+            provider: "google",
             callbackURL: "/dashboard",
           })
         }
       >
-        Sign in with Facebook
+        Sign in with Google
       </button>
     </div>
   );
