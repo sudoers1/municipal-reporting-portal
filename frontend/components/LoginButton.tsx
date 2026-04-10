@@ -12,7 +12,7 @@ export default function LoginButton() {
   };
 
   return (
-    <button onClick={handleLogin} className="text-4xl px-4 py-2 bg-blue-600 text-white rounded-lg border">
+    <button onClick={handleLogin} className="text-4xl font-light px-4 py-2 bg-blue-600 text-white rounded-lg border">
       Continue with LinkedIn
     </button>
   );
