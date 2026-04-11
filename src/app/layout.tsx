@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./../styles/globals.css";
 import Navbar from "./../layouts/navbar";
 import Footer from "./../layouts/footer";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Municipal Portal Project",
@@ -19,8 +20,9 @@ export default function RootLayout({
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
+
+        <Toaster position="bottom-center" />
       </body>
     </html>
   );
 }
-

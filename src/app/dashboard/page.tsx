@@ -1,11 +1,36 @@
+"use client";
+
+import DashboardItems from "@/components/dashboarditems";
+import ComplaintButton from "@/components/complaintbutton";
+
 export default function DashboardPage() {
   return (
-    <main>
-      <header>
-        <h1>Welcome to the Dashboard</h1>
-      </header>
-      <section>
-        <p>You are now signed in with GitHub.</p>
+    <main
+      id="dashboard"
+      className="w-screen min-h-screen overflow-y-auto bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/municipality.png')" }}
+    >
+      {/* Overlay so text is readable */}
+      <section className="p-8 space-y-10 bg-black/50 min-h-screen">
+        <h1 className="text-3xl md:text-5xl font-bold text-white text-center">
+          Municipal Portal Dashboard
+        </h1>
+
+        <p className="text-lg text-white max-w-3xl mx-auto text-center">
+          Welcome to the Municipal Portal Dashboard. You have successfully logged
+          in and can now access your personalized dashboard and information
+          regarding your municipality. From here, you can log a complaint or
+          report an issue directly to the municipal authorities. Explore the
+          various sections to stay informed and engaged with your community.
+        </p>
+              <h2 className="text-2xl md:text-3xl font-bold text-center text-white">
+        Dashboard
+      </h2>
+        {/* Dashboard items */}
+        <DashboardItems />
+
+        {/* Complaint button */}
+        <ComplaintButton />
       </section>
     </main>
   );

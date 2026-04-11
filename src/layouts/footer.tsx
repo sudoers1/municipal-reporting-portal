@@ -1,7 +1,16 @@
 export default function Footer() {
   return (
-    <footer className="w-full px-6 py-4 bg-gray-100 text-center text-sm text-gray-600 dark:bg-zinc-900 dark:text-zinc-400">
-      © {new Date().getFullYear()} sudoers1. All rights reserved.
+    <footer className="w-full px-6 py-4 bg-brand-primary text-center text-sm text-white dark:bg-brand-primary">
+      © {new Date().getFullYear()}{" "}
+      <a
+        href="https://github.com/sudoers1"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:underline font-semibold"
+      >
+        sudoers1
+      </a>
+      . All rights reserved.
     </footer>
   );
 }
