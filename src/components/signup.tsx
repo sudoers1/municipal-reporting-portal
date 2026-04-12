@@ -1,6 +1,6 @@
 "use client";
 
-import { authClient } from "@/lib/auth-client"; // adjust path to where you export it
+import { authClient } from "@/lib/auth-client";
 
 export default function Signup({ onBack }: { onBack: () => void }) {
   return (
@@ -23,28 +23,50 @@ export default function Signup({ onBack }: { onBack: () => void }) {
           Sign up with GitHub
         </button>
 
-        {/* other providers can be wired up the same way */}
         <button
           className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-          onClick={() => console.log("Google signup clicked")}
+          onClick={() =>
+            authClient.signIn.social({
+              provider: "google",
+              callbackURL: "/dashboard",
+            })
+          }
         >
           Sign up with Google
         </button>
+
         <button
           className="px-4 py-2 rounded bg-blue-700 text-white hover:bg-blue-800"
-          onClick={() => console.log("Microsoft signup clicked")}
+          onClick={() =>
+            authClient.signIn.social({
+              provider: "microsoft",
+              callbackURL: "/dashboard",
+            })
+          }
         >
           Sign up with Microsoft
         </button>
+
         <button
           className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-          onClick={() => console.log("Facebook signup clicked")}
+          onClick={() =>
+            authClient.signIn.social({
+              provider: "facebook",
+              callbackURL: "/dashboard",
+            })
+          }
         >
           Sign up with Facebook
         </button>
+
         <button
           className="px-4 py-2 rounded bg-sky-500 text-white hover:bg-sky-600"
-          onClick={() => console.log("Twitter signup clicked")}
+          onClick={() =>
+            authClient.signIn.social({
+              provider: "twitter",
+              callbackURL: "/dashboard",
+            })
+          }
         >
           Sign up with Twitter
         </button>
