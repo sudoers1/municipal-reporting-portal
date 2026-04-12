@@ -46,8 +46,6 @@ export default function Navbar() {
         </Link>
 
 
-        
-    
         <div className="flex items-center gap-6 text-white">
 
             <Hamburger/>
