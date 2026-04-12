@@ -1,16 +1,23 @@
-console.log("CHECKING ENV:", process.env.LINKEDIN_CLIENT_ID ? "LOADED" : "MISSING");
-
-import { betterAuth} from "better-auth";
-import { nextCookies } from "better-auth/next-js";
-import Database from "better-sqlite3";
+import { betterAuth } from "better-auth";
+import {Pool} from "pg"; //this will change once we get the postgres server up
 
 export const auth = betterAuth({
-    database: new Database("./sqlite.db"),
-    socialProviders: {
-        linkedin: { 
-            clientId:  "77b02c8qyuphu2",
-            clientSecret: "WPL_AP1.WQanKtpVCvkCFYXE.m9FAVg==", 
-        }, 
+  database: new Pool({
+    connectionString: process.env.NEON_CONNECTION_STRING,
+  }), //same as above
+  socialProviders: {
+    facebook: {
+      //change to your provider (clientId and clientSecret is all we need i think)
+      clientId: process.env.FACEBOOK_CLIENT_ID!,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
     },
-    plugins: [nextCookies()] 
-})
+    discord: {
+      clientId: process.env.DISCORD_CLIENT_ID!,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+    },
+    linkedin: { 
+      clientId:  process.env.LINKEDIN_CLIENT_ID!,
+      clientSecret: proccess.env.LINKEDIN_SECRET!, 
+    }, 
+  },
+});

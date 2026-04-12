@@ -1,12 +1,12 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - Municipal-reporting-portal
+name: Build and deploy Node.js app to Azure Web App - Municipal-Reporting-Portalz
 
 on:
   push:
     branches:
-      - main
+      - feature/login-discord
   workflow_dispatch:
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: '4.8'
+          node-version: '22.x'
 
       - name: npm install, build, and test
         run: |
@@ -51,15 +51,15 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9A2BEBFABE48429BA6F6F560038FBA36 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_C47757D5CD324A5C93ECA4E730527B83 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_38F0BEF0C5A04D84BE129E97FA9FAE56 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_4C0B785137E643D1BE3AFA53E1F3F92C }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_869DD965B044464A9C30D13931A60500 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_519F61C638D841E59117D87DE358D8F8 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'Municipal-reporting-portal'
+          app-name: 'Municipal-Reporting-Portalz'
           slot-name: 'Production'
           package: .
           
