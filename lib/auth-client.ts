@@ -1,8 +1,3 @@
-import { createAuthClient } from "better-auth/client"
-export const authClient =  createAuthClient()
+import { createAuthClient } from "better-auth/react";
 
-const signIn = async () => {
-    const data = await authClient.signIn.social({
-        provider: "linkedin"
-    })
-}
+export const authClient = createAuthClient(); //this never changes regardless of the provider
