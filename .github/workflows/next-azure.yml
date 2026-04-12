@@ -24,7 +24,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y build-essential
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build Next.js app
         run: npm run build
@@ -41,7 +41,6 @@ jobs:
           path: |
             .next
             package.json
-            package-lock.json
             next.config.js
             public
 
