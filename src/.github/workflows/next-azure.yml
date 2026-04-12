@@ -18,11 +18,19 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build Next.js app
         run: npm run build
+        env:
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          OAUTH_GITHUB_CLIENT_ID: ${{ secrets.OAUTH_GITHUB_CLIENT_ID }}
+          OAUTH_GITHUB_CLIENT_SECRET: ${{ secrets.OAUTH_GITHUB_CLIENT_SECRET }}
 
       - name: Login to Azure
         uses: azure/login@v2

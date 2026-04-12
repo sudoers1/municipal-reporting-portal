@@ -6,8 +6,8 @@ export const auth = betterAuth({
   socialProviders: {
     github: {
       //change to your provider (clientId and clientSecret is all we need i think)
-  clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+clientId: process.env.OAUTH_GITHUB_CLIENT_ID!,
+clientSecret: process.env.OAUTH_GITHUB_CLIENT_SECRET!,
     },
   },
 });
