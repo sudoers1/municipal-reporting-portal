@@ -45,7 +45,7 @@ export default function LoginModal({
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "github",
-                    callbackURL: "/dashboard",
+                    callbackURL: "/api/auth/callback/github",
                   })
                 }
               >
@@ -56,7 +56,7 @@ export default function LoginModal({
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "google",
-                    callbackURL: "/dashboard",
+                    callbackURL: "/api/auth/callback/google",
                   })
                 }
               >
@@ -66,19 +66,19 @@ export default function LoginModal({
                 className="px-4 py-2 rounded bg-blue-700 text-white hover:bg-blue-800"
                 onClick={() =>
                   authClient.signIn.social({
-                    provider: "microsoft",
-                    callbackURL: "/dashboard",
+                    provider: "discord",
+                    callbackURL: "/api/auth/callback/discord",
                   })
                 }
               >
-                Continue with Microsoft
+                Continue with Discord
               </button>
               <button
                 className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "facebook",
-                    callbackURL: "/dashboard",
+                    callbackURL: "/api/auth/callback/facebook",
                   })
                 }
               >
@@ -89,7 +89,7 @@ export default function LoginModal({
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "twitter",
-                    callbackURL: "/dashboard",
+                    callbackURL: "/api/auth/callback/twitter",
                   })
                 }
               >

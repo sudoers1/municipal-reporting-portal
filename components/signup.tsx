@@ -16,7 +16,7 @@ export default function Signup({ onBack }: { onBack: () => void }) {
           onClick={() =>
             authClient.signIn.social({
               provider: "github",
-              callbackURL: "/dashboard",
+              callbackURL: "/api/auth/callback/github",
             })
           }
         >
@@ -28,7 +28,7 @@ export default function Signup({ onBack }: { onBack: () => void }) {
           onClick={() =>
             authClient.signIn.social({
               provider: "google",
-              callbackURL: "/dashboard",
+              callbackURL: "/api/auth/callback/google",
             })
           }
         >
@@ -39,12 +39,12 @@ export default function Signup({ onBack }: { onBack: () => void }) {
           className="px-4 py-2 rounded bg-blue-700 text-white hover:bg-blue-800"
           onClick={() =>
             authClient.signIn.social({
-              provider: "microsoft",
-              callbackURL: "/dashboard",
+              provider: "discord",
+              callbackURL: "/api/auth/callback/discord",
             })
           }
         >
-          Sign up with Microsoft
+          Sign up with Discord
         </button>
 
         <button
@@ -52,7 +52,7 @@ export default function Signup({ onBack }: { onBack: () => void }) {
           onClick={() =>
             authClient.signIn.social({
               provider: "facebook",
-              callbackURL: "/dashboard",
+              callbackURL: "/api/auth/callback/facebook",
             })
           }
         >
@@ -63,12 +63,12 @@ export default function Signup({ onBack }: { onBack: () => void }) {
           className="px-4 py-2 rounded bg-sky-500 text-white hover:bg-sky-600"
           onClick={() =>
             authClient.signIn.social({
-              provider: "twitter",
-              callbackURL: "/dashboard",
+              provider: "linkedin",
+              callbackURL: "/api/auth/callback/linkedin",
             })
           }
         >
-          Sign up with Twitter
+          Sign up with LinkedIn
         </button>
       </main>
       <footer className="mt-4">
