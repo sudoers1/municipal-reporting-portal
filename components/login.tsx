@@ -93,7 +93,7 @@ export default function LoginModal({
                   })
                 }
               >
-                Continue with Twitter
+                Continue with LinkedIn
               </button>
             </main>
             <footer className="mt-4">

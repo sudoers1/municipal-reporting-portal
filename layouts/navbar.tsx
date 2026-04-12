@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import LoginModal from "@/components/login";
 import toast from "react-hot-toast";
+import Hamburger from "@/components/hamburgerMenu";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,41 +40,47 @@ export default function Navbar() {
      
         <Link
           href={session ? "/dashboard" : "/"}
-          className="text-xl font-bold text-foreground hover:underline"
+          className="text-xl text-white font-bold text-foreground hover:underline"
         >
           Municipal Portal Project
         </Link>
 
-    
+
         <div className="flex items-center gap-6 text-white">
-          <Link
-            href={session ? "/dashboard" : "/"}
-            className="hover:underline"
-          >
-            Dashboard
-          </Link>
 
-         
-          <button
-            onClick={() => handleNotReady("Reports")}
-            className="hover:underline"
-          >
-            Reports
-          </button>
+            <Hamburger/>
 
-          <button
-            onClick={() => handleNotReady("About")}
-            className="hover:underline"
-          >
-            About
-          </button>
+            <section className="flex gap-4 navContainer max-sm:hidden">
+                <Link
+              href={session ? "/dashboard" : "/"}
+              className="hover:underline"
+            >
+              Dashboard
+            </Link>
 
-          <button
-            onClick={() => handleNotReady("Contact")}
-            className="hover:underline"
-          >
-            Contact
-          </button>
+            <button
+              onClick={() => handleNotReady("Reports")}
+              className="hover:underline"
+            >
+              Reports
+            </button>
+
+            <button
+              onClick={() => handleNotReady("About")}
+              className="hover:underline"
+            >
+              About
+            </button>
+
+            <button
+              onClick={() => handleNotReady("Contact")}
+              className="hover:underline"
+            >
+              Contact
+            </button>
+            </section>
+
+
 
           {session ? (
             <button
