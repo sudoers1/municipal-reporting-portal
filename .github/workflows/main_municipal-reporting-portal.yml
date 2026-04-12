@@ -35,10 +35,17 @@ jobs:
           name: node-app
           path: |
             .next
+            app
+            lib
             public
             package.json
             package-lock.json
-            next.config.js
+            next.config.ts
+            next-env.d.ts
+            tsconfig.json
+            postcss.config.mjs
+            eslint.config.mjs
+
 
   deploy:
     runs-on: ubuntu-latest
