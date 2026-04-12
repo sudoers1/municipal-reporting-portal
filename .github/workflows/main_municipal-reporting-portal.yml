@@ -21,10 +21,9 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: '22.x'
+          node-version: '4.8'
 
       - name: npm install, build, and test
-        working-directory: ./frontend  #file structure has the app inside frontend folder, hence root is inside
         run: |
           npm install
           npm run build --if-present
@@ -52,9 +51,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A62E590033654405B6CC99E463EA5DE7 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_BBC6148625D741A193E5CD3EE223909E }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8D1759B01DB64B788DC0AC8D91E243C7 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_3843F10999B5433EBE8530FB7333B44C }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_83D20EDB183B4B548297D68E49D68783 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_32179B8913334063939880DE3F3A9D77 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
