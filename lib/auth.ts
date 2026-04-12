@@ -1,9 +1,16 @@
 import { betterAuth } from "better-auth";
-import Database from "better-sqlite3";
+import {Pool} from "pg"; //this will change once we get the postgres server up
 
 export const auth = betterAuth({
-  database: new Database("./database.db"),
+  database: new Pool({
+    connectionString: process.env.NEON_CONNECTION_STRING,
+  }), //same as above
   socialProviders: {
+    facebook: {
+      //change to your provider (clientId and clientSecret is all we need i think)
+      clientId: process.env.FACEBOOK_CLIENT_ID!,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+    },
     discord: {
       clientId: process.env.DISCORD_CLIENT_ID!,
       clientSecret: process.env.DISCORD_CLIENT_SECRET!,
