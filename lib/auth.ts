@@ -17,7 +17,7 @@ export const auth = betterAuth({
     },
     linkedin: { 
       clientId:  process.env.LINKEDIN_CLIENT_ID!,
-      clientSecret: proccess.env.LINKEDIN_SECRET!, 
+      clientSecret: process.env.LINKEDIN_SECRET!, 
     }, 
     github: {
       //change to your provider (clientId and clientSecret is all we need i think)

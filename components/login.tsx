@@ -45,7 +45,7 @@ export default function LoginModal({
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "github",
-                    callbackURL: "/api/auth/callback/github",
+                    callbackURL: "/dashboard",
                   })
                 }
               >
@@ -56,7 +56,7 @@ export default function LoginModal({
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "google",
-                    callbackURL: "/api/auth/callback/google",
+                    callbackURL: "/dashboard",
                   })
                 }
               >
@@ -67,7 +67,7 @@ export default function LoginModal({
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "discord",
-                    callbackURL: "/api/auth/callback/discord",
+                    callbackURL: "/dashboard",
                   })
                 }
               >
@@ -78,7 +78,7 @@ export default function LoginModal({
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "facebook",
-                    callbackURL: "/api/auth/callback/facebook",
+                    callbackURL: "/dashboard",
                   })
                 }
               >
@@ -88,8 +88,8 @@ export default function LoginModal({
                 className="px-4 py-2 rounded bg-sky-500 text-white hover:bg-sky-600"
                 onClick={() =>
                   authClient.signIn.social({
-                    provider: "twitter",
-                    callbackURL: "/api/auth/callback/twitter",
+                    provider: "linkedin",
+                    callbackURL: "/dashboard",
                   })
                 }
               >
