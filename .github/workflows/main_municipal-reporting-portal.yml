@@ -37,6 +37,9 @@ jobs:
             .next
             app
             lib
+            layouts
+            styles
+            components
             public
             package.json
             package-lock.json
