@@ -30,7 +30,13 @@ export default function DashboardPage() {
         <DashboardItems />
 
         {/* Complaint button */}
-        <ComplaintButton />
+        <ComplaintButton
+          onClick={() => setShowComplaints(!showComplaints)}
+          showComplaints={showComplaints}
+        />
+
+        {/* Complaints form modal */}
+        {showComplaints && <Complaints onClose={() => setShowComplaints(false)} />}
       </section>
     </main>
   );
