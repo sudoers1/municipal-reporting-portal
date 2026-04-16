@@ -1,9 +1,12 @@
 "use client";
 
 import DashboardItems from "@/components/dashboarditems";
+import Complaints from '@/components/complaintform'
 import ComplaintButton from "@/components/complaintbutton";
+import { useState } from "react";
 
 export default function DashboardPage() {
+  const [showComplaints,setShowComplaints]=useState(false);
   return (
     <main
       id="dashboard"
