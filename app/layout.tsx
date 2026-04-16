@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import "./../styles/globals.css";
-import Navbar from "./../layouts/navbar";
-import Footer from "./../layouts/footer";
+import "@/styles/globals.css";
+import Navbar from "@/layouts/navbar";
+import Footer from "@/layouts/footer";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {

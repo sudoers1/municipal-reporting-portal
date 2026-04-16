@@ -16,7 +16,7 @@ export default function Signup({ onBack }: { onBack: () => void }) {
           onClick={() =>
             authClient.signIn.social({
               provider: "github",
-              callbackURL: "/api/auth/callback/github",
+              callbackURL: "/dashboard",
             })
           }
         >
@@ -28,7 +28,7 @@ export default function Signup({ onBack }: { onBack: () => void }) {
           onClick={() =>
             authClient.signIn.social({
               provider: "google",
-              callbackURL: "/api/auth/callback/google",
+              callbackURL: "/dashboard",
             })
           }
         >
@@ -40,7 +40,7 @@ export default function Signup({ onBack }: { onBack: () => void }) {
           onClick={() =>
             authClient.signIn.social({
               provider: "discord",
-              callbackURL: "/api/auth/callback/discord",
+              callbackURL: "/dashboard",
             })
           }
         >
@@ -52,7 +52,7 @@ export default function Signup({ onBack }: { onBack: () => void }) {
           onClick={() =>
             authClient.signIn.social({
               provider: "facebook",
-              callbackURL: "/api/auth/callback/facebook",
+              callbackURL: "/dashboard",
             })
           }
         >
@@ -64,7 +64,7 @@ export default function Signup({ onBack }: { onBack: () => void }) {
           onClick={() =>
             authClient.signIn.social({
               provider: "linkedin",
-              callbackURL: "/api/auth/callback/linkedin",
+              callbackURL: "/dashboard",
             })
           }
         >
