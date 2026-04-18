@@ -27,8 +27,6 @@ export async function setResident(userId: string): Promise<void> {
     SELECT id FROM user_types WHERE type_name = 'Resident' LIMIT 1
   `;
 
-  if (!defaultRole[0]?.id) throw new Error('Default role not found');
-
   await sql`
     INSERT INTO roles (user_id, user_types_id)
     VALUES (${userId}, ${defaultRole[0].id})
