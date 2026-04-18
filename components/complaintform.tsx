@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
+import { insertComplaint,insertComplaintwIMG } from "@/lib/db/complaints";
+
+
 
 
   async function uploadHandler(file : File)
@@ -15,16 +18,26 @@ import { authClient } from "@/lib/auth-client";
     else{*/
       const formData = new FormData();
 
-      formData.append('file', file);
-      formData.append('upload_preset', 'bloobase4');
-      //change this to be signed at some point in time
-      fetch('https://api.cloudinary.com/v1_1/dncfvewe2/image/upload', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => console.log('Issue Image successfully uploaded:', data))
-      .catch(error => console.error('Error while uploading image:', error));
+      formData.append("file", file);
+      formData.append("upload_preset", "bloobase4");
+
+      try {
+        const response = await fetch(
+          "https://api.cloudinary.com/v1_1/dncfvewe2/image/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        const data = await response.json();
+        console.log("Image uploaded:", data);
+
+        return data; // 
+      } catch (error) {
+        console.error("Upload error:", error);
+        throw error;
+      }
+
     //}
   }
 
@@ -53,32 +66,52 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
 
 
   async function handleSubmit(e: React.FormEvent) {
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
     e.preventDefault();
-
-    // Build form data (kept for future backend integration)
-    const formData = new FormData();
-    formData.append("category", form.category);
-    formData.append("description", form.description);
-    formData.append("created_by", form.created_by);
-    if (form.photo) {
-      formData.append("photo", form.photo);
-      uploadHandler(form.photo);
+    if (form.photo &&form.photo.size > 5_000_000) {
+      
+      toast("ERROR:File too large (max 5MB)");
+      return;
     }
+    else{
+      if (form.photo && !allowedTypes.includes(form.photo.type)) {
+        toast("ERROR:Only JPG, PNG, or WEBP images allowed");
+        return;
+      }
+      else{
 
-    // Placeholder backend call
-    // TODO: Replace with actual POST to /api/issues when available
-    console.log("Form submitted:", Object.fromEntries(formData.entries()));
+        // Build form data (kept for future backend integration)
+        const formData = new FormData();
+        formData.append("category", form.category);
+        formData.append("description", form.description);
+        formData.append("created_by", form.created_by);
+        if (form.photo) {
+          formData.append("photo", form.photo);
+          const response = await uploadHandler(form.photo);
+          const url = response.url;
+          insertComplaintwIMG(form.created_by,form.category,form.description,url,);
+        }
+        else{
+          //backend call
+          insertComplaint(form.created_by,form.category,form.description,);
+        }
+        console.log("Form submitted:", Object.fromEntries(formData.entries()));
 
-    // Simulate success
-    //setMessage("Complaint submitted (backend integration pending).");
-    toast("Complaint submitted (backend integration pending).");
-    setForm({
-      category: "",
-      description: "",
-      photo: null,
-      created_by: form.created_by,
-    });
-    onClose();
+        // Simulate success
+        //setMessage("Complaint submitted (backend integration pending).");
+
+        toast("Complaint submitted (backend integration pending).");
+        
+        
+        setForm({
+          category: "",
+          description: "",
+          photo: null,
+          created_by: form.created_by,
+        });
+        onClose();
+      }
+    }
   }
 
  return (
