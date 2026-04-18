@@ -36,7 +36,11 @@ export const auth = betterAuth({
     session: {
       create: {
         after: async (session) => {
-          await setResident(session.userId);
+          const role = await getUserRole(session.userId);
+          if(!role){
+            // If the user doesn't have a role, assign them the "Resident" role
+            await setResident(session.userId);
+          }
         },
       },
     },
@@ -53,4 +57,16 @@ export const auth = betterAuth({
       };
     }),
   ],
+  session: {
+    expiresIn: 60 * 60 * 2, // 2 hours
+    updateAge: 60 * 60 * 2,     // refresh session every 2h
+    cookie: {
+      name: "muni-session",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    },
+  },
 });
+
+
