@@ -1,10 +1,5 @@
-import { neon, NeonQueryFunction } from '@neondatabase/serverless';
 import { UserRole } from './types';
-
-
-
-let test: string = process.env.DATABASE_URL!;
-const sql = neon(test);
+import { sql } from "@/lib/db/neon";
 
 export async function getUserRole(id: string): Promise<UserRole> {
   const result = await sql`
