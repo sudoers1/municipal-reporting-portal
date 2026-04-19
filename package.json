@@ -12,21 +12,24 @@
     "test:badges": "npm run test:coverage  && jest-coverage-badges  --output ./badges"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.1.0",
+    "@turf/turf": "^7.3.4",
     "better-auth": "^1.6.0",
-    "jest-coverage-badges": "^1.1.2",
+    "better-sqlite3": "^12.9.0",
+    "dotenv": "^17.4.2",
+    "geojsonhint": "^2.0.0",
+    "leaflet": "^1.9.4",
     "next": "16.2.2",
     "pg": "^8.20.0",
     "postgres": "^3.4.9",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-hot-toast": "^2.6.0"
+    "react-hot-toast": "^2.6.0",
+    "swiper": "^12.1.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/better-sqlite3": "^7.6.13",
     "@types/jest": "^30.0.0",
-    "@types/node": "20.19.39",
     "@types/node": "20.19.39",
     "@types/pg": "^8.20.0",
     "@types/react": "^19",

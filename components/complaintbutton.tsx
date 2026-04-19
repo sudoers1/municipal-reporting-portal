@@ -12,3 +12,4 @@ export default function ComplaintButton({ onClick, showComplaints }: { onClick: 
     </footer>
   );
 }
+
