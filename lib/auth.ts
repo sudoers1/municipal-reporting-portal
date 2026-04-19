@@ -8,30 +8,30 @@ export const auth = betterAuth({
   database: new Pool({
     connectionString: process.env.NEON_CONNECTION_STRING,
   }), //same as above
-  // socialProviders: {
-  //   facebook: {
-  //     //change to your provider (clientId and clientSecret is all we need i think)
-  //     clientId: process.env.FACEBOOK_CLIENT_ID!,
-  //     clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
-  //   },
-  //   discord: {
-  //     clientId: process.env.DISCORD_CLIENT_ID!,
-  //     clientSecret: process.env.DISCORD_CLIENT_SECRET!,
-  //   },
-  //   linkedin: {
-  //     clientId: process.env.LINKEDIN_CLIENT_ID!,
-  //     clientSecret: process.env.LINKEDIN_SECRET!,
-  //   },
-  //   github: {
-  //     //change to your provider (clientId and clientSecret is all we need i think)
-  //     clientId: process.env.OAUTH_GITHUB_CLIENT_ID!,
-  //     clientSecret: process.env.OAUTH_GITHUB_CLIENT_SECRET!,
-  //   },
-  //   google: {
-  //     clientId: process.env.GOOGLE_CLIENT_ID!,
-  //     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-  //   }
-  // },
+  socialProviders: {
+    facebook: {
+      //change to your provider (clientId and clientSecret is all we need i think)
+      clientId: process.env.FACEBOOK_CLIENT_ID!,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+    },
+    discord: {
+      clientId: process.env.DISCORD_CLIENT_ID!,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+    },
+    linkedin: {
+      clientId: process.env.LINKEDIN_CLIENT_ID!,
+      clientSecret: process.env.LINKEDIN_SECRET!,
+    },
+    github: {
+      //change to your provider (clientId and clientSecret is all we need i think)
+      clientId: process.env.OAUTH_GITHUB_CLIENT_ID!,
+      clientSecret: process.env.OAUTH_GITHUB_CLIENT_SECRET!,
+    },
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }
+  },
   databaseHooks: {
     session: {
       create: {
