@@ -26,4 +26,9 @@ module.exports = {
     transformIgnorePatterns: [
     "node_modules/(?!(better-auth)/)"
   ],
+      coverageReporters: [
+      "json-summary",
+      "text",
+      "lcov"
+    ]
 };

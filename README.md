@@ -1,3 +1,10 @@
+![Lines](./coverage/badge-lines.svg)
+![Statements](./coverage/badge-statements.svg)
+![Functions](./coverage/badge-functions.svg)
+![Branches](./coverage/badge-branches.svg)
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
