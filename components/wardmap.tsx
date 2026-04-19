@@ -90,30 +90,54 @@ useEffect(() => {
       "Limpopo","Mpumalanga","Northern Cape","North West","Western Cape"
     ];
 
-for (const prov of provinces) {
-  try {
-    const res = await fetch(`${wardsUrl}?province=${prov}`);
-    if (!res.ok) continue; // 🔹 skip if 404
+    for (const prov of provinces) {
+      try {
+        const res = await fetch(`${wardsUrl}?province=${prov}`);
+        if (!res.ok) continue; // skip if 404
 
-    const wards = (await res.json()) as WardCollection;
-    const foundWard = wards.features.find((wardFeature) =>
-      turf.booleanPointInPolygon(point, wardFeature as WardFeature)
-    ) as WardFeature | undefined;
+        const wards = (await res.json()) as WardCollection;
+        const foundWard = wards.features.find((wardFeature) =>
+          turf.booleanPointInPolygon(point, wardFeature as WardFeature)
+        ) as WardFeature | undefined;
 
-    if (foundWard) {
-      setSelectedProvince(prov);
-      setWardsData(wards);
-      zoomToWard(foundWard);
-      setSelectedWard(foundWard);
-      break; // stop once we’ve found it
+        if (foundWard) {
+          setSelectedProvince(prov);
+          setWardsData(wards);
+          zoomToWard(foundWard);
+          setSelectedWard(foundWard);
+          break;
+        }
+      } catch (err) {
+        console.error(`Error loading ${prov} wards:`, err);
+      }
     }
-  } catch (err) {
-    console.error(`Error loading ${prov} wards:`, err);
-  }
-}
-
   });
 }, [zoomToWard]);
+
+// 🔹 Manual province change effect
+useEffect(() => {
+  if (!selectedProvince) return;
+
+  async function loadProvinceData() {
+    try {
+      setWardsData(null);        // 🔹 clear old wards
+      setSelectedWard(null);     // 🔹 reset ward selection
+
+      const res = await fetch(`${wardsUrl}?province=${selectedProvince}`);
+      if (!res.ok) return;
+
+      const wards = (await res.json()) as WardCollection;
+      setWardsData(wards);
+    } catch (err) {
+      console.error(`Error loading ${selectedProvince} wards:`, err);
+    }
+  }
+
+  loadProvinceData();
+}, [selectedProvince]);
+
+
+
 
   useEffect(() => {
     if (!mapRef.current || !wardsData) return;
