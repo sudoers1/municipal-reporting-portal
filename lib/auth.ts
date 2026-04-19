@@ -34,14 +34,10 @@ export const auth = betterAuth({
     }
   },
   databaseHooks: {
-    session: {
+    user: {
       create: {
-        after: async (session) => {
-          const role = await getUserRole(session.userId);
-          if(!role){
-            // If the user doesn't have a role, assign them the "Resident" role
-            await setResident(session.userId);
-          }
+        after: async (user) => {
+          await setResident(user.id);
         },
       },
     },
@@ -52,7 +48,7 @@ export const auth = betterAuth({
       return {
         user: {
           ...user,
-          role: role ?? 'Guest',
+          role,
         },
         session,
       };
