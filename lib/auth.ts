@@ -19,6 +19,7 @@ export const auth = betterAuth({
       clientId: process.env.DISCORD_CLIENT_ID!,
       clientSecret: process.env.DISCORD_CLIENT_SECRET!,
     },
+<<<<<<< HEAD
     linkedin: {
       clientId: process.env.LINKEDIN_CLIENT_ID!,
       clientSecret: process.env.LINKEDIN_SECRET!,
@@ -63,6 +64,12 @@ export const auth = betterAuth({
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
     },
+=======
+    linkedin: { 
+      clientId:  process.env.LINKEDIN_CLIENT_ID!,
+      clientSecret: process.env.LINKEDIN_SECRET!, 
+    }, 
+>>>>>>> 5f757a9f630a312fbadb759751f32d57d80388f6
   },
 });
 
