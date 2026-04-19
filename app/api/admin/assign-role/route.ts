@@ -26,7 +26,7 @@ export async function POST(req: Request) {
   // 3. Validate input
   const { userId, role } = await req.json();
 
-  const validRoles = ["resident", "worker", "admin"];
+  const validRoles = ["Resident", "Worker", "Admin"];
   if (!userId || !validRoles.includes(role)) {
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }

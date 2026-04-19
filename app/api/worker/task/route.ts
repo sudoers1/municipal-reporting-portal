@@ -11,7 +11,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  requireRole(session, ["worker"]);
+  requireRole(session, ["Worker"]);
 
   return NextResponse.json({ message: "Worker endpoint ready" });
 }

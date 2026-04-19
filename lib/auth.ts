@@ -1,12 +1,13 @@
 import { betterAuth } from "better-auth";
 import { customSession } from 'better-auth/plugins';
 import { getUserRole, setResident } from "./db/users";
+import { neon } from "@neondatabase/serverless";
 import { Pool } from "pg"; //this will change once we get the postgres server up
 
 export const auth = betterAuth({
 
   database: new Pool({
-    connectionString: process.env.NEON_CONNECTION_STRING,
+    connectionString: process.env.DATABASE_URL,
   }), //same as above
   socialProviders: {
     facebook: {

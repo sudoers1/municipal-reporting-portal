@@ -7,10 +7,17 @@ let test: string = process.env.DATABASE_URL!;
 const sql = neon(test);
 
 export async function getUserRole(id: string): Promise<UserRole> {
-    const result = await sql`SELECT user_types_id FROM roles WHERE user_id = ${id}`;
-    const role = await sql`SELECT type_name FROM user_types WHERE id = ${result[0].user_types_id}`;
-    console.log(role[0].type_name ?? "Guest")
-    return (role[0]?.type_name ?? "Guest") as UserRole;
+  const result = await sql`
+    SELECT user_types_id FROM roles WHERE user_id = ${id}
+  `;
+
+  if (!result.length) return "Resident";
+
+  const role = await sql`
+    SELECT type_name FROM user_types WHERE id = ${result[0].user_types_id}
+  `;
+
+  return (role[0]?.type_name ?? "Resident") as UserRole;
 }
 
 export async function setUserRole(id: string, role: string): Promise<void> {
