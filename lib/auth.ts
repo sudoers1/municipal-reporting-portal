@@ -58,7 +58,7 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 2, // 2 hours
     updateAge: 60 * 60 * 2,     // refresh session every 2h
     cookie: {
-      name: "muni-session",
+      // name: "muni-session",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
