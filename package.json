@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "test:badges": "npm run test:coverage  && jest-coverage-badges"
+    "test:badges": "npm run test:coverage  && jest-coverage-badges  --output ./badges"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
