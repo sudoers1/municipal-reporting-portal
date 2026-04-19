@@ -5,7 +5,7 @@ import { sql } from "@/lib/db/neon";
 
 
 export async function insertComplaint(userid:string,issuetype: string,details: string) {
-  const result =sql ` INSERT INTO complaints (userid,municipality, creationtime, issuetype, details)
+  const result = await sql ` INSERT INTO complaints (userid,municipality, creationtime, issuetype, details)
     VALUES (${userid},${"testmunicipality"},${new Date()},${issuetype},${details}
     )
     RETURNING *
@@ -15,7 +15,7 @@ export async function insertComplaint(userid:string,issuetype: string,details: s
   return result;
 }
 export async function insertComplaintwIMG(userid:string,issuetype: string,details: string,image:string) {
-  const result =sql ` INSERT INTO complaints (userid,municipality, creationtime, issuetype, details,image)
+  const result = await sql ` INSERT INTO complaints (userid,municipality, creationtime, issuetype, details,image)
     VALUES (${userid},${"testmunicipality"},${new Date()},${issuetype},${details},${image}
     ) 
   `;

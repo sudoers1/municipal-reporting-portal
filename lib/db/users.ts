@@ -3,7 +3,7 @@ import { UserRole } from './types';
 
 
 
-let test: string = process.env.DATABASE_URL!;
+let test: string = process.env.NEON_CONNECTION_STRING!;
 const sql = neon(test);
 
 export async function getUserRole(id: string): Promise<UserRole> {

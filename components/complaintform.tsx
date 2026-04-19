@@ -68,6 +68,11 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
   async function handleSubmit(e: React.FormEvent) {
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
     e.preventDefault();
+
+    if (!form.created_by) {
+      toast.error("Session not loaded yet, please try again.");
+      return;
+    }
     if (form.photo &&form.photo.size > 5_000_000) {
       
       toast("ERROR:File too large (max 5MB)");
@@ -89,11 +94,11 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
           formData.append("photo", form.photo);
           const response = await uploadHandler(form.photo);
           const url = response.url;
-          insertComplaintwIMG(form.created_by,form.category,form.description,url,);
+          await insertComplaintwIMG(form.created_by,form.category,form.description,url,);
         }
         else{
           //backend call
-          insertComplaint(form.created_by,form.category,form.description,);
+          await insertComplaint(form.created_by,form.category,form.description,);
         }
         console.log("Form submitted:", Object.fromEntries(formData.entries()));
 
