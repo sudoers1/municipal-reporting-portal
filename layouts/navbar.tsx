@@ -58,12 +58,12 @@ export default function Navbar() {
               Dashboard
             </Link>
 
-            <button
-              onClick={() => handleNotReady("Reports")}
+            <Link
+              href={"/reports"}
               className="hover:underline"
             >
               Reports
-            </button>
+            </Link>
 
             <button
               onClick={() => handleNotReady("About")}
