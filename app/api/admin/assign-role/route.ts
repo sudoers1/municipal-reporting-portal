@@ -9,8 +9,6 @@ export async function POST(req: Request) {
     headers: req.headers,
     });
 
-    console.log("Session data:", session); // Debugging line
-
   // 1. Auth check
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -18,7 +16,7 @@ export async function POST(req: Request) {
 
   // 2. RBAC check (critical)
     try {
-        requireRole(session, ["admin"]);
+        requireRole(session, ["Admin"]);
     } catch {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
