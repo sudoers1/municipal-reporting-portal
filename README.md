@@ -1,7 +1,7 @@
-![Lines](./coverage/badge-lines.svg)
-![Statements](./coverage/badge-statements.svg)
-![Functions](./coverage/badge-functions.svg)
-![Branches](./coverage/badge-branches.svg)
+![Lines](./badges/badge-lines.svg)
+![Statements](./badges/badge-statements.svg)
+![Functions](./badges/badge-functions.svg)
+![Branches](./badges/badge-branches.svg)
 
 
 
