@@ -7,8 +7,9 @@ module.exports = {
   coverageProvider: "v8", // The provider v8 is faster than babble
 
   collectCoverageFrom: [
-    "src/**/*.{ts,tsx}",
-    "!src/**/*.d.ts"
+    "app/**/*.ts",
+    "lib/**/*.ts",
+    "!**/*.d.ts"
   ],
 
   coverageThreshold: {
@@ -19,4 +20,10 @@ module.exports = {
       statements: 70,
     },
   },
+    moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/$1",
+  },
+    transformIgnorePatterns: [
+    "node_modules/(?!(better-auth)/)"
+  ],
 };
