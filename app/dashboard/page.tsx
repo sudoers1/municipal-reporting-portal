@@ -1,6 +1,8 @@
 "use client";
 
 import DashboardItems from "@/components/dashboarditems";
+import { useState } from "react";
+import Complaints from '@/components/complaintform'
 import ComplaintButton from "@/components/complaintbutton";
 import { authClient } from "@/lib/auth-client";
 
@@ -8,7 +10,7 @@ import { authClient } from "@/lib/auth-client";
 export default function DashboardPage() {
   const { data: session } = authClient.useSession();
   const role = session?.user.role;
-
+  const [showComplaints,setShowComplaints]=useState(false);
   return (
     <main
       id="dashboard"
@@ -35,7 +37,13 @@ export default function DashboardPage() {
         <DashboardItems />
 
         {/* Complaint button */}
-        <ComplaintButton />
+        <ComplaintButton
+          onClick={() => setShowComplaints(!showComplaints)}
+          showComplaints={showComplaints}
+        />
+
+        {/* Complaints form modal */}
+        {showComplaints && <Complaints onClose={() => setShowComplaints(false)} />}
       </section>
     </main>
   );
