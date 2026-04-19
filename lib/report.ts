@@ -1,8 +1,10 @@
+import { Status } from "./status";
+
 
 export class Report {
     constructor(
         private municipality: string,
-        private status: string,
+        private status: Status,
         private issuetype: string,
         private creationtime: Date,
         private userid: string,
@@ -50,7 +52,7 @@ export class Report {
         this.municipality = municipality;
     }
 
-    setStatus(status: string): void {
+    setStatus(status: Status): void {
         this.status = status;
     }
 
