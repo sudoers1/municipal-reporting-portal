@@ -2,8 +2,6 @@
 
 import { sql } from "@/lib/db/neon";
 
-
-
 export async function insertComplaint(userid:string,issuetype: string,details: string) {
   const result = await sql ` INSERT INTO complaints (userid,municipality, creationtime, issuetype, details)
     VALUES (${userid},${"testmunicipality"},${new Date()},${issuetype},${details}

@@ -15,8 +15,10 @@ import { authClient } from "@/lib/auth-client";
 const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
 
 export default function DashboardPage() {
-  const { data: session, isPending } = authClient.useSession();
-  const [showComplaints, setShowComplaints] = useState(false);
+  const { data: session, isPending  } = authClient.useSession();
+  const [showComplaints,setShowComplaints]=useState(false);
+  const name = session?.user.name;
+  
 
   if (isPending) return (
     <main
@@ -32,8 +34,6 @@ export default function DashboardPage() {
     </main>
   );
 
-  const role = (session as any)?.user?.role;
-
   return (
     <main
       id="dashboard"
@@ -42,7 +42,7 @@ export default function DashboardPage() {
     >
       <section className="p-8 space-y-10 bg-black/50 min-h-screen">
         <h1 className="text-3xl md:text-5xl font-bold text-white text-center">
-          Hello, {role}!
+          Hello, {name}!
         </h1>
 
         <p className="text-lg text-white max-w-3xl mx-auto text-center">
