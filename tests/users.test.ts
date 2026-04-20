@@ -1,47 +1,44 @@
 import { getUserRole, setUserRole, setResident } from "../lib/db/users";
 
-jest.mock("@neondatabase/serverless", () => {
-  const mockSql = jest.fn();
-  mockSql.transaction = jest.fn();
-  return { neon: jest.fn(() => mockSql) };
+const mockClient = {
+  query: jest.fn(),
+  release: jest.fn(),
+};
+
+const mockQuery = jest.fn();
+const mockConnect = jest.fn().mockResolvedValue(mockClient);
+
+jest.mock("pg", () => ({
+  Pool: jest.fn().mockImplementation(() => ({
+    query: jest.fn((...args) => mockQuery(...args)),
+    connect: jest.fn((...args) => mockConnect(...args)),
+  })),
+}));
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockClient.query.mockResolvedValue({ rows: [] });
 });
 
-const mockSql = require("@neondatabase/serverless").neon();
-
 describe("getUserRole", () => {
-  beforeEach(() => jest.clearAllMocks());
-
-  test("returns Resident when no role found in roles table", async () => {
-    mockSql.mockResolvedValueOnce([]);
+  test("returns Resident when no role found", async () => {
+    mockQuery.mockResolvedValueOnce({ rows: [] });
 
     const result = await getUserRole("user-1");
     expect(result).toBe("Resident");
   });
 
   test("returns the role name when found", async () => {
-    mockSql
-      .mockResolvedValueOnce([{ user_types_id: 2 }])
-      .mockResolvedValueOnce([{ type_name: "Worker" }]);
+    mockQuery.mockResolvedValueOnce({ rows: [{ type_name: "Worker" }] });
 
     const result = await getUserRole("user-1");
     expect(result).toBe("Worker");
   });
-
-  test("returns Resident when user_types query returns empty", async () => {
-    mockSql
-      .mockResolvedValueOnce([{ user_types_id: 2 }])
-      .mockResolvedValueOnce([]);
-
-    const result = await getUserRole("user-1");
-    expect(result).toBe("Resident");
-  });
 });
 
 describe("setUserRole", () => {
-  beforeEach(() => jest.clearAllMocks());
-
   test("throws when role is not found in user_types", async () => {
-    mockSql.mockResolvedValueOnce([{}]);
+    mockClient.query.mockResolvedValueOnce({ rows: [] });
 
     await expect(setUserRole("user-1", "InvalidRole")).rejects.toThrow(
       "Role 'InvalidRole' not found"
@@ -49,25 +46,29 @@ describe("setUserRole", () => {
   });
 
   test("runs transaction when role is valid", async () => {
-    mockSql.mockResolvedValueOnce([{ id: 3 }]);
-    mockSql.transaction.mockResolvedValueOnce(undefined);
+    mockClient.query
+      .mockResolvedValueOnce({ rows: [{ id: 3 }] })
+      .mockResolvedValueOnce({})
+      .mockResolvedValueOnce({})
+      .mockResolvedValueOnce({})
+      .mockResolvedValueOnce({});
 
     await setUserRole("user-1", "Worker");
 
-    expect(mockSql.transaction).toHaveBeenCalledTimes(1);
+    expect(mockClient.query).toHaveBeenCalledWith("BEGIN");
+    expect(mockClient.query).toHaveBeenCalledWith("COMMIT");
+    expect(mockClient.release).toHaveBeenCalled();
   });
 });
 
 describe("setResident", () => {
-  beforeEach(() => jest.clearAllMocks());
-
   test("inserts resident role for new user", async () => {
-    mockSql
-      .mockResolvedValueOnce([{ id: 1 }])
-      .mockResolvedValueOnce(undefined);
+    mockQuery
+      .mockResolvedValueOnce({ rows: [{ id: 1 }] })
+      .mockResolvedValueOnce({ rows: [] });
 
     await setResident("user-1");
 
-    expect(mockSql).toHaveBeenCalledTimes(2);
+    expect(mockQuery).toHaveBeenCalledTimes(2);
   });
 });
