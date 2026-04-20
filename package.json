@@ -12,6 +12,7 @@
     "test:badges": "npm run test:coverage  && jest-coverage-badges  --output ./badges"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
     "@turf/turf": "^7.3.4",
     "better-auth": "^1.6.0",
     "better-sqlite3": "^12.9.0",
@@ -29,9 +30,9 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "20.19.39",
     "@types/jest": "^29.5.14",
     "@types/next": "^8.0.7",
-    "@types/node": "20.19.39",
     "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",

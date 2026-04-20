@@ -10,7 +10,7 @@ export default async function Reports() {
       className="w-screen min-h-[120vh] overflow-y-auto bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('/municipality.png')" }}
     >
-      <section className="p-8 space-y-10 bg-black/50 min-h-[120vh] flex flex-col">
+      <section className="p-8 space-y-10 md:bg-black/50 min-h-[120vh] flex flex-col">
         
         <header>
           <h1 className="text-3xl md:text-5xl font-bold text-white text-center">
@@ -20,7 +20,7 @@ export default async function Reports() {
 
         
 
-        <figure className="flex justify-center">
+        <figure className="flex md:justify-center">
           <ComplaintsTable complaints={complaints} />
         </figure>
         

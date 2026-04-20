@@ -60,7 +60,7 @@ export default function ComplaintViewer({
         {loading ? (
           <Spinner />
         ) : complaint ? (
-          <section className="flex flex-row px-10 gap-5 text-black">
+          <section className="flex flex-col md:flex-row px-10 gap-5 text-black">
             <section className="flex flex-col min-w-[20vw]">
                 <p>
                 <strong>Municipality:</strong> {complaint.municipality}

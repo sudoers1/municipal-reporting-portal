@@ -34,7 +34,7 @@ export default function ComplaintsTable({ complaints }) {
 
   return (
     <>
-      <table className="w-[85vw] bg-brand-primary rounded-2xl overflow-hidden shadow text-white">
+      <table className="w-[85vw] bg-brand-primary rounded-2xl overflow-hidden text-white">
 
         <thead className="bg-brand-accent text-black">
           <tr>
