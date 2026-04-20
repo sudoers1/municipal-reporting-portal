@@ -1,27 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import LoginModal from "@/components/login";
 import toast from "react-hot-toast";
 import Hamburger from "@/components/hamburgerMenu";
+import ProfilePopup from "@/components/profile";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [session, setSession] = useState<unknown | null>(null);
+  const [showProfile, setShowProfile] = useState(false);
+  const { data: session } = authClient.useSession();
+  const user = (session as any)?.user;
   const router = useRouter();
-
-  useEffect(() => {
-    authClient.getSession().then((res) => {
-      setSession(res?.data?.session ?? null);
-    });
-  }, []);
 
   const handleLogout = async () => {
     await authClient.signOut();
-    setSession(null);
     router.push("/");
   };
 
@@ -29,66 +25,54 @@ export default function Navbar() {
     setIsOpen(true);
   };
 
-  // Temporary handler for unfinished pages
   const handleNotReady = (page: string) => {
-    toast(`${page} page doesn’t exist yet`);
+    toast(`${page} page doesn't exist yet`);
   };
 
   return (
     <>
       <nav className="w-full flex items-center justify-between px-6 py-4 bg-brand-primary shadow">
-     
         <Link
-          href={session ? "/dashboard" : "/"}
+          href={user ? "/dashboard" : "/"}
           className="text-xl text-white font-bold text-foreground hover:underline"
         >
           Municipal Portal Project
         </Link>
 
-
         <div className="flex items-center gap-6 text-white">
+          <Hamburger />
 
-            <Hamburger/>
-
-            <section className="flex gap-4 navContainer max-sm:hidden">
-                <Link
-              href={session ? "/dashboard" : "/"}
-              className="hover:underline"
-            >
+          <section className="flex gap-4 navContainer max-sm:hidden">
+            <Link href={user ? "/dashboard" : "/"} className="hover:underline">
               Dashboard
             </Link>
 
-            <button
-              onClick={() => handleNotReady("Reports")}
-              className="hover:underline"
-            >
+            <Link href="/reports" className="hover:underline">
               Reports
-            </button>
+            </Link>
 
-            <button
-              onClick={() => handleNotReady("About")}
-              className="hover:underline"
-            >
+            <button onClick={() => handleNotReady("About")} className="hover:underline">
               About
             </button>
 
-            <button
-              onClick={() => handleNotReady("Contact")}
-              className="hover:underline"
-            >
+            <button onClick={() => handleNotReady("Contact")} className="hover:underline">
               Contact
             </button>
-            </section>
+          </section>
 
+          {user ? (
+            <div className="relative">
+              <button onClick={() => setShowProfile(!showProfile)}>
+                <img
+                  src={user?.image ?? "/default-avatar.png"}
+                  className="w-9 h-9 rounded-full cursor-pointer hover:ring-2 hover:ring-white"
+                />
+              </button>
 
-
-          {session ? (
-            <button
-              className="px-4 py-2 rounded bg-brand-accent text-black hover:bg-brand-primary hover:text-white"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
+              {showProfile && (
+                <ProfilePopup onClose={() => setShowProfile(false)} />
+              )}
+            </div>
           ) : (
             <button
               className="px-4 py-2 rounded bg-brand-accent text-black hover:bg-brand-primary hover:text-white"
