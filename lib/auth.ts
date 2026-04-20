@@ -1,7 +1,6 @@
 import { betterAuth } from "better-auth";
 import { customSession } from 'better-auth/plugins';
 import { getUserRole, setResident } from "./db/users";
-import { neon } from "@neondatabase/serverless";
 import { Pool } from "pg"; //this will change once we get the postgres server up
 
 export const auth = betterAuth({
@@ -54,16 +53,20 @@ export const auth = betterAuth({
       };
     }),
   ],
-  session: {
-    expiresIn: 60 * 60 * 2, // 2 hours
-    updateAge: 60 * 60 * 2,     // refresh session every 2h
-    cookie: {
-      // name: "muni-session",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+  // auth.ts
+    session: {
+      expiresIn: 60 * 60 * 2,
+      updateAge: 60 * 60 * 2,
+      cookieCache: {
+        enabled: true,
+        maxAge: 60 * 5, // cache session in cookie for 5 minutes
+      },
+      cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+      },
     },
-  },
 });
 
 
