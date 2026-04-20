@@ -13,9 +13,9 @@ export async function GET(req: Request) {
 
   try {
     requireRole(session, ["Worker"]);
-    } catch {
+  } catch {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+  }
 
   return NextResponse.json({ message: "Worker endpoint ready" });
 }

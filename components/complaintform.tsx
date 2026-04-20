@@ -49,8 +49,13 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
 
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
-    if (form.photo && form.photo.size > 5_000_000) {
-      toast("ERROR: File too large (max 5MB)");
+    if (!form.created_by) {
+      toast.error("Session not loaded yet, please try again.");
+      return;
+    }
+    if (form.photo &&form.photo.size > 5_000_000) {
+      
+      toast("ERROR:File too large (max 5MB)");
       return;
     }
 
