@@ -1,9 +1,9 @@
 name: Test & Coverage
 on:
   push:
-    branches: [chore/setup-jest-coverage]
+    branches: [dev]
   pull_request:
-    branches: [chore/setup-jest-coverage]
+    branches: [dev]
 
 jobs:
   test:
