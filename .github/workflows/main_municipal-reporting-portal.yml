@@ -80,4 +80,5 @@ jobs:
           app-name: 'municipal-reporting-portal'
           slot-name: 'Production'
           package: .
+          startup-command: 'node server.js'
           
