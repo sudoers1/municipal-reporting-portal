@@ -48,22 +48,10 @@ export default function DashboardPage() {
       className="w-screen min-h-screen overflow-y-auto bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('/municipality.png')" }}
     >
-      <section className="p-8 space-y-10 bg-black/50 min-h-screen">
-        <h1 className="text-3xl md:text-5xl font-bold text-white text-center">
-          Hello, {name}!
-        </h1>
-
-        <p className="text-lg text-white max-w-3xl mx-auto text-center">
-          Welcome to the Municipal Portal Dashboard. You have successfully logged
-          in and can now access your personalized dashboard and information
-          regarding your municipality. From here, you can log a complaint or
-          report an issue directly to the municipal authorities. Explore the
-          various sections to stay informed and engaged with your community.
-        </p>
-
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-white">
-          Dashboard
-        </h2>
+      <section className="p-6 space-y-10 bg-black/50 min-h-screen">
+        
+        {/*moved some of the dashboard into the swiper so the map has more space to exist*/}
+        
 
         <Swiper
           modules={[Keyboard, Navigation]}
@@ -74,6 +62,23 @@ export default function DashboardPage() {
           autoHeight={true}// added so we dont have that massive gap on the dashboard
         >
           <SwiperSlide>
+            <section className="p-4 space-y-10 ">
+              <h1 className="text-3xl md:text-5xl font-bold text-white text-center">
+                Hello, {name}!
+              </h1>
+                  <p className="text-lg text-white max-w-3xl mx-auto text-center">
+                Welcome to the Municipal Portal Dashboard. You have successfully logged
+                in and can now access your personalized dashboard and information
+                regarding your municipality. From here, you can log a complaint or
+                report an issue directly to the municipal authorities. Explore the
+                various sections to stay informed and engaged with your community. 
+              </p>
+              <p className="text-lg text-white max-w-3xl mx-auto text-center">Use the arrow keys to access the map.</p>
+
+              <h2 className="text-2xl md:text-3xl font-bold text-center text-white">
+                Dashboard
+              </h2>
+            </section>
             <DashboardItems />
           </SwiperSlide>
           <SwiperSlide>
