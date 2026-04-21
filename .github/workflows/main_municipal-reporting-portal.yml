@@ -34,8 +34,8 @@ jobs:
 
       - name: Copy static files into standalone
         run: |
-          cp -r public .next/standalone/public
-          cp -r .next/static .next/standalone/.next/static
+          rsync -a public/ .next/standalone/public/
+          rsync -a .next/static/ .next/standalone/.next/static/
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
