@@ -1,3 +1,5 @@
+"use client"
+
 import { readComplaints } from "@/lib/db/complaints";
 import ComplaintsTable from "@/components/complaintsTable";
 import { useState, useEffect } from "react";
