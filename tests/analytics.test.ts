@@ -1,3 +1,4 @@
+/** @jest-environment node */
 import { GET } from "../app/api/analytics/route";
 import { auth } from "../lib/auth";
 

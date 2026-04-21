@@ -1,4 +1,14 @@
 import '@testing-library/jest-dom';
+import { TextEncoder, TextDecoder } from 'util';
+
+// Polyfill TextEncoder/TextDecoder first (undici needs these)
+Object.assign(global, { TextEncoder, TextDecoder });
+
+// Polyfill Web Fetch APIs only in node environment
+if (typeof window === 'undefined') {
+  const { Request, Response, Headers, fetch } = require('undici');
+  Object.assign(global, { Request, Response, Headers, fetch });
+}
 
 // Mock Leaflet CSS
 Object.defineProperty(require, 'resolve', {
@@ -24,10 +34,13 @@ const createLeafletMock = () => ({
   })),
 });
 
-Object.defineProperty(window, 'L', {
-  value: createLeafletMock(),
-  writable: true,
-});
+// Mock window.L only in jsdom environment
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'L', {
+    value: createLeafletMock(),
+    writable: true,
+  });
+}
 
 // Mock Turf.js
 jest.mock('@turf/turf', () => ({
@@ -42,9 +55,10 @@ jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
-// Fix jsdom image loading
-Object.defineProperty(HTMLImageElement.prototype, 'src', {
-  set() {},
-  get() { return ''; },
-});
-
+// Fix jsdom image loading (jsdom only)
+if (typeof window !== 'undefined') {
+  Object.defineProperty(HTMLImageElement.prototype, 'src', {
+    set() {},
+    get() { return ''; },
+  });
+}

@@ -1,3 +1,4 @@
+/** @jest-environment node */
 import { GET } from "../app/api/worker/task/route";
 import { auth } from "../lib/auth";
 import { requireRole } from "../lib/guards/route";
