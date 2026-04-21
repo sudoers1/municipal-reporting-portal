@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";//need this for redirecting to homescreen
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Keyboard, Navigation } from "swiper/modules";
 import "swiper/css";
@@ -18,9 +19,16 @@ export default function DashboardPage() {
   const { data: session, isPending  } = authClient.useSession();
   const [showComplaints,setShowComplaints]=useState(false);
   const name = session?.user.name;
-  
 
-  if (isPending) return (
+  const router = useRouter();
+  // Handle redirect for unauthenticated users
+  useEffect(() => {
+    if (!isPending && !session) {
+      router.push('/'); // Redirect to public
+    }
+  }, [session, isPending, router]);
+
+  if (isPending){ return (
     <main
       className="w-screen min-h-screen bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('/municipality.png')" }}
@@ -32,7 +40,7 @@ export default function DashboardPage() {
         </div>
       </section>
     </main>
-  );
+  );}
 
   return (
     <main
@@ -63,6 +71,7 @@ export default function DashboardPage() {
           navigation={true}
           spaceBetween={50}
           slidesPerView={1}
+          autoHeight={true}// added so we dont have that massive gap on the dashboard
         >
           <SwiperSlide>
             <DashboardItems />
