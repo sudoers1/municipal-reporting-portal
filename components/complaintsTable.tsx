@@ -3,7 +3,7 @@
 import { useState } from "react";
 import ComplaintViewer from "@/components/complaintView";
 
-export default function ComplaintsTable({ complaints }) {
+export default function ComplaintsTable({ complaints }: { complaints: Record<string, any>[] }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const [sortKey, setSortKey] = useState("creationtime");
