@@ -6,6 +6,20 @@ Object.assign(global, { TextEncoder, TextDecoder });
 
 // Polyfill Web Fetch APIs only in node environment
 if (typeof window === 'undefined') {
+  // Polyfill File if not available (Node < 20)
+  if (typeof File === 'undefined') {
+    const { Blob } = require('buffer');
+    global.File = class File extends Blob {
+      name: string;
+      lastModified: number;
+      constructor(chunks: any[], filename: string, opts: any = {}) {
+        super(chunks, opts);
+        this.name = filename;
+        this.lastModified = opts.lastModified ?? Date.now();
+      }
+    } as any;
+  }
+
   const { Request, Response, Headers, fetch } = require('undici');
   Object.assign(global, { Request, Response, Headers, fetch });
 }
