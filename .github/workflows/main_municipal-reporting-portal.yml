@@ -12,16 +12,6 @@ env:
   DATABASE_URL: ${{ secrets.NEON_CONNECTION_STRING }}
   BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
   BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
-  OAUTH_GITHUB_CLIENT_ID: ${{ secrets.OAUTH_GITHUB_CLIENT_ID }}
-  OAUTH_GITHUB_CLIENT_SECRET: ${{ secrets.OAUTH_GITHUB_CLIENT_SECRET }}
-  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-  FACEBOOK_CLIENT_ID: ${{ secrets.FACEBOOK_CLIENT_ID }}
-  FACEBOOK_CLIENT_SECRET: ${{ secrets.FACEBOOK_CLIENT_SECRET }}
-  LINKEDIN_CLIENT_ID: ${{ secrets.LINKEDIN_CLIENT_ID }}
-  LINKEDIN_CLIENT_SECRET: ${{ secrets.LINKEDIN_CLIENT_SECRET }}
-  DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
-  DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
 
 jobs:
   build:
@@ -42,17 +32,16 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
+      - name: Copy static files into standalone
+        run: |
+          cp -r public .next/standalone/public
+          cp -r .next/static .next/standalone/.next/static
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: |
-            .next/standalone
-            .next/static
-            public
-            package.json
-            package-lock.json
-            next.config.ts
+          path: .next/standalone
 
   deploy:
     runs-on: ubuntu-latest
@@ -80,4 +69,4 @@ jobs:
           app-name: 'municipal-reporting-portal'
           slot-name: 'Production'
           package: .
-          startup-command: 'node .next/standalone/server.js'
+          startup-command: 'node server.js'
