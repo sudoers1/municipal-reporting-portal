@@ -38,7 +38,7 @@ export default function WardMap({
       [bbox[3], bbox[2]],
     ]);
 
-    mapRef.current.fitBounds(bounds, { padding: 0 });
+    mapRef.current.fitBounds(bounds, { padding: [0, 0]});
     mapRef.current.setMaxBounds(bounds);
     setSelectedWard(ward);
   }, []);
