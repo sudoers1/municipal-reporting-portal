@@ -70,3 +70,5 @@ jobs:
           slot-name: 'Production'
           package: .
           startup-command: 'node server.js'
+      - name: Debug artifact contents
+        run: ls -la
