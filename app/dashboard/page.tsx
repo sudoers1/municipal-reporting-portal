@@ -1,11 +1,18 @@
 "use client";
 
-import DashboardItems from "@/components/dashboarditems";
 import { useState } from "react";
-import Complaints from '@/components/complaintform'
+import dynamic from "next/dynamic";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Keyboard, Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/keyboard";
+import "swiper/css/navigation";
+import DashboardItems from "@/components/dashboarditems";
+import Complaints from "@/components/complaintform";
 import ComplaintButton from "@/components/complaintbutton";
 import { authClient } from "@/lib/auth-client";
 
+const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
 
 export default function DashboardPage() {
   const { data: session, isPending  } = authClient.useSession();
@@ -27,14 +34,12 @@ export default function DashboardPage() {
     </main>
   );
 
-  console.log("Session data:", session);
   return (
     <main
       id="dashboard"
       className="w-screen min-h-screen overflow-y-auto bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('/municipality.png')" }}
     >
-      {/* Overlay so text is readable */}
       <section className="p-8 space-y-10 bg-black/50 min-h-screen">
         <h1 className="text-3xl md:text-5xl font-bold text-white text-center">
           Hello, {name}!
@@ -47,19 +52,31 @@ export default function DashboardPage() {
           report an issue directly to the municipal authorities. Explore the
           various sections to stay informed and engaged with your community.
         </p>
+
         <h2 className="text-2xl md:text-3xl font-bold text-center text-white">
           Dashboard
         </h2>
-        {/* Dashboard items */}
-        <DashboardItems />
 
-        {/* Complaint button */}
+        <Swiper
+          modules={[Keyboard, Navigation]}
+          keyboard={{ enabled: true, onlyInViewport: false }}
+          navigation={true}
+          spaceBetween={50}
+          slidesPerView={1}
+        >
+          <SwiperSlide>
+            <DashboardItems />
+          </SwiperSlide>
+          <SwiperSlide>
+            <WardMap />
+          </SwiperSlide>
+        </Swiper>
+
         <ComplaintButton
           onClick={() => setShowComplaints(!showComplaints)}
           showComplaints={showComplaints}
         />
 
-        {/* Complaints form modal */}
         {showComplaints && <Complaints onClose={() => setShowComplaints(false)} />}
       </section>
     </main>
