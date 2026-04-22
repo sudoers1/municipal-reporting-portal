@@ -9,7 +9,6 @@ export async function insertComplaint(userid:string,issuetype: string,details: s
     RETURNING *
   `;
 
-  console.log("backend result", result);
   return result;
 }
 export async function insertComplaintwIMG(userid:string,issuetype: string,details: string,image:string) {
@@ -24,6 +23,14 @@ export async function readComplaints() {
   
   const result = await sql`
     SELECT * FROM complaints
+  `;
+
+  return result;
+}
+export async function readMyComplaints(userid:string|undefined) {
+  
+  const result = await sql`
+    SELECT * FROM complaints WHERE userid=${userid}
   `;
 
   return result;
