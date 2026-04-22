@@ -177,7 +177,8 @@ useEffect(() => {
 
   return (
     <div className="w-full">
-      <div className="mb-4 text-center">
+      <div className=" flex flex-col md:flex-row justify-center bg-brand-secondary rounded-2xl w-auto px-6 mb-4 text-center">
+        <div className="p-4">{/*added a bg to the dropdowns and altered their layout direction for mobile*/}
         <label className="block text-lg font-bold text-white mb-2">
           Select Province
         </label>
@@ -193,9 +194,10 @@ useEffect(() => {
             </option>
           ))}
         </select>
-
+      </div>
+      
         {selectedProvince && filteredWards && (
-          <>
+          <div className="p-4">
             <label className="block text-lg font-bold text-white mb-2">
               Select Ward
             </label>
@@ -211,7 +213,7 @@ useEffect(() => {
                 </option>
               ))}
             </select>
-          </>
+          </div>
         )}
       </div>
 
