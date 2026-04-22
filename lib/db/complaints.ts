@@ -28,6 +28,14 @@ export async function readComplaints() {
 
   return result;
 }
+export async function readMyComplaints(userid:string) {
+  
+  const result = await sql`
+    SELECT * FROM complaints WHERE userid=${userid}
+  `;
+
+  return result;
+}
 export async function readoneComplaint(complaintid: string) {
   const result = await sql`
     SELECT * FROM complaints
