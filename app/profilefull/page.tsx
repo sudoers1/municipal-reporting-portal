@@ -23,7 +23,7 @@ export default function Home() {
         router.push('/'); // Redirect to public
       }
       async function getComplaints() {
-        const data= await readMyComplaints(session.user.id);
+        const data= await readMyComplaints(session?.user?.id);
         setComplaints(data);
         setLoading(false);
       }
