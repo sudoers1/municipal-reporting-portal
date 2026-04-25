@@ -12,6 +12,8 @@ import DashboardItems from "@/components/dashboarditems";
 import Complaints from "@/components/complaintform";
 import ComplaintButton from "@/components/complaintbutton";
 import { authClient } from "@/lib/auth-client";
+import Spinner from "@/components/spinner";
+
 
 const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
 
@@ -34,10 +36,7 @@ export default function DashboardPage() {
       style={{ backgroundImage: "url('/municipality.png')" }}
     >
       <section className="p-8 bg-black/50 min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
-          <p className="text-white text-lg font-semibold">Loading your dashboard...</p>
-        </div>
+          <Spinner splash="dashboard"/>
       </section>
     </main>
   );}

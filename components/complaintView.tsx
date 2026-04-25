@@ -1,47 +1,27 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { readoneComplaint } from "@/lib/db/complaints";
-
-function Spinner() {
-  return (
-    <div className="flex justify-center items-center py-10">
-      <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
-    </div>
-  );
-}
+import Image from "next/image";
+import { useState } from "react";
+import Spinner from "@/components/spinner";
 
 export default function ComplaintViewer({
   onClose,
-  cid,
+  complaint,
 }: {
   onClose: () => void;
-  cid: string;
+  complaint: Record<string, any>;
 }) {
-  const [complaint, setComplaint] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      const data = await readoneComplaint(cid);
-      setComplaint(data);
-      setLoading(false);
-    }
-
-    fetchData();
-  }, [cid]);
-
   return (
-    <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 "
+    <section
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
       role="dialog"
       aria-modal="true"
-      
     >
-      <article className="bg-brand-accent rounded-2xl shadow-lg w-full max-w-lg min-w-[50vw] min-h-[55vh] max-h-[85vh] overflow-hidden p-8 relative">
-
-        {/* Header */}
+     <article
+        className={`bg-brand-accent rounded-2xl h-[85%] md:h-[70%] overflow-y-auto p-8 relative
+          ${complaint.image ? "min-w-[60%] md:max-w-5xl" : "md:max-w-lg"}
+        `}
+      >
+        
         <header>
           <button
             onClick={onClose}
@@ -51,59 +31,74 @@ export default function ComplaintViewer({
             ×
           </button>
 
-          <h2 className="text-2xl font-bold text-center text-black mb-6">
+          <h2 className="text-2xl font-bold text-center text-black h-[15%] mb-6">
             Complaint Details
           </h2>
         </header>
 
-        {/* Body */}
-        {loading ? (
-          <Spinner />
-        ) : complaint ? (
-          <section className="flex flex-col md:flex-row px-10 gap-5 text-black">
-            <section className="flex flex-col min-w-[20vw]">
-                <p>
-                <strong>Municipality:</strong> {complaint.municipality}
-                </p>
+        <section className="flex flex-col md:flex-row md:gap-4 text-black h-[80%]">
+          
 
-                <p>
+          <section className="flex flex-col min-w-[48%] gap-4 flex-1 h-full">
+
+            <section className="border-[3px] rounded-xl space-y-1 border-brand-secondary p-3 flex-shrink-0">
+              <p>
+                <strong>Municipality:</strong> {complaint.municipality}
+              </p>
+
+              <p>
                 <strong>Status:</strong>{" "}
                 {complaint.status ? "Completed" : "Pending"}
-                </p>
+              </p>
 
-                <p>
+              <p>
                 <strong>Issue:</strong> {complaint.issuetype}
-                </p>
-                <p>
+              </p>
+
+              <p>
                 <strong>Time of report:</strong>{" "}
                 <time dateTime={complaint.creationtime}>
-                    {new Date(complaint.creationtime).toLocaleString()}
+                  {new Date(complaint.creationtime).toLocaleString()}
                 </time>
-                </p>
-
-                <p className="border border-brand-primary border-3 bg-brand-secondary">
-                <strong>Description:</strong> {complaint.details}
-                </p>
-
-                
+              </p>
             </section>
-            {complaint.image && (
-                <figure className="flex-shrink-0">
-                <img
-                    src={complaint.image}
-                    alt="Complaint evidence"
-                    className="w-full max-w-[320px] aspect-[4/3] object-cover rounded-lg"
-                />
-                </figure>
-            )}
+
+            {/* DETAILS BOX (fills remaining space) */}
+            <section className="flex-1 border rounded-xl border-brand-primary border-[3px] overflow-y-auto p-3 pr-2 bg-brand-secondary">
+              <p>{complaint.details}</p>
+            </section>
 
           </section>
-        ) : (
-          <section>
-            <p>No complaint found</p>
-          </section>
-        )}
+
+          {complaint.image && (
+            <section className="min-w-[48%] min-h-[100%] py-4 md:py-0">
+              <figure className="relative w-full h-full flex items-center justify-center bg-brand-primary rounded-xl overflow-hidden border-[3px] border-brand-secondary">
+
+                {/* Spinner */}
+                {loading && (
+                  <Spinner/>
+                )}
+
+                <Image
+                  src={complaint.image}
+                  alt="Complaint evidence"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className={`object-contain transition-opacity duration-300 ${
+                    loading ? "opacity-0" : "opacity-100"
+                  }`}
+                  onLoad={() => setLoading(false)}
+                />
+              </figure>
+            </section>
+          )}
+
+          
+
+        </section>
+
+
       </article>
-    </div>
+    </section>
   );
 }
