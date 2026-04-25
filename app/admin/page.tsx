@@ -8,7 +8,7 @@ export default function AdminPage() {
     <AdminLayout/>
     <main className="m-12 flex flex-col justify-center items-center">
       <section>
-        <h1 className="text-6xl pb-4">Welcome Admin</h1>
+        <h1 className="text-6xl pb-4 max-sm:text-5xl">Welcome Admin</h1>
         <p className="text-xl">Some informative text for the admin to read</p>
       </section>
       <section>
