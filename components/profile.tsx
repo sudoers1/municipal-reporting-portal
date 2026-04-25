@@ -15,14 +15,34 @@ export default function ProfilePopup({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="absolute top-12 right-0 bg-white rounded-2xl shadow-lg p-6 z-50 w-72">
-      <button onClick={onClose} className="absolute top-3 right-4 text-gray-500 hover:text-black text-xl">×</button>
+    <aside className="absolute top-12 right-0 bg-white rounded-2xl shadow-lg p-6 z-50 w-72">
+      
+      <button
+        onClick={onClose}
+        aria-label="Close profile popup"
+        className="absolute top-3 right-4 text-gray-500 hover:text-black text-xl"
+      >
+        ×
+      </button>
 
-      <div className="flex flex-col items-center gap-3">
-        <img src={user?.image ?? "/default-avatar.png"} className="w-16 h-16 rounded-full" />
-        <h3 className="font-bold text-black text-lg">{user?.name}</h3>
-        <p className="text-gray-500 text-sm">{user?.email}</p>
-        <span className="px-3 py-1 bg-brand-primary text-white text-sm rounded-full">{user?.role}</span>
+      <section className="flex flex-col items-center gap-3">
+        
+        <figure>
+          <img
+            src={user?.image ?? "/default-avatar.png"}
+            alt={`${user?.name ?? "User"} avatar`}
+            className="w-16 h-16 rounded-full"
+          />
+        </figure>
+
+        <header className="text-center">
+          <h2 className="font-bold text-black text-lg">{user?.name}</h2>
+          <p className="text-gray-500 text-sm">{user?.email}</p>
+        </header>
+
+        <p className="px-3 py-1 bg-brand-primary text-white text-sm rounded-full">
+          {user?.role}
+        </p>
 
         <button
           onClick={handleLogout}
@@ -30,7 +50,8 @@ export default function ProfilePopup({ onClose }: { onClose: () => void }) {
         >
           Logout
         </button>
-      </div>
-    </div>
+
+      </section>
+    </aside>
   );
 }
