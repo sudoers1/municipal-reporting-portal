@@ -39,7 +39,7 @@ export default function Navbar() {
           Municipal Portal Project
         </Link>
 
-        <div className="flex items-center gap-6 text-white">
+        <section className="flex items-center gap-6 text-white">
           <Hamburger />
 
           <section className="flex gap-4 navContainer max-sm:hidden">
@@ -61,7 +61,7 @@ export default function Navbar() {
           </section>
 
           {user ? (
-            <div className="relative">
+            <section className="relative">
               <button onClick={() => setShowProfile(!showProfile)}>
                 <img
                   src={user?.image ?? "/default-avatar.png"}
@@ -72,7 +72,7 @@ export default function Navbar() {
               {showProfile && (
                 <ProfilePopup onClose={() => setShowProfile(false)} />
               )}
-            </div>
+            </section>
           ) : (
             <button
               className="px-4 py-2 rounded bg-brand-accent text-black hover:bg-brand-primary hover:text-white"
@@ -81,7 +81,7 @@ export default function Navbar() {
               Login
             </button>
           )}
-        </div>
+        </section>
       </nav>
 
       <LoginModal isOpen={isOpen} onClose={() => setIsOpen(false)} />

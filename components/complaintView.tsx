@@ -5,9 +5,9 @@ import { readoneComplaint } from "@/lib/db/complaints";
 
 function Spinner() {
   return (
-    <div className="flex justify-center items-center py-10">
-      <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
-    </div>
+    <section className="flex justify-center items-center py-10">
+      <section className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
+    </section>
   );
 }
 
@@ -33,7 +33,7 @@ export default function ComplaintViewer({
   }, [cid]);
 
   return (
-    <div
+    <section
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 "
       role="dialog"
       aria-modal="true"
@@ -104,6 +104,6 @@ export default function ComplaintViewer({
           </section>
         )}
       </article>
-    </div>
+    </section>
   );
 }

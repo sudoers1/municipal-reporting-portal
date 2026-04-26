@@ -176,8 +176,8 @@ useEffect(() => {
   const filteredWards = wardsData ?? null;
 
   return (
-    <div className="w-full">
-      <div className="mb-4 text-center">
+    <section className="w-full">
+      <section className="mb-4 text-center">
         <label className="block text-lg font-bold text-white mb-2">
           Select Province
         </label>
@@ -213,55 +213,55 @@ useEffect(() => {
             </select>
           </>
         )}
-      </div>
+      </section>
 
       {/* Map container */}
-      <div className="relative w-full h-125 rounded-4xl overflow-hidden shadow-lg">
-        <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
-      </div>
+      <section className="relative w-full h-125 rounded-4xl overflow-hidden shadow-lg">
+        <section ref={containerRef} style={{ width: "100%", height: "100%" }} />
+      </section>
  {/* Info box for selected ward */}
       {selectedWard && (
-        <div className="mt-6 bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+        <aside className="mt-6 bg-white rounded-xl shadow-lg p-6 border border-gray-100">
           <h3 className="text-xl font-bold text-gray-800 mb-4">Ward Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="font-medium text-gray-600">Ward:</span>
-                <span className="text-gray-800">
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <section className="space-y-2">
+              <section className="flex justify-between">
+                <p className="font-medium text-gray-600">Ward:</p>
+                <p className="text-gray-800">
                   {String(selectedWard.properties?.WardLabel)} (Ward {String(selectedWard.properties?.WardNo)})
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium text-gray-600">Ward ID:</span>
-                <span className="text-gray-800">{String(selectedWard.properties?.WardID)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium text-gray-600">Province:</span>
-                <span className="text-gray-800">{String(selectedWard.properties?.Province)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium text-gray-600">Municipality:</span>
-                <span className="text-gray-800">{String(selectedWard.properties?.Municipali)}</span>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="font-medium text-gray-600">District:</span>
-                <span className="text-gray-800">{String(selectedWard.properties?.District)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium text-gray-600">District Code:</span>
+                </p>
+              </section>
+              <section className="flex justify-between">
+                <p className="font-medium text-gray-600">Ward ID:</p>
+                <p className="text-gray-800">{String(selectedWard.properties?.WardID)}</p>
+              </section>
+              <section className="flex justify-between">
+                <p className="font-medium text-gray-600">Province:</p>
+                <p className="text-gray-800">{String(selectedWard.properties?.Province)}</p>
+              </section>
+              <section className="flex justify-between">
+                <p className="font-medium text-gray-600">Municipality:</p>
+                <p className="text-gray-800">{String(selectedWard.properties?.Municipali)}</p>
+              </section>
+            </section>
+            <section className="space-y-2">
+              <section className="flex justify-between">
+                <p className="font-medium text-gray-600">District:</p>
+                <p className="text-gray-800">{String(selectedWard.properties?.District)}</p>
+              </section>
+              <section className="flex justify-between">
+                <p className="font-medium text-gray-600">District Code:</p>
                 <span className="text-gray-800">{String(selectedWard.properties?.DistrictCo)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium text-gray-600">CAT_B:</span>
-                <span className="text-gray-800">{String(selectedWard.properties?.CAT_B)}</span>
-              </div>
-            </div>
-          </div>
-        </div>
+              </section>
+              <section className="flex justify-between">
+                <p className="font-medium text-gray-600">CAT_B:</p>
+                <p className="text-gray-800">{String(selectedWard.properties?.CAT_B)}</p>
+              </section>
+            </section>
+          </section>
+        </aside>
       )}
-    </div>
+    </section>
   );
 }
 

@@ -112,7 +112,7 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <main className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <section className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-8 relative">
         <button
           onClick={onClose}
@@ -201,6 +201,6 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
           </button>
         </form>
       </section>
-    </div>
+    </main>
   );
 }
