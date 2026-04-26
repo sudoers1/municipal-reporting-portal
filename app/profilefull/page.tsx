@@ -6,7 +6,6 @@ import { authClient } from "@/lib/auth-client";
 import ComplaintsTable from "@/components/complaintsTable";
 import { readMyComplaints } from "@/lib/db/complaints";
 import Spinner from "@/components/spinner";
-import Image from "next/image";
 
 
 export default function Home() {
@@ -64,11 +63,9 @@ export default function Home() {
         <section className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
           
          <figure className="flex-shrink-0">
-            <Image
-              src={session?.user?.image ?? "/default-avatar.png"}
-              alt={`${session?.user?.name ?? "User"}'s avatar`}
-              width={160}
-              height={160}
+            <img 
+              src={session?.user?.image ?? "/default-avatar.png"} 
+              alt={`${session?.user?.name}'s avatar`}
               className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-brand-secondary"
             />
           </figure>

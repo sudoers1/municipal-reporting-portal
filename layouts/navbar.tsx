@@ -65,12 +65,9 @@ export default function Navbar() {
           {user ? (
             <div className="relative">
               <button onClick={() => setShowProfile(!showProfile)}>
-                <Image
+                <img
                   src={user?.image ?? "/default-avatar.png"}
-                  alt="User avatar"
-                  width={36}
-                  height={36}
-                  className="w-9 h-9 rounded-full cursor-pointer hover:ring-2 hover:ring-white object-cover"
+                  className="w-9 h-9 rounded-full cursor-pointer hover:ring-2 hover:ring-white"
                 />
               </button>
 
