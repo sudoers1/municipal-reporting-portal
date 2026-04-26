@@ -1,6 +1,8 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { authClient } from "@/lib/auth-client";
 import Spinner from "@/components/spinner";
+import FeedbackModal from "@/components/feedbackform";
 
 export default function ComplaintViewer({
   onClose,
@@ -10,6 +12,33 @@ export default function ComplaintViewer({
   complaint: Record<string, any>;
 }) {
   const [loading, setLoading] = useState(true);
+  const [idloading, setIdLoading] = useState(true);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [uid, setUid] = useState<string>("");
+
+  
+    useEffect(() => {
+      async function loadSession() {
+        const session = await authClient.getSession();
+        if (session?.data?.user?.id) {
+          setUid(session?.data?.user?.id);
+        }
+        setIdLoading(false);
+      }
+      loadSession();
+    }, []);
+
+
+  if(idloading){return (
+    <section
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+      role="dialog"
+      aria-modal="true"
+    >
+          <Spinner splash="Report"/>
+    </section>
+    );}
+    else{
   return (
     <section
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
@@ -36,7 +65,7 @@ export default function ComplaintViewer({
           </h2>
         </header>
 
-        <section className="flex flex-col md:flex-row md:gap-4 text-black h-[80%]">
+        <section className="flex flex-col md:flex-row md:gap-4 text-black py-2 h-[80%]">
           
 
           <section className="flex flex-col min-w-[48%] gap-4 flex-1 h-full">
@@ -97,8 +126,18 @@ export default function ComplaintViewer({
 
         </section>
 
+        {
+          (uid!="" && complaint.status) &&
+          (
+            <button onClick={()=>setShowFeedback(true)}  className="w-full  bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-md hover:bg-brand-secondary hover:text-black transition-colors duration-300">
+              Submit Feedback
+            </button>
+          )
+        }
+
 
       </article>
+      {showFeedback &&(<FeedbackModal onClose={() => setShowFeedback(false) } uid={uid} cid={complaint.complaintid} />)}
     </section>
-  );
+  );}
 }
