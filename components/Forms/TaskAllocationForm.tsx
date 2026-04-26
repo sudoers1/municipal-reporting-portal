@@ -17,12 +17,22 @@ export default function TaskAllocationForm(){
                     <form action="" className="flex flex-col gap-4">
                         <label htmlFor="" className="w-80 text-wrap">Preloaded information about the complaint will be loaded here</label>
                         <section className="bg-white"></section>
+                        <label htmlFor="">Employee Name</label>
                         <select name="Employee" id="" className="p-2 border  border-gray-400">
-                            <option value="">Employee Name</option>
+                            <option value="">John Langeveld</option>
                         </select>
+                        <label htmlFor="">Department</label>
                         <select name="" id="" className="p-2 border  border-gray-400">
-                            <option value="">Department</option>
+                            <option value="">Water & Sanitation</option>
+                            <option value="">Electricity</option>
+                            <option value="">Waste Management</option>
+                            <option value="">Roads & Transport</option>
+                            <option value="">Infrastructure & Engineering Services</option>
+                            <option value="">Environmental Management</option>
+                            <option value="">Human Settelments</option>
+                            <option value="">Disaster Management</option>
                         </select>
+                        <label htmlFor="">Priortiy Level</label>
                         <select name="" id="" className="p-2 border  border-gray-400">
                             <option value="">Priortiy Level</option>
                             <option value="">Low</option>
