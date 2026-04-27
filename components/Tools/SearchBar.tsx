@@ -40,7 +40,7 @@ export default function SearchBar(){
                             type="submit"
                             className="text-gray-400 mr-3 hover:text-gray-600"
                         >
-                            <img src="/search-outline.svg" alt=""
+                            <img src="/search-outline.svg" alt="search magnifying glass"
                                 className="w-6"
                             />
                         </button>
@@ -48,7 +48,7 @@ export default function SearchBar(){
                             type="submit"
                             className="text-gray-400 mr-3 hover:text-gray-600"
                         >
-                            <img src="/options-outline.svg" alt="" 
+                            <img src="/options-outline.svg" alt="filtering options sliders" 
                                 className="w-6"
                             />
                         </button>
