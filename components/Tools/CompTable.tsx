@@ -3,8 +3,12 @@
 import React, { useEffect } from "react";
 import { columns, Complaint } from "../ComplaintsData/Columns";
 import { DataTable } from "../ComplaintsData/DataTable";
+import ComplaintDetails from "../Forms/ComplaintDetails";
 
 export default function ComplaintsTable(){
+
+    const [showModal, setShowModal] = React.useState(false);
+
     return(
         <section className="flex justify-center">
             <table className="border border-gray-400">
@@ -18,7 +22,7 @@ export default function ComplaintsTable(){
                     <th className="bg-gray-300 text-left px-4 py-1 border-l border-gray-400">creationtime</th>
                     <th className="bg-gray-300 text-left px-4 py-1 border-l border-gray-400">userid</th>
                 </tr>
-                <tr>
+                <tr onClick={() => setShowModal(true)}>
                     <td className="text-left px-4 border-l border-gray-400">info</td>
                     <td className="text-left px-4 border-l border-gray-400">info</td>
                     <td className="text-left px-4 border-l border-gray-400">info</td>
@@ -29,6 +33,7 @@ export default function ComplaintsTable(){
                     <td className="text-left px-4 border-l border-gray-400">info</td>
                 </tr>
             </table>
+            {showModal && <ComplaintDetails/>}
         </section>
     )
 }
