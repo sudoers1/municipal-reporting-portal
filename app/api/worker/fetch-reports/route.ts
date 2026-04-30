@@ -1,0 +1,1 @@
+// fetch all reports, categorize by type, report status should be included
