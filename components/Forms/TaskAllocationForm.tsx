@@ -9,7 +9,7 @@ export default function TaskAllocationForm(){
 
     return(
         <main>
-            <section className="bg-gray-50 p-4 flex flex-col justify-center items-center border border-gray-400">
+            <section className="bg-gray-50 w-fit h-fit p-4 m-auto flex flex-col justify-center items-center border border-gray-400 fixed inset-0">
                 <h1 className="text-2xl">
                     Task Allocation Form
                 </h1>
@@ -42,7 +42,7 @@ export default function TaskAllocationForm(){
                         <label htmlFor="">Completion Deadline</label>
                         <input type="date" className="p-2 border  border-gray-400"/>
                         <label htmlFor="">Notes</label>
-                        <textarea name="" id="" rows={4} className="p-2 border  border-gray-400"></textarea>
+                        <textarea name="" id="" rows={2} className="p-2 border  border-gray-400"></textarea>
                         <section className="flex justify-center-safe item">
                             <button type="submit" className="bg-gray-400 w-24 px-2 py-1 rounded-md">Allocate</button>
 
