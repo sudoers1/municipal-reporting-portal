@@ -1,3 +1,4 @@
+import { Priority } from "./priority";
 import { Status } from "./status";
 
 
@@ -8,6 +9,7 @@ export class Report {
         private issuetype: string,
         private creationtime: Date,
         private userid: string,
+        private priority: Priority,
         private image?: string,
         private details?: string,
     ) {
@@ -18,6 +20,7 @@ export class Report {
         this.details = details;
         this.creationtime = creationtime;
         this.userid = userid;
+        this.priority = priority;
     }
     getMunicipality(): string {
         return this.municipality;
@@ -45,6 +48,10 @@ export class Report {
 
     getUserID(): string {
         return this.userid;
+    }
+
+    getPriority(): Priority{
+        return this.priority;
     }
 
 
@@ -76,6 +83,9 @@ export class Report {
         this.userid = userid;
     }
 
+    setPriority(priority: Priority): void {
+        this.priority = priority;
+    }
 
 
 }
