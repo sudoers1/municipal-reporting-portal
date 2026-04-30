@@ -1,7 +1,14 @@
 export default function ComplaintDetails(){
     return(
-        <section className="bg-white w-fit h-fit p-4 m-auto flex flex-col items-center justify-center border border-gray-600 fixed inset-0">
-            <h1 className="font-semibold text-2xl text-center p-2">Complaint No.001</h1>
+        <section className="bg-white max-w-90  h-fit p-4 m-auto flex flex-col items-center justify-center border border-gray-600 fixed inset-0">
+            <section className="mb-4 flex justify-between items-center">
+                <button  
+                className="bg-red-600 text-white px-2 absolute top-2 right-4 border border-transparent rounded"
+                > 
+                    close
+                </button>
+            </section>
+            <h1 className="font-semibold text-2xl pl-4">Complaint No.001</h1>
             <section className="p-4 flex flex-col gap-2">
                 <p className="">Complaint Details...</p>
                 <p className="">Complaint Details...</p>
