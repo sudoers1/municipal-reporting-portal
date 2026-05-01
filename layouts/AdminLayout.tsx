@@ -5,8 +5,6 @@ export default function AdminLayout(){
 
     const [showModal, setShowModal] = React.useState(false);
 
-    
-
     return(
         <>
         <header className="bg-gray-400 p-2 flex justify-between relative">
