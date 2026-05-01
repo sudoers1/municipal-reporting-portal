@@ -58,3 +58,56 @@ export const GET = withAuth(["Worker", "Admin"], async (req: Request, session: a
     );
   }
 });
+
+export const PATCH = withAuth(["Worker"], async (req: Request, session: any) => {
+  try {
+    const workerId = session.user.id;
+    const { complaintid, status } = await req.json();
+
+    if (!complaintid || !status) {
+      return NextResponse.json(
+        { message: "Missing complaintid or status" },
+        { status: 400 }
+      );
+    }
+
+    const allowedStatuses = ["Acknowledged", "In progress", "Resolved"];
+
+    if (!allowedStatuses.includes(status)) {
+      return NextResponse.json(
+        { message: "Invalid status" },
+        { status: 400 }
+      );
+    }
+
+    const result = await sql`
+      UPDATE assignments
+      SET 
+        status = ${status},
+        updated_at = NOW()
+      WHERE complaintid = ${complaintid}
+        AND workerid = ${workerId}
+      RETURNING *
+    `;
+
+    if (result.length === 0) {
+      return NextResponse.json(
+        { message: "Assignment not found or not authorized" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      message: "Status updated successfully",
+      data: result[0],
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      { message: "Failed to update status" },
+      { status: 500 }
+    );
+  }
+});
