@@ -59,6 +59,7 @@ export const GET = withAuth(["Worker", "Admin"], async (req: Request, session: a
   }
 });
 
+// Note: Remember to notify resident and admin when report status changes
 export const PATCH = withAuth(["Worker"], async (req: Request, session: any) => {
   try {
     const workerId = session.user.id;
