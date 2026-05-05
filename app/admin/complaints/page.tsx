@@ -5,7 +5,12 @@ import SearchBar from "@/components/Tools/SearchBar";
 import AdminLayout from "@/layouts/AdminLayout";
 import React from "react";
 
-export default function ComplaintsPage(){
+interface TaskAllocationFormProps {
+    complaint: any;
+    onClose: () => void;
+}
+
+export default function ComplaintsPage({ complaint,onClose }: TaskAllocationFormProps){
 
     const [showModal, setShowModal] = React.useState(false);
 
@@ -19,7 +24,11 @@ export default function ComplaintsPage(){
                 <button onClick={() => setShowModal(true)} className=" bg-gray-300 w-fit px-4 py-2 rounded-md">Allocate Tasks To Workers</button>
             </section>
             <ComplaintsTable/>
-            {showModal && <TaskAllocationForm/>}
+            {showModal && 
+            <TaskAllocationForm
+                complaint={complaint}
+                onClose={() => setShowModal(false)}
+            />}
         </main>
         </>
     )
