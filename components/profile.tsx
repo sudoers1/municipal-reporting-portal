@@ -46,7 +46,7 @@ export default function ProfilePopup({ onClose }: { onClose: () => void }) {
         </span>
 
         {/* Worker Dashboard link */}
-        {user?.role?.toLowerCase() === "municipal worker" && (
+        {user?.role === "Worker" && (
           <Link
             href="/worker"
             className="w-full mt-2 px-4 py-2 rounded-xl text-center bg-green-500 text-white font-semibold hover:bg-green-600 transition-colors"

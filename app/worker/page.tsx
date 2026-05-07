@@ -36,6 +36,10 @@ export default function WorkerDashboard() {
     const unassignedData = await unassignedRes.json();
     const completedData = await completedRes.json();
 
+    console.log("assignedRes", assignedRes.status);
+    console.log("unassignedRes", unassignedRes.status);
+    console.log("completedRes", completedRes.status);
+
     setAssigned(assignedData.data ?? []);
     setUnassigned(unassignedData.data ?? []);
     setCompleted(completedData.data ?? []);
@@ -46,12 +50,21 @@ export default function WorkerDashboard() {
   }, [session]);
 
   async function handleClaim(id: string) {
-    await fetch(`/api/complaints/${id}/claim`, { method: "POST" });
+    await fetch(`/api/reports/claim`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        complaintid: id,
+      }),
+    });
+
     await fetchData();
   }
 
   async function handleStatus(id: string, status: string) {
-    await fetch(`/api/complaints/${id}/status`, {
+    await fetch(`/api/reports/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),

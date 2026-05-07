@@ -7,6 +7,8 @@ export const POST = withAuth(["Worker"], async (req: Request, session: any) => {
     const workerId = session.user.id;
     const { complaintid } = await req.json();
 
+    console.log("Received claim: ", req.body);
+
     if (!complaintid) {
       return NextResponse.json(
         { message: "Missing complaintid" },
