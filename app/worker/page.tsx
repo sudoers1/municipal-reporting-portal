@@ -63,12 +63,18 @@ export default function WorkerDashboard() {
     await fetchData();
   }
 
-  async function handleStatus(id: string, status: string) {
-    await fetch(`/api/reports/${id}`, {
+  async function handleStatus(complaintid: string, status: string) {
+    await fetch(`/api/reports/id`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        complaintid,
+        status,
+      }),
     });
+
     await fetchData();
   }
 
@@ -104,9 +110,16 @@ export default function WorkerDashboard() {
           <CompletedTasksCard tasks={completed} />
 
           {selected && (
-            <>
-              <UpdateStatusCard report={selected} onUpdate={handleStatus} />
-              <ReportDetailsCard report={selected} />
+  <>
+              <UpdateStatusCard
+                report={selected}
+                onUpdate={handleStatus}
+              />
+
+              <ReportDetailsCard
+                report={selected}
+                onClose={() => setSelected(null)}
+              />
             </>
           )}
         </section>

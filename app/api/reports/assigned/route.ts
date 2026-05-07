@@ -24,6 +24,7 @@ export const GET = withAuth(["Worker"], async (req: Request, session: any) => {
       FROM assignments a
       JOIN complaints c ON c.complaintid = a.complaintid
       WHERE a.workerid = ${workerId}
+        AND a.status != 'Resolved'
       ORDER BY a.assigned_at DESC
     `;
 

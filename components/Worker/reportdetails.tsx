@@ -2,11 +2,19 @@ import Card from "../card";
 
 export default function ReportDetailsCard({
   report,
+  onClose 
 }: any) {
   if (!report) return null;
 
   return (
     <Card title="Report Details">
+      <button
+        onClick={onClose}
+        className="mb-4 text-sm text-red-300 hover:text-red-200"
+      >
+        ← Back to dashboard
+      </button>
+
       <dl className="space-y-4">
         <div>
           <dt className="text-sm text-gray-300">

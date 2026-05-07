@@ -12,9 +12,10 @@ export const GET = withAuth(["Worker", "Admin"], async (req: Request, session: a
         c.creationtime,
         c.userid,
         c.municipality,
-        c.status
+        a.status AS assignment_status
       FROM complaints c
-      WHERE c.status = 'Resolved'
+      JOIN assignments a ON c.complaintid = a.complaintid
+      WHERE a.status = 'Resolved'
       ORDER BY c.creationtime DESC
     `;
 
