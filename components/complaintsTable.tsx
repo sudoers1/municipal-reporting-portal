@@ -4,7 +4,7 @@ import { useState } from "react";
 import ComplaintViewer from "@/components/complaintView";
 
 export default function ComplaintsTable({ complaints }: { complaints: Record<string, any>[] }) {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Record<string,any> | null>(null);
 
   const [sortKey, setSortKey] = useState("creationtime");
   const [ascending, setAscending] = useState(false);
@@ -80,7 +80,7 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
 
               <td className="p-3">
                 <button
-                  onClick={() => setSelectedId(entry.complaintid)}
+                  onClick={() => setSelected(entry)}
                   className="bg-brand-accent text-black px-3 py-1 rounded"
                 >
                   View
@@ -92,11 +92,10 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
 
       </table>
 
-      {/* MODAL */}
-      {selectedId && (
+      {selected && (
         <ComplaintViewer
-          cid={selectedId}
-          onClose={() => setSelectedId(null)}
+          complaint={selected}
+          onClose={() => setSelected(null)}
         />
       )}
     </>

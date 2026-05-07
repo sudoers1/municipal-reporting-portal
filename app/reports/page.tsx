@@ -3,6 +3,8 @@
 import { readComplaints } from "@/lib/db/complaints";
 import ComplaintsTable from "@/components/complaintsTable";
 import { useState, useEffect } from "react";
+import Spinner from "@/components/spinner";
+
 
 export default function Reports() {
 
@@ -26,10 +28,7 @@ export default function Reports() {
       style={{ backgroundImage: "url('/municipality.png')" }}
     >
       <section className="p-8 bg-black/50 min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
-          <p className="text-white text-lg font-semibold">Loading Reports...</p>
-        </div>
+        <Spinner splash="Reports"/>
       </section>
     </main>
   );}

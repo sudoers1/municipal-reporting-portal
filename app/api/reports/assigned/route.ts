@@ -4,16 +4,39 @@ import {sql} from "@/lib/db/neon";
 
 
 export const GET = withAuth(["Worker"], async (req: Request, session: any) => {
-  // fetch assigned reports here
+  try {
+    const workerId = session.user.id;
 
-  const assignedReports = await sql`
-  select * from assignments
-  `;
+    const assignedReports = await sql`
+      SELECT
+        a.id AS assignment_id,
+        a.workerid,
+        a.status AS assignment_status,
+        a.assigned_at,
+        a.updated_at,
+        c.complaintid,
+        c.issuetype,
+        c.details,
+        c.creationtime,
+        c.userid,
+        c.municipality,
+        c.status AS complaint_status
+      FROM assignments a
+      JOIN complaints c ON c.complaintid = a.complaintid
+      WHERE a.workerid = ${workerId}
+      ORDER BY a.assigned_at DESC
+    `;
 
-  return NextResponse.json({
-    message: "Assigned reports fetched",
-    reports: assignedReports
-  });
+    return NextResponse.json({
+      message: "Assigned reports fetched",
+      data: assignedReports,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Failed to fetch assigned reports" },
+      { status: 500 }
+    );
+  }
 });
 
 export const POST = withAuth(["Admin"], async (req: Request) => {
