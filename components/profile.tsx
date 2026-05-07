@@ -25,6 +25,31 @@ export default function ProfilePopup({ onClose }: { onClose: () => void }) {
         <h3 className="font-bold text-black text-lg">{user?.name}</h3>
         <p className="text-gray-500 text-sm">{user?.email}</p>
         <span className="px-3 py-1 bg-brand-primary text-white text-sm rounded-full">{user?.role}</span>
+
+
+        {/* Worker Dashboard link */}
+          {user?.role?.toLowerCase() === "municipal worker" && (
+          <Link
+          href="/worker"
+          className="w-full mt-2 px-4 py-2 rounded-xl text-center bg-green-500 text-white font-semibold hover:bg-green">
+
+          View Worker Dashboard
+          </Link>
+        )
+        }
+
+        {/* Admin Dashboard link */}
+          {user?.role?.toLowerCase() === "admin" && (
+          <Link
+          href="/admin"
+          className="w-full mt-2 px-4 py-2 rounded-xl text-center bg-green-500 text-white font-semibold hover:bg-green">
+
+          View Admin Dashboard
+          </Link>
+        )
+        }
+
+
         <Link
           href="/profilefull"
           className="w-full mt-2 px-4 py-2 rounded-xl text-center bg-blue-500 text-white font-semibold hover:bg-red-600 transition-colors"

@@ -1,3 +1,5 @@
+"use client"
+
 import TaskAllocationForm from "@/components/Forms/TaskAllocationForm";
 import BackButton from "@/components/Tools/BackButton";
 import ComplaintsTable from "@/components/Tools/CompTable";
@@ -16,7 +18,7 @@ export default function ComplaintsPage({ complaint,onClose }: TaskAllocationForm
 
     return(
         <>
-        <AdminLayout/>
+        {/* <AdminLayout/> */}
         <BackButton/>
         <main className="p-2 flex flex-col gap-8">
             <SearchBar/>

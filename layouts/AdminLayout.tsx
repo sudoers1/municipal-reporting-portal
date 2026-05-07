@@ -1,3 +1,5 @@
+"use client"
+
 import Profiles from "@/components/Profiles";
 import React from "react";
 
