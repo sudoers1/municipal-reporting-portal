@@ -6,9 +6,9 @@ import BackButton from "@/components/Tools/BackButton";
 export default function AdminPage() {
   return (
     <>
-    <AdminLayout/>
+    {/* <AdminLayout/> */}
     <BackButton/>
-    <main className="m-12 flex flex-col justify-center items-center">
+    <main className="flex flex-col justify-center items-center">
       <section>
         <h1 className="text-6xl pb-4 max-sm:text-5xl">Welcome Admin</h1>
         <p className="text-xl">Some informative text for the admin to read</p>

@@ -12,7 +12,7 @@ export default async function AdminDashboard(){
 
     return(
         <>
-            <AdminLayout/>
+            {/* <AdminLayout/> */}
             <section className="p-4 grid grid-cols-4">
                 <section>
                     <BackButton/>

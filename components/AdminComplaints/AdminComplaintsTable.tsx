@@ -35,27 +35,29 @@ export default function AdminComplaintsTable({ complaints }: { complaints: Recor
 
   return (
     <>
-      <table className="border border-gray-400">
+      <table className="border text-black">
 
-        <thead className="bg-brand-accent text-black">
+        <thead className="bg-[#138808] text-white">
           <tr>
-            <th onClick={() => handleSort("municipality")} className="p-3 text-left border-r cursor-pointer">
+            <th onClick={() => handleSort("municipality")} className="p-3 text-left border-r border-black cursor-pointer">
               Municipality
             </th>
 
-            <th onClick={() => handleSort("status")} className="p-3 text-left border-r cursor-pointer">
+            <th onClick={() => handleSort("status")} className="p-3 text-left border-r border-black cursor-pointer">
               Status
             </th>
 
-            <th onClick={() => handleSort("issuetype")} className="p-3 text-left border-r cursor-pointer">
+            <th onClick={() => handleSort("issuetype")} className="p-3 text-left border-r border-black cursor-pointer">
               Issue Type
             </th>
 
-            <th onClick={() => handleSort("creationtime")} className="p-3 text-left border-r cursor-pointer">
+            <th onClick={() => handleSort("creationtime")} className="p-3 text-left border-r border-black cursor-pointer">
               Date
             </th>
 
-            <th />
+            <th className="p-3 text-left border-r border-black cursor-pointer">
+              View Complaint
+            </th>
           </tr>
         </thead>
 
@@ -63,7 +65,7 @@ export default function AdminComplaintsTable({ complaints }: { complaints: Recor
           {sortedTable.map((entry) => (
             <tr
               key={entry.complaintid}
-              className="border-t hover:bg-brand-secondary border-black"
+              className="border-t hover:bg-brand-secondary/30 border-black"
             >
               <td className="p-3 border-r border-black">{entry.municipality}</td>
 
@@ -79,10 +81,10 @@ export default function AdminComplaintsTable({ complaints }: { complaints: Recor
                 </time>
               </td>
 
-              <td className="p-3">
+              <td className="p-3 flex justify-center ">
                 <button
                   onClick={() => setSelectedId(entry.complaintid)}
-                  className="bg-brand-accent text-black px-3 py-1 rounded"
+                  className="bg-[#138808]/60 text-white px-3 py-1 rounded"
                 >
                   View
                 </button>

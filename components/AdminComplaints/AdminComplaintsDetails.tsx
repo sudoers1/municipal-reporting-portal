@@ -36,7 +36,7 @@ export default function AdminComplaintsDetails({
   }, [cid]);
 
   return (
-    <div
+    <section
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 "
       role="dialog"
       aria-modal="true"
@@ -85,13 +85,13 @@ export default function AdminComplaintsDetails({
                   </time>
                   </p>
 
-                  <p className="bg-brand-secondary">
+                  <p className="">
                   <strong>Description:</strong> {complaint.details}
                   </p>
                 </section>
 
                 <section className="flex justify-center">
-                    <button onClick={() => setShowModal(true)}  className=" bg-gray-300 px-4 py-2 rounded-md">Allocate Work</button>
+                    <button onClick={() => setShowModal(true)}  className=" bg-brand-secondary text-white px-4 py-2 rounded-md">Allocate Work</button>
                 </section>
                 {showModal && 
                 <TaskAllocationForm 
@@ -118,6 +118,6 @@ export default function AdminComplaintsDetails({
           </section>
         )}
       </article>
-    </div>
+    </section>
   );
 }
