@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import ComplaintsTable from "../complaintsTable";
 import AdminComplaintsTable from "../AdminComplaints/AdminComplaintsTable";
 
-export default function Reports() {
+export default function CTable() {
 
   const [complaints, setComplaints] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);

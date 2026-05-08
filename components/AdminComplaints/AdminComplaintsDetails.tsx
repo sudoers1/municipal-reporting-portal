@@ -7,9 +7,9 @@ import React from "react";
 
 function Spinner() {
   return (
-    <div className="flex justify-center items-center py-10">
-      <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
-    </div>
+    <section className="flex justify-center items-center py-10">
+      <section className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
+    </section>
   );
 }
 
@@ -42,7 +42,7 @@ export default function AdminComplaintsDetails({
       aria-modal="true"
       
     >
-      <article className=" bg-brand-accent bg-white rounded-2xl shadow-lg w-full max-w-lg min-w-[50vw] min-h-[55vh] max-h-[85vh] overflow-hidden py-8 relative">
+      <article className=" bg-brand-accent bg-white  max-w-lg min-w-[50vw] min-h-[55vh] max-h-[85vh] px-8 py-4 rounded-2xl shadow-lg  overflow-hidden relative">
 
         {/* Header */}
         <header>
@@ -63,9 +63,9 @@ export default function AdminComplaintsDetails({
         {loading ? (
           <Spinner />
         ) : complaint ? (
-          <section className="flex flex-col md:flex-row px-10 gap-5 text-black">
-            <section className="flex flex-col justify-between min-w-[20vw]">
-                <section>
+          <section className="flex flex-col md:flex-row gap-5 text-black">
+            <section className="min-w-[20vw] flex flex-col justify-between">
+                <section className="">
                   <p>
                   <strong>Municipality:</strong> {complaint.municipality}
                   </p>
@@ -91,7 +91,7 @@ export default function AdminComplaintsDetails({
                 </section>
 
                 <section className="flex justify-center">
-                    <button onClick={() => setShowModal(true)}  className=" bg-brand-secondary text-white px-4 py-2 rounded-md">Allocate Work</button>
+                    <button onClick={() => setShowModal(true)}  className=" bg-brand-secondary text-white px-4 py-2 my-4 rounded-md">Allocate Work</button>
                 </section>
                 {showModal && 
                 <TaskAllocationForm 
@@ -106,7 +106,7 @@ export default function AdminComplaintsDetails({
                 <img
                     src={complaint.image}
                     alt="Complaint evidence"
-                    className="w-full max-w-[320px] aspect-[4/3] object-cover rounded-lg"
+                    className="w-60 aspect-[4/3] object-cover rounded-lg"
                 />
                 </figure>
             )}
