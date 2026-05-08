@@ -32,6 +32,7 @@ export async function GET(req: Request) {
             if (!msg.payload) return;
             try {
               const payload = JSON.parse(msg.payload);
+              console.log(msg);
               if (payload.user_id !== userId) return;
               controller.enqueue(
                 encoder.encode(`data: ${JSON.stringify(payload)}\n\n`)

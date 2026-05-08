@@ -79,7 +79,7 @@ export function NotificationBell({ initialNotifications }: { initialNotification
                     <p className="text-xs text-gray-500 mt-0.5">{n.body}</p>
                   )}
                   <time className="text-xs text-gray-400 mt-1 block">
-                    {new Date(n.created_at).toLocaleDateString()}
+                    {new Date(n.created_at).toLocaleString()}
                   </time>
                 </li>
               ))}
