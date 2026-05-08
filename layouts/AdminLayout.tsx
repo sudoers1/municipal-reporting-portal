@@ -1,11 +1,11 @@
+"use client"
+
 import Profiles from "@/components/Profiles";
 import React from "react";
 
 export default function AdminLayout(){
 
     const [showModal, setShowModal] = React.useState(false);
-
-    
 
     return(
         <>

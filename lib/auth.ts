@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { customSession } from 'better-auth/plugins';
-import { getUserRole, setResident } from "./db/users";
+import { getUserRole, setResident , setAdmin } from "./db/users";
 import { Pool } from "pg"; //this will change once we get the postgres server up
 
 export const auth = betterAuth({
@@ -20,7 +20,7 @@ export const auth = betterAuth({
     },
     linkedin: {
       clientId: process.env.LINKEDIN_CLIENT_ID!,
-      clientSecret: process.env.LINKEDIN_SECRET!,
+      clientSecret: process.env.LINKEDIN_CLIENT_SECRET!,
     },
     github: {
       //change to your provider (clientId and clientSecret is all we need i think)
@@ -37,6 +37,7 @@ export const auth = betterAuth({
       create: {
         after: async (user) => {
           await setResident(user.id);
+          // await setAdmin(user.id);
         },
       },
     },

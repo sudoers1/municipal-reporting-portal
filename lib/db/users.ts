@@ -42,3 +42,37 @@ export async function setResident(userId: string): Promise<void> {
     ON CONFLICT (user_id, user_types_id) DO NOTHING
   `, [userId, defaultRole.rows[0].id]);
 }
+
+export async function setAdmin(userId: string): Promise<void> {
+  const client = await pool.connect();
+  try {
+    // 1. Get the Admin role ID dynamically
+    const roleResult = await client.query(
+      `SELECT id FROM user_types WHERE type_name = 'Admin' LIMIT 1`
+    );
+    
+    if (!roleResult.rows[0]?.id) {
+      throw new Error("Admin role not found in user_types table");
+    }
+
+    const adminRoleId = roleResult.rows[0].id;
+
+    await client.query('BEGIN');
+    
+    // 2. Clear existing roles (if a user should only have one role at a time)
+    await client.query(`DELETE FROM roles WHERE user_id = $1`, [userId]);
+    
+    // 3. Insert the Admin role
+    await client.query(
+      `INSERT INTO roles (user_id, user_types_id) VALUES ($1, $2)`,
+      [userId, adminRoleId]
+    );
+    
+    await client.query('COMMIT');
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    client.release();
+  }
+}

@@ -1,39 +1,35 @@
 "use client"
 
-import React, { useEffect } from "react";
-import { columns, Complaint } from "../ComplaintsData/Columns";
-import { DataTable } from "../ComplaintsData/DataTable";
-import ComplaintDetails from "../Forms/ComplaintDetails";
+import { readComplaints } from "../../lib/db/complaints";
+import { useState, useEffect } from "react";
+import ComplaintsTable from "../complaintsTable";
+import AdminComplaintsTable from "../AdminComplaints/AdminComplaintsTable";
 
-export default function ComplaintsTable(){
+export default function Reports() {
 
-    const [showModal, setShowModal] = React.useState(false);
+  const [complaints, setComplaints] = useState<Record<string, any>[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    return(
-        <section className="flex justify-center">
-            <table className="border border-gray-400">
-                <tr className="text-gray-700 border-b border-gray-400">
-                    <th className="bg-gray-300 text-left px-4 py-1 border-l border-gray-400">complaintid</th>
-                    <th className="bg-gray-300 text-left px-4 py-1 border-l border-gray-400">municipality</th>
-                    <th className="bg-gray-300 text-left px-4 py-1 border-l border-gray-400">status</th>
-                    <th className="bg-gray-300 text-left px-4 py-1 border-l border-gray-400">details</th>
-                    <th className="bg-gray-300 text-left px-4 py-1 border-l border-gray-400">issuetype</th>
-                    <th className="bg-gray-300 text-left px-4 py-1 border-l border-gray-400">image</th>
-                    <th className="bg-gray-300 text-left px-4 py-1 border-l border-gray-400">creationtime</th>
-                    <th className="bg-gray-300 text-left px-4 py-1 border-l border-gray-400">userid</th>
-                </tr>
-                <tr onClick={() => setShowModal(true)}>
-                    <td className="text-left px-4 border-l border-gray-400">info</td>
-                    <td className="text-left px-4 border-l border-gray-400">info</td>
-                    <td className="text-left px-4 border-l border-gray-400">info</td>
-                    <td className="text-left px-4 border-l border-gray-400">info</td>
-                    <td className="text-left px-4 border-l border-gray-400">info</td>
-                    <td className="text-left px-4 border-l border-gray-400">info</td>
-                    <td className="text-left px-4 border-l border-gray-400">info</td>
-                    <td className="text-left px-4 border-l border-gray-400">info</td>
-                </tr>
-            </table>
-            {showModal && <ComplaintDetails/>}
-        </section>
-    )
+  useEffect(() => {
+    async function getComplaints() {
+      const data= await readComplaints();
+      setComplaints(data);
+      setLoading(false);
+    }
+
+    getComplaints();
+    
+  }, []);
+
+  
+  return (
+    <section className="text-black">
+        <figure className="flex md:justify-center">
+            <AdminComplaintsTable complaints={complaints} />
+        </figure>
+    
+    </section>
+        
+    
+  )
 }
