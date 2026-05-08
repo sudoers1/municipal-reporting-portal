@@ -1,6 +1,6 @@
 "use client";
 
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";//need this for redirecting to homescreen
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -13,13 +13,14 @@ import Complaints from "@/components/complaintform";
 import ComplaintButton from "@/components/complaintbutton";
 import { authClient } from "@/lib/auth-client";
 import Spinner from "@/components/spinner";
+import { createNotificationAction } from "@/lib/notifications/actions";
 
 
 const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
 
 export default function DashboardPage() {
-  const { data: session, isPending  } = authClient.useSession();
-  const [showComplaints,setShowComplaints]=useState(false);
+  const { data: session, isPending } = authClient.useSession();
+  const [showComplaints, setShowComplaints] = useState(false);
   const name = session?.user.name;
 
   const router = useRouter();
@@ -30,16 +31,18 @@ export default function DashboardPage() {
     }
   }, [session, isPending, router]);
 
-  if (isPending){ return (
-    <main
-      className="w-screen min-h-screen bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/municipality.png')" }}
-    >
-      <section className="p-8 bg-black/50 min-h-screen flex items-center justify-center">
-          <Spinner splash="dashboard"/>
-      </section>
-    </main>
-  );}
+  if (isPending) {
+    return (
+      <main
+        className="w-screen min-h-screen bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/municipality.png')" }}
+      >
+        <section className="p-8 bg-black/50 min-h-screen flex items-center justify-center">
+          <Spinner splash="dashboard" />
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main
@@ -48,9 +51,9 @@ export default function DashboardPage() {
       style={{ backgroundImage: "url('/municipality.png')" }}
     >
       <section className="p-6 space-y-10 bg-black/50 min-h-screen">
-        
+
         {/*moved some of the dashboard into the swiper so the map has more space to exist*/}
-        
+
 
         <Swiper
           modules={[Keyboard, Navigation]}
@@ -65,12 +68,12 @@ export default function DashboardPage() {
               <h1 className="text-3xl md:text-5xl font-bold text-white text-center">
                 Hello, {name}!
               </h1>
-                  <p className="text-lg text-white max-w-3xl mx-auto text-center">
+              <p className="text-lg text-white max-w-3xl mx-auto text-center">
                 Welcome to the Municipal Portal Dashboard. You have successfully logged
                 in and can now access your personalized dashboard and information
                 regarding your municipality. From here, you can log a complaint or
                 report an issue directly to the municipal authorities. Explore the
-                various sections to stay informed and engaged with your community. 
+                various sections to stay informed and engaged with your community.
               </p>
               <p className="text-lg text-white max-w-3xl mx-auto text-center">Use the arrow keys to access the map.</p>
 
@@ -89,6 +92,12 @@ export default function DashboardPage() {
           onClick={() => setShowComplaints(!showComplaints)}
           showComplaints={showComplaints}
         />
+        <button
+          onClick={() => createNotificationAction("Test Notification", "Yes")}
+          className="px-6 py-3 rounded-lg bg-brand-primary text-white font-semibold shadow-md hover:bg-brand-accent hover:text-black transition-colors duration-300"
+
+        />
+
 
         {showComplaints && <Complaints onClose={() => setShowComplaints(false)} />}
       </section>
