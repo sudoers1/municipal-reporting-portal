@@ -13,18 +13,18 @@ export default async function AdminDashboard(){
     return(
         <>
             {/* <AdminLayout/> */}
-            <section className="p-4 grid grid-cols-4">
+            {/* <section className="p-4 grid grid-cols-4">
                 <section>
                     <BackButton/>
                 </section>
                 <section className="col-span-2">
                     <SearchBar/>
                 </section>
-            </section>
-            <main>
+            </section> */}
+            <main className="p-4">
                 <KPICards data={complaints}/>
-                <section className="p-4 grid grid-cols-2 gap-8">
-                    <MapView/>
+                <section className="p-4 gap-8">
+                    {/* <MapView/> */}
                     <StatusLegend/>
                 </section>
             </main>
