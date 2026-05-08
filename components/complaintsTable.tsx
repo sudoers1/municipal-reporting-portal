@@ -67,7 +67,7 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
               <td className="p-3 border-r border-black">{entry.municipality}</td>
 
               <td className="p-3 border-r border-black">
-                {entry.status ? "Completed" : "Pending"}
+                {entry.status}
               </td>
 
               <td className="p-3 border-r border-black">{entry.issuetype}</td>

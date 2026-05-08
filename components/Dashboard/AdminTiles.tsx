@@ -5,8 +5,8 @@ export default function Tiles(){
             <button className="bg-[#138808] text-2xl w-64 h-64 flex justify-center items-center rounded-md shadow-2xl"><a href="/admin/complaints">Complaints</a></button>
             <section className="bg-[#138808] text-2xl w-64 h-64 flex flex-col justify-center items-center gap-4 rounded-md shadow-2xl"> 
                 <h2>Manage</h2>
-                <button className="bg-white px-4 py-1 rounded-md shadow-sm"><a href="">Users</a></button>
-                <button className="bg-white px-4 py-1 rounded-md shadow-sm"><a href="">workers</a></button>
+                <button className="bg-[#138808] px-4 py-1 rounded-md shadow-sm"><a href="">Users</a></button>
+                <button className="bg-[#138808] px-4 py-1 rounded-md shadow-sm"><a href="">workers</a></button>
             </section>
         </main>
     )

@@ -77,7 +77,7 @@ export default function ComplaintViewer({
 
               <p>
                 <strong>Status:</strong>{" "}
-                {complaint.status ? "Completed" : "Pending"}
+                {complaint.status}
               </p>
 
               <p>

@@ -1,5 +1,5 @@
 "use client"
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 interface TaskAllocationFormProps {
     complaint: any;
@@ -8,9 +8,59 @@ interface TaskAllocationFormProps {
 
 export default function TaskAllocationForm({ complaint,onClose }: TaskAllocationFormProps){
 
-    // const [showModal, setShowModal] = React.useState(false);
+    const [employees, setEmployees] = useState<any[]>([]);
+    const [selectedEmployee, setSelectedEmployee] = useState("");
 
-    // if(!showModal) return null;
+    useEffect(() => {
+        const fetchEmployees = async () => {
+            try {
+                const response = await fetch("/api/workers");
+                console.log(response);
+                const data = await response.json();
+
+                setEmployees(data);
+            } catch (error) {
+                console.error("Failed to fetch employees:", error);
+            }
+        };
+
+        fetchEmployees();
+    }, []);
+
+    const handleAllocate = async (
+        e: React.FormEvent<HTMLFormElement>
+        ) => {
+        e.preventDefault();
+
+        try {
+            const response = await fetch("/api/assignments", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                complaintid: complaint.complaintid,
+                workerid: selectedEmployee,
+            }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+            console.error(data.error);
+            return;
+            }
+
+            console.log("Assignment created:", data);
+
+            onClose();
+
+        } catch (error) {
+            console.error("Allocation failed:", error);
+        }
+        };
+
+
 
     return(
         <section className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -30,13 +80,16 @@ export default function TaskAllocationForm({ complaint,onClose }: TaskAllocation
                 </header>
                 <section className="flex-1 overflow-y-auto">
                     <section className="w-100 p-4">
-                    <form action="" className="flex flex-col gap-4">
+                    <form
+                    onSubmit={handleAllocate}
+                    className="flex flex-col gap-4"
+                    >
                         <section className="bg-brand-secondary/30 p-2">
                             {complaint ? (
                                     <>
                                         <p><strong>Municipality:</strong> {complaint.municipality}</p>
                                         <p><strong>Issue:</strong> {complaint.issuetype}</p>
-                                        <p><strong>Status:</strong> {complaint.status ? "Completed" : "Pending"}</p>
+                                        <p><strong>Status:</strong> {complaint.status}</p>
                                         <p className="mt-1"><strong>Description:</strong> {complaint.details}</p>
                                     </>
                                 ) : (
@@ -44,8 +97,22 @@ export default function TaskAllocationForm({ complaint,onClose }: TaskAllocation
                                 )}
                         </section>
                         <label htmlFor="">Employee Name</label>
-                        <select name="Employee" id="" className="p-2 border  border-gray-400">
-                            <option value="">John Langeveld</option>
+                        <select
+                            name="Employee"
+                            value={selectedEmployee}
+                            onChange={(e) => setSelectedEmployee(e.target.value)}
+                            className="p-2 border border-gray-400"
+                        >
+                            <option value="">Select employee</option>
+
+                            {employees.map((employee) => (
+                                <option
+                                    key={employee.id}
+                                    value={employee.id}
+                                >
+                                    {employee.name}
+                                </option>
+                            ))}
                         </select>
                         <label htmlFor="">Department</label>
                         <select name="" id="" className="p-2 border  border-gray-400">
@@ -70,7 +137,13 @@ export default function TaskAllocationForm({ complaint,onClose }: TaskAllocation
                         <label htmlFor="">Notes</label>
                         <textarea name="" id="" rows={2} className="p-2 border  border-gray-400"></textarea>
                         <section className="flex justify-center-safe item">
-                            <button type="submit" className="bg-brand-secondary text-white w-24 px-2 py-1 rounded-md">Allocate</button>
+                            <button
+                            type="submit"
+                            disabled={!selectedEmployee}
+                            className="bg-brand-secondary text-white w-24 px-2 py-1 rounded-md disabled:opacity-50"
+                            >
+                            Allocate
+                            </button>
 
                         </section>
                     </form>
