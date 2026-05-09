@@ -21,9 +21,11 @@ export default async function AdminDashboard(){
                     <SearchBar/>
                 </section>
             </section> */}
-            <main className="p-4">
+            <main className="p-4 flex flex-col gap-4">
+                <h1 className="text-2xl text-center">Report Analytics</h1>
                 <KPICards data={complaints}/>
-                <section className="p-4 gap-8">
+                <h1 className="text-2xl text-center">Task & Worker Analytics</h1>
+                <section className="gap-8">
                     {/* <MapView/> */}
                     <StatusLegend/>
                 </section>

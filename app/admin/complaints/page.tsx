@@ -20,8 +20,10 @@ export default function ComplaintsPage({ complaint,onClose }: TaskAllocationForm
         <>
         {/* <AdminLayout/> */}
         {/* <BackButton/> */}
-        <main className="py-8 flex flex-col gap-8">
-            <SearchBar/>
+        <main className="py-8 flex flex-col justify-center items-center gap-8">
+            <section className="border w-20 h-20">
+
+            </section>
             {/* <section className="flex justify-center relative">
                 <button onClick={() => setShowModal(true)} className=" bg-brand-secondary text-white w-fit px-4 py-2 rounded-md">Allocate Tasks To Workers</button>
             </section> */}

@@ -39,7 +39,7 @@ export default function AdminComplaintsTable({ complaints }: { complaints: Recor
 
         <thead className="bg-[#138808] text-white">
           <tr>
-
+            
             <th onClick={() => handleSort("municipality")} className="p-3 text-left border-r border-black cursor-pointer">
               Municipality
             </th>
@@ -64,8 +64,7 @@ export default function AdminComplaintsTable({ complaints }: { complaints: Recor
 
         <tbody>
           {sortedTable.map((entry) => (
- 
-          <tr
+            <tr
               key={entry.complaintid}
               className="border-t hover:bg-brand-secondary/30 border-black"
             >
