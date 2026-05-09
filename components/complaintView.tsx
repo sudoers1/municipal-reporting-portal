@@ -2,7 +2,8 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import Spinner from "@/components/spinner";
-import FeedbackModal from "@/components/feedbackform";
+import FeedbackModal from "@/components/feedback/feedbackform";
+import Link from "next/link";
 
 export default function ComplaintViewer({
   onClose,
@@ -15,7 +16,6 @@ export default function ComplaintViewer({
   const [idloading, setIdLoading] = useState(true);
   const [showFeedback, setShowFeedback] = useState(false);
   const [uid, setUid] = useState<string>("");
-
   
     useEffect(() => {
       async function loadSession() {
@@ -46,7 +46,7 @@ export default function ComplaintViewer({
       aria-modal="true"
     >
      <article
-        className={`bg-brand-accent rounded-2xl h-[85%] md:h-[70%] overflow-y-auto p-8 relative
+        className={`bg-brand-accent rounded-2xl h-[95%] md:h-[85%] overflow-y-auto p-8 relative
           ${complaint.image ? "min-w-[60%] md:max-w-5xl" : "md:max-w-lg"}
         `}
       >
@@ -92,7 +92,7 @@ export default function ComplaintViewer({
               </p>
             </section>
 
-            {/* DETAILS BOX (fills remaining space) */}
+            
             <section className="flex-1 border rounded-xl border-brand-primary border-[3px] overflow-y-auto p-3 pr-2 bg-brand-secondary">
               <p>{complaint.details}</p>
             </section>
@@ -113,7 +113,7 @@ export default function ComplaintViewer({
                   alt="Complaint evidence"
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  className={`object-contain transition-opacity duration-300 ${
+                  className={`object-contain transition-opacity duration-300 p-2 ${
                     loading ? "opacity-0" : "opacity-100"
                   }`}
                   onLoad={() => setLoading(false)}
@@ -122,18 +122,28 @@ export default function ComplaintViewer({
             </section>
           )}
 
-          
+
 
         </section>
 
-        {
-          (uid!="" && complaint.status) &&
-          (
-            <button onClick={()=>setShowFeedback(true)}  className="w-full  bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-md hover:bg-brand-secondary hover:text-black transition-colors duration-300">
+        <section className="flex flex-col sm:flex-row gap-3 py-3 w-full">
+          {uid !== "" && complaint.status === "Resolved" && (
+            <button
+              onClick={() => setShowFeedback(true)}
+              className="flex-1 bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-md hover:bg-brand-secondary hover:text-black transition-colors duration-300"
+            >
               Submit Feedback
             </button>
-          )
-        }
+          )}
+
+          <Link
+            href={`/reportfull/${complaint.complaintid}`}
+            className="flex-1 bg-brand-secondary text-black font-semibold py-3 rounded-xl shadow-md hover:bg-brand-primary hover:text-white transition-colors duration-300 text-center"
+          >
+            View Full Report
+          </Link>
+        </section>
+
 
 
       </article>

@@ -36,7 +36,7 @@ export default function DashboardPage() {
       style={{ backgroundImage: "url('/municipality.png')" }}
     >
       <section className="p-8 bg-black/50 min-h-screen flex items-center justify-center">
-          <Spinner splash="dashboard"/>
+          <Spinner splash="your dashboard"/>
       </section>
     </main>
   );}

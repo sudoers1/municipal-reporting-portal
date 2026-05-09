@@ -68,15 +68,14 @@ export default function FeedbackModal({ onClose, uid="",cid="" }: { uid:string; 
 
             try 
             {
-                let uploaded:string ="";
-                uploaded = await uploadHandler(form.photo);
-                if (uploaded!="")
+                const uploaded = await uploadHandler(form.photo);
+                if (uploaded)
                 {
                     await insertFeedbackwIMG(
                         form.uid,
                         form.cid,
                         form.details,
-                        uploaded
+                        uploaded.url
                     );
                 }
                 else
