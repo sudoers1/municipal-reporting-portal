@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import Spinner from "@/components/spinner";
-import FeedbackModal from "@/components/feedbackform";
+import FeedbackModal from "@/components/feedback/feedbackform";
 
 export default function ComplaintViewer({
   onClose,

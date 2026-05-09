@@ -19,7 +19,7 @@ import ComplaintsFilters from "@/components/complaintsFilters";
 type Complaint = {
   complaintid: string;
   municipality: string;
-  status: boolean;
+  status: string;
   issuetype: string;
   creationtime: string;
   image?: string;      // for the viewer
@@ -36,8 +36,7 @@ const dateRangeFilter = (row: Row<Complaint>, columnId: string, value: any) => {
   return true;
 };
 
-const statusCell = (info: CellContext<Complaint, boolean>) =>
-  info.getValue() ? "Completed" : "Pending";
+
 const dateCell = (info: CellContext<Complaint, string>) =>
   new Date(info.getValue()).toLocaleString();
 
@@ -60,7 +59,7 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
     const mapped: Complaint[] = complaints.map((d) => ({
       complaintid: d.complaintid,
       municipality: d.municipality,
-      status: Boolean(d.status),
+      status: d.status,
       issuetype: d.issuetype,
       creationtime: d.creationtime,
       image: d.image,          // preserve image URL
@@ -76,7 +75,7 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
   const columns = useMemo(
     () => [
       { accessorKey: "municipality", header: "Municipality", filterFn: filterFns.equals },
-      { accessorKey: "status", header: "Status", filterFn: filterFns.equals, cell: statusCell },
+      { accessorKey: "status", header: "Status", filterFn: filterFns.equals},
       { accessorKey: "issuetype", header: "Issue Type", filterFn: filterFns.equals },
       { accessorKey: "creationtime", header: "Date", filterFn: dateRangeFilter, cell: dateCell },
       { id: "actions", header: "", cell: actionsCell(setSelectedComplaint) },
