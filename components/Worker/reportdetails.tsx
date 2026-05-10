@@ -46,16 +46,6 @@ export default function ReportDetailsCard({
 
         <div>
           <dt className="text-sm text-gray-300">
-            Resident/User ID
-          </dt>
-
-          <dd className="break-all text-sm">
-            {report.userid}
-          </dd>
-        </div>
-
-        <div>
-          <dt className="text-sm text-gray-300">
             Created
           </dt>
 
