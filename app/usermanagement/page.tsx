@@ -1,7 +1,7 @@
 "use client"
 
 import { readUsers } from "@/lib/db/usersneon";
-import UsersTable from "@/components/Users/userTable";
+import UsersTable from "@/components/UserManagement/userTable";
 import { useState, useEffect } from "react";
 import Spinner from "@/components/spinner";
 import { useRouter } from "next/navigation";

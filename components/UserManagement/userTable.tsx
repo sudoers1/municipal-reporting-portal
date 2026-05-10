@@ -13,8 +13,8 @@ import {
   CellContext,
   Row,
 } from "@tanstack/react-table";
-import UserViewer from "@/components/Users/userView";
-import UserFilters from "@/components/Users/userFilters";
+import UserViewer from "@/components/UserManagement/userView";
+import UserFilters from "@/components/UserManagement/userFilters";
 
 type User = {
   id: string;
