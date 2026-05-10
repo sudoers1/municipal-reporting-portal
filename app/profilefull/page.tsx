@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import ComplaintsTable from "@/components/complaintsTable";
 import { readMyComplaints } from "@/lib/db/complaints";
+import Spinner from "@/components/spinner";
+
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -38,11 +40,8 @@ export default function Home() {
       className="w-screen min-h-screen bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('/municipality.png')" }}
     >
-      <section className="p-8 bg-black/50 min-h-screen flex items-center justify-center">
         <section className="flex flex-col items-center gap-4">
-          <section className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
-          <p className="text-white text-lg font-semibold">Loading your profile...</p>
-        </section>
+          <Spinner splash="Profile"/>
       </section>
     </main>
   );}
@@ -63,7 +62,7 @@ export default function Home() {
         {/*add stuff here when we have more user info. for example, if i wasnt lazy i would get provider from accounts table*/ }
         <section className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
           
-          <figure className="flex-shrink-0">
+         <figure className="flex-shrink-0">
             <img 
               src={session?.user?.image ?? "/default-avatar.png"} 
               alt={`${session?.user?.name}'s avatar`}

@@ -5,11 +5,11 @@ import { authClient } from "@/lib/auth-client";
 export default function TestPage() {
   const { data: session, isPending } = authClient.useSession();
 
-  if (isPending) return <div>Loading...</div>;
+  if (isPending) return <section>Loading...</section>;
 
   return (
-    <div>
+    <section>
       <pre>{JSON.stringify(session, null, 2)}</pre>
-    </div>
+    </section>
   );
 }

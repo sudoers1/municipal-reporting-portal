@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AdminLayout Component Snapshot matches snapshot after modal is opened 1`] = `
+<DocumentFragment>
+  <header
+    class="bg-gray-400 p-2 flex justify-between relative"
+  >
+    <section
+      class="text-2xl flex justify-center align-items "
+    >
+      Muncipal Portal Project
+    </section>
+    <section>
+      <section
+        class="bg-gray-300 border-2 border-gray-600 w-8 h-8 rounded-4xl"
+      />
+      <div
+        data-testid="profiles-modal"
+      >
+        Profiles Modal
+      </div>
+    </section>
+  </header>
+  <main />
+  <footer
+    class="bg-gray-400 w-full h-8 p-2 flex flex-col justify-center items-center fixed bottom-0 "
+  >
+    © 2026 sudoers1. All rights reserved.
+  </footer>
+</DocumentFragment>
+`;
+
+exports[`AdminLayout Component Snapshot matches snapshot before modal is opened 1`] = `
+<DocumentFragment>
+  <header
+    class="bg-gray-400 p-2 flex justify-between relative"
+  >
+    <section
+      class="text-2xl flex justify-center align-items "
+    >
+      Muncipal Portal Project
+    </section>
+    <section>
+      <section
+        class="bg-gray-300 border-2 border-gray-600 w-8 h-8 rounded-4xl"
+      />
+    </section>
+  </header>
+  <main />
+  <footer
+    class="bg-gray-400 w-full h-8 p-2 flex flex-col justify-center items-center fixed bottom-0 "
+  >
+    © 2026 sudoers1. All rights reserved.
+  </footer>
+</DocumentFragment>
+`;

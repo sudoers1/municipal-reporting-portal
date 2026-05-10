@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,8 +8,10 @@ import LoginModal from "@/components/login";
 import toast from "react-hot-toast";
 import Hamburger from "@/components/hamburgerMenu";
 import ProfilePopup from "@/components/profile";
+import { NotificationBell } from "@/components/notificationBell";
+import type { Notification } from "@/lib/notifications/client";
 
-export default function Navbar() {
+export default function Navbar({ initialNotifications = [] }: { initialNotifications?: Notification[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const { data: session } = authClient.useSession();
@@ -31,48 +33,44 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="w-full flex items-center justify-between px-6 py-4 bg-brand-primary shadow">
+      <nav className="w-full flex items-center justify-between px-6 py-2 bg-brand-primary shadow">
         <Link
           href={user ? "/dashboard" : "/"}
           className="text-xl text-white font-bold text-foreground hover:underline"
         >
           Municipal Portal Project
         </Link>
-
-        <div className="flex items-center gap-6 text-white">
+        <section className="flex items-center gap-6 text-white">
           <Hamburger />
-
           <section className="flex gap-4 navContainer max-sm:hidden">
             <Link href={user ? "/dashboard" : "/"} className="hover:underline">
               Dashboard
             </Link>
-
             <Link href="/reports" className="hover:underline">
               Reports
             </Link>
-
             <button onClick={() => handleNotReady("About")} className="hover:underline">
               About
             </button>
-
             <button onClick={() => handleNotReady("Contact")} className="hover:underline">
               Contact
             </button>
           </section>
-
           {user ? (
-            <div className="relative">
-              <button onClick={() => setShowProfile(!showProfile)}>
-                <img
-                  src={user?.image ?? "/default-avatar.png"}
-                  className="w-9 h-9 rounded-full cursor-pointer hover:ring-2 hover:ring-white"
-                />
-              </button>
-
-              {showProfile && (
-                <ProfilePopup onClose={() => setShowProfile(false)} />
-              )}
-            </div>
+            <>
+              <NotificationBell initialNotifications={initialNotifications} />
+              <figure className="relative m-0">
+                <button onClick={() => setShowProfile(!showProfile)}>
+                  <img
+                    src={user?.image ?? "/default-avatar.png"}
+                    className="w-9 h-9 rounded-full cursor-pointer hover:ring-2 hover:ring-white"
+                  />
+                </button>
+                {showProfile && (
+                  <ProfilePopup onClose={() => setShowProfile(false)} />
+                )}
+              </figure>
+            </>
           ) : (
             <button
               className="px-4 py-2 rounded bg-brand-accent text-black hover:bg-brand-primary hover:text-white"
@@ -81,9 +79,8 @@ export default function Navbar() {
               Login
             </button>
           )}
-        </div>
+        </section>
       </nav>
-
       <LoginModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   );
