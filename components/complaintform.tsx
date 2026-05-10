@@ -6,6 +6,7 @@ import { authClient } from "@/lib/auth-client";
 import { insertComplaint, insertComplaintwIMG } from "@/lib/db/complaints";
 import { Report } from "@/lib/report"; // adjust path as needed
 import { Status } from "@/lib/status"; // adjust path as needed
+import { Priority } from "@/lib/priority";
 
 async function uploadHandler(file: File) {
   const formData = new FormData();
@@ -91,7 +92,7 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
           form.category,
           new Date(),
           form.created_by,
-          undefined,
+          "Low" as Priority,
           form.description
         );
 

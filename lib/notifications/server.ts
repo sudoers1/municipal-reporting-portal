@@ -1,4 +1,5 @@
 import { sql } from '@/lib/db/neon';
+import type { Notification } from './types';
 
 export type NotificationType = 'general' | 'alert' | 'update';
 
@@ -12,9 +13,9 @@ export async function createNotification(
 
 }
 
-export async function getNotifications(userId: string) {
+export async function getNotifications(userId: string):Promise<Notification[]> {
   const rows  = await sql`SELECT * FROM notifications WHERE user_id = ${userId} ORDER BY created_at DESC LIMIT 50`;
-  return rows;
+  return rows as Notification[];
 }
 
 export async function markNotificationsRead(userId: string) {
