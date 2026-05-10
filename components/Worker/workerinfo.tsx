@@ -5,22 +5,18 @@ export default function WorkerInfoCard({ worker }: any) {
 
   return (
     <Card title="Worker Information">
-      <div className="space-y-3">
-        <div>
-          <p className="text-sm text-gray-300">Name</p>
-          <p className="font-medium">{worker.name || "Unknown"}</p>
-        </div>
-
-        <div>
-          <p className="text-sm text-gray-300">Email</p>
-          <p className="font-medium break-all">{worker.email}</p>
-        </div>
-
-        <div>
-          <p className="text-sm text-gray-300">Worker ID</p>
-          <p className="font-mono text-xs break-all">{worker.id}</p>
-        </div>
-      </div>
+      <table className="w-full">
+        <tbody className="space-y-3">
+          <tr>
+            <th className="text-sm text-gray-300 text-left">Name</th>
+            <td className="font-medium">{worker.name || "Unknown"}</td>
+          </tr>
+          <tr>
+            <th className="text-sm text-gray-300 text-left">Email</th>
+            <td className="font-medium break-all">{worker.email}</td>
+          </tr>
+        </tbody>
+      </table>
     </Card>
   );
 }

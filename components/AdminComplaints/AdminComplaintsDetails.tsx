@@ -66,13 +66,14 @@ export default function AdminComplaintsDetails({
           <section className="flex flex-col md:flex-row gap-5 text-black">
             <section className="min-w-[20vw] flex flex-col justify-between">
                 <section className="">
+                  <p><strong>Complaint ID:</strong> {complaint.complaintid}</p>
                   <p>
                   <strong>Municipality:</strong> {complaint.municipality}
                   </p>
 
                   <p>
                   <strong>Status:</strong>{" "}
-                  {complaint.status ? "Completed" : "Pending"}
+                  {complaint.status}
                   </p>
 
                   <p>

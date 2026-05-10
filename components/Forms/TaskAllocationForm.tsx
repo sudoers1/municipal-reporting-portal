@@ -87,6 +87,7 @@ export default function TaskAllocationForm({ complaint,onClose }: TaskAllocation
                         <section className="bg-brand-secondary/30 p-2">
                             {complaint ? (
                                     <>
+                                        <p><strong>Complaint ID:</strong> {complaint.complaintid}</p>
                                         <p><strong>Municipality:</strong> {complaint.municipality}</p>
                                         <p><strong>Issue:</strong> {complaint.issuetype}</p>
                                         <p><strong>Status:</strong> {complaint.status}</p>
@@ -114,7 +115,7 @@ export default function TaskAllocationForm({ complaint,onClose }: TaskAllocation
                                 </option>
                             ))}
                         </select>
-                        <label htmlFor="">Department</label>
+                        {/* <label htmlFor="">Department</label>
                         <select name="" id="" className="p-2 border  border-gray-400">
                             <option value="">Water & Sanitation</option>
                             <option value="">Electricity</option>
@@ -124,7 +125,7 @@ export default function TaskAllocationForm({ complaint,onClose }: TaskAllocation
                             <option value="">Environmental Management</option>
                             <option value="">Human Settelments</option>
                             <option value="">Disaster Management</option>
-                        </select>
+                        </select> */}
                         <label htmlFor="">Priortiy Level</label>
                         <select name="" id="" className="p-2 border  border-gray-400">
                             <option value="">Priortiy Level</option>
@@ -134,8 +135,8 @@ export default function TaskAllocationForm({ complaint,onClose }: TaskAllocation
                         </select>
                         <label htmlFor="">Completion Deadline</label>
                         <input type="date" className="p-2 border  border-gray-400"/>
-                        <label htmlFor="">Notes</label>
-                        <textarea name="" id="" rows={2} className="p-2 border  border-gray-400"></textarea>
+                        {/* <label htmlFor="">Notes</label>
+                        <textarea name="" id="" rows={2} className="p-2 border  border-gray-400"></textarea> */}
                         <section className="flex justify-center-safe item">
                             <button
                             type="submit"

@@ -39,6 +39,7 @@ export default function AdminComplaintsTable({ complaints }: { complaints: Recor
 
         <thead className="bg-[#138808] text-white">
           <tr>
+            
             <th onClick={() => handleSort("municipality")} className="p-3 text-left border-r border-black cursor-pointer">
               Municipality
             </th>
@@ -70,7 +71,7 @@ export default function AdminComplaintsTable({ complaints }: { complaints: Recor
               <td className="p-3 border-r border-black">{entry.municipality}</td>
 
               <td className="p-3 border-r border-black">
-                {entry.status ? "Completed" : "Pending"}
+                {entry.status}
               </td>
 
               <td className="p-3 border-r border-black">{entry.issuetype}</td>

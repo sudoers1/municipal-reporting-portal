@@ -26,6 +26,29 @@ async function uploadHandler(file: File) {
   }
 }
 
+
+async function getCurrentCoords(): Promise<{
+      latitude: number;
+      longitude: number;
+    }> {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error("Geolocation is not supported."));
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            resolve({
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+            });
+          },
+          reject
+        );
+      });
+}
+
 export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
   const [form, setForm] = useState({
     category: "",
@@ -65,6 +88,9 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
     }
 
     try {
+
+           const coords = await getCurrentCoords();
+
       if (form.photo) {
         const uploaded = await uploadHandler(form.photo);
 
@@ -82,7 +108,9 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
           report.getUserID(),
           report.getIssueType(),
           report.getDetails(),
-          report.getImage()
+          report.getImage(),
+          coords.latitude,
+          coords.longitude
         );
       } else {
         const report = new Report(
@@ -98,7 +126,9 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
         await insertComplaint(
           report.getUserID(),
           report.getIssueType(),
-          report.getDetails()
+          report.getDetails(),
+          coords.latitude,
+          coords.longitude
         );
       }
 

@@ -2,20 +2,72 @@
 
 import { sql } from "@/lib/db/neon";
 
-export async function insertComplaint(userid:string,issuetype: string,details: string) {
-  const result = await sql ` INSERT INTO complaints (userid,municipality, creationtime, issuetype, details)
-    VALUES (${userid},${"testmunicipality"},${new Date()},${issuetype},${details}
+export async function insertComplaint(
+  userid: string,
+  issuetype: string,
+  details: string,
+  latitude: number,
+  longitude: number
+) {
+  // I added storage of latitude and longitude here
+  const result = await sql`
+    INSERT INTO complaints (
+      userid,
+      municipality,
+      creationtime,
+      issuetype,
+      details,
+      latitude,
+      longitude
+    )
+    VALUES (
+      ${userid},
+      ${"testmunicipality"},
+      ${new Date()},
+      ${issuetype},
+      ${details},
+      ${latitude},
+      ${longitude}
     )
     RETURNING *
   `;
 
   return result;
 }
-export async function insertComplaintwIMG(userid:string,issuetype: string,details: string,image:string) {
-  const result = await sql ` INSERT INTO complaints (userid,municipality, creationtime, issuetype, details,image)
-    VALUES (${userid},${"testmunicipality"},${new Date()},${issuetype},${details},${image}
-    ) 
+
+export async function insertComplaintwIMG(
+  userid: string,
+  issuetype: string,
+  details: string,
+  image: string,
+  latitude: number,
+  longitude: number
+) {
+  // I added storage of latitude and longitude here
+  const result = await sql`
+    INSERT INTO complaints (
+      userid,
+      municipality,
+      creationtime,
+      issuetype,
+      details,
+      image,
+      latitude,
+      longitude
+    )
+    VALUES (
+      ${userid},
+      ${"testmunicipality"},
+      ${new Date()},
+      ${issuetype},
+      ${details},
+      ${image},
+      ${latitude},
+      ${longitude}
+    )
+    RETURNING *
   `;
+
   return result;
 }
 
