@@ -57,20 +57,6 @@ export default function Navbar({ initialNotifications = [] }: { initialNotificat
             </button>
           </section>
           {user ? (
-<<<<<<< HEAD
-            <div className="relative">
-              <button onClick={() => setShowProfile(!showProfile)}>
-                <img
-                  src={user?.image ?? "/default-avatar.png"}
-                  className="w-8 h-8 rounded-full cursor-pointer hover:ring-2 hover:ring-white"
-                />
-              </button>
-
-              {showProfile && (
-                <ProfilePopup onClose={() => setShowProfile(false)} />
-              )}
-            </div>
-=======
             <>
               <NotificationBell initialNotifications={initialNotifications} />
               <figure className="relative m-0">
@@ -85,7 +71,6 @@ export default function Navbar({ initialNotifications = [] }: { initialNotificat
                 )}
               </figure>
             </>
->>>>>>> d9ee3e65afc2dfe4f148804ba6f675130a54c29d
           ) : (
             <button
               className="px-4 py-2 rounded bg-brand-accent text-black hover:bg-brand-primary hover:text-white"
