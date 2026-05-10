@@ -43,7 +43,7 @@ export default function ComplaintsFilters({
       >
         <option value="">All</option>
         <option value="Acknowledged">Acknowledged</option>
-        <option value="In Progress">In Progress</option>
+        <option value="In progress">In Progress</option>
         <option value="Resolved">Resolved</option>
       </select>
 

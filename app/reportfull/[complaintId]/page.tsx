@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, use } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 import { authClient } from "@/lib/auth-client";
@@ -25,15 +24,10 @@ export default function ReportFull({
   const [complaint, setComplaint] = useState<Record<string, any> | null>(null);
   const [feedback, setFeedback] = useState<Record<string, any>[]>([]);
 
-  const router = useRouter();
 
   useEffect(() => {
     if (isPending) return;
 
-    if (!session) {
-      router.push("/");
-      return;
-    }
 
     async function loadData() {
       const [complaintData, feedbackData] = await Promise.all([
@@ -47,7 +41,7 @@ export default function ReportFull({
     }
 
     loadData();
-  }, [session, isPending, router, complaintId]);
+  }, [session, isPending, complaintId]);
 
   if (isPending || loading) {
     return (
@@ -76,11 +70,11 @@ export default function ReportFull({
           Report Feedback
         </h1>
 
-        <section className="w-[85vw] mx-auto flex flex-col lg:flex-row gap-6 text-black">
+        <section className="w-[85vw] mx-auto flex flex-col md:flex-row gap-6 text-black">
 
           <section className="flex flex-col gap-6 flex-1">
 
-            <section className="border-[3px] rounded-xl border-brand-secondary p-5 space-y-2 bg-brand-secondary">
+            <section className="border-[3px] rounded-xl border-brand-primary p-5 space-y-2 bg-brand-secondary">
               <p><strong>Municipality:</strong> {complaint.municipality}</p>
               <p><strong>Status:</strong> {complaint.status ? "Completed" : "Pending"}</p>
               <p><strong>Issue:</strong> {complaint.issuetype}</p>
