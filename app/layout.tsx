@@ -4,6 +4,13 @@ import Navbar from "@/layouts/navbar";
 import Footer from "@/layouts/footer";
 import { Toaster } from "react-hot-toast";
 
+import { Inter } from 'next/font/google';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   title: "Municipal Portal Project",
   description: "Portal for municipal reporting",
@@ -15,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.className}>
       <body className="min-h-screen flex flex-col bg-white dark:bg-black" 
   suppressHydrationWarning={true}>
         <Navbar />

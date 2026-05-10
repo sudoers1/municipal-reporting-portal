@@ -10,11 +10,16 @@ export default async function AdminDashboard(){
 
     return(
         <>
-            <main className="p-4 flex flex-col gap-4">
-                <h1 className="text-2xl text-center">Report Analytics</h1>
-                <KPICards data={assignmentData}/>
-                <h1 className="text-2xl text-center">Task & Worker Analytics</h1>
-                <section className="">
+            <main className="text-center p-4 flex flex-col gap-4">
+                <h1 className="text-5xl font-semibold p-4">Administrative Dashboard</h1>
+                <h2 className="text-3xl font-medium">Report Analytics</h2>
+                <p className="text-xl">Overview of all submitted complaints categorized by their current status to ensure timely response and resolution.</p>
+                <section className="py-4">
+                    <KPICards data={assignmentData}/>
+                </section>
+                <h2 className="text-3xl font-medium">Task & Worker Analytics</h2>
+                <p className="text-xl">Assess team productivity and resolution progress to optimize the dispatching of workers to active maintenance sites.</p>
+                <section className="py-4">
                     {/* <MapView/> */}
                     <StatusAnalytics assignments={assignmentData}/>
                 </section>
