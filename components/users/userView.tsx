@@ -2,16 +2,20 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import MunicipalityAssignModal from "./municipalityassignmodal";
 import Spinner from "@/components/spinner";
 
 export default function UserViewer({
+  onSuccess,
   onClose,
   user,
 }: {
   onClose: () => void;
+  onSuccess: () => void;
   user: Record<string, any>;
 }) {
   const [loading, setLoading] = useState(true);
+  const [showAssignForm, setShowAssignForm] = useState(false);
 
   const getRoleName = (role: number | null | undefined) => {
     switch (role ?? 0) {
@@ -24,11 +28,12 @@ export default function UserViewer({
     }
   };
 
+
   return (
     <section className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
       
       <article
-        className={`bg-brand-accent rounded-2xl h-[95%] lg:h-[75%] overflow-y-auto p-8 relative ${
+        className={`bg-brand-accent rounded-2xl  overflow-y-auto p-8 relative ${
           user.image ? "min-w-[40%] lg:max-w-3xl" : "md:max-w-lg"
         }`}
       >
@@ -62,6 +67,10 @@ export default function UserViewer({
               </p>
 
               <p>
+                <strong>Municipality:</strong> {user.municipality}
+              </p>
+
+              <p>
                 <strong>Created:</strong>{" "}
                 <time dateTime={user.createdAt}>
                   {new Date(user.createdAt).toLocaleString()}
@@ -76,10 +85,12 @@ export default function UserViewer({
               </p>
             </section>
 
+            
+
           </section>
 
           {user.image && (
-            <section className="min-w-[48%] py-4 md:py-0 flex items-start">
+             <section className="min-w-[48%] py-4 md:py-0 flex items-start mb-4 sm:mb-0">
               <figure className="w-full bg-brand-primary rounded-xl overflow-hidden border-[3px] border-brand-secondary flex justify-center">
 
                 {loading && <Spinner />}
@@ -98,9 +109,29 @@ export default function UserViewer({
               </figure>
             </section>
           )}
-
+          
         </section>
+
+        <section className="flex flex-col sm:flex-row gap-3 md:mt-3 w-full">
+          {((user.user_types_id ?? 0) === 1 && user.municipality==="Not assigned") && (
+              <button onClick={() => setShowAssignForm(true)} className="w-full bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-md hover:bg-brand-secondary hover:text-black transition-colors duration-300">
+                Assign Municipality
+              </button>
+            )}
+        </section>
+        
       </article>
+      
+      {showAssignForm && (
+        <MunicipalityAssignModal 
+          onSuccess={() => {
+            onSuccess();
+            onClose();
+          }} 
+          onClose={() => setShowAssignForm(false)} 
+          uid={user.id}
+        />
+      )}
 
     </section>
   );

@@ -51,3 +51,13 @@ export async function readoneUser(userid: string) {
 
   return result[0] || null;
 }
+
+export async function insertUserMunicipality(userid: string,municipality: string) 
+{
+  const result = await sql`
+    INSERT INTO user_municipality (userid, municipality)
+    VALUES (${userid}, ${municipality})
+    RETURNING *
+  `;
+  return result[0] || null;
+}

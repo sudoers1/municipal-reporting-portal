@@ -11,8 +11,9 @@ export default function ProfilePopup({ onClose }: { onClose: () => void }) {
 
   const handleLogout = async () => {
     await authClient.signOut();
-    onClose();
     router.push("/");
+    onClose();
+    
   };
 
   return (
