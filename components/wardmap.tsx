@@ -263,7 +263,7 @@ useEffect(() => {
                 marker.on("click", () => {
                   const zoom = 15;
                   const pxPoint = map.project([lat, lng], zoom);
-                  const offsetPx = pxPoint.subtract([0, 100]); // shift up by 100px
+                  const offsetPx = pxPoint.subtract([0, 200]); // shift up by 200px
                   const offsetLatLng = map.unproject(offsetPx, zoom);
                   map.setView(offsetLatLng, zoom, { animate: true });
                 });
