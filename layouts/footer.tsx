@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="w-full px-6 py-4 bg-brand-primary text-center text-sm text-white dark:bg-brand-primary">
+    <footer className="w-full px-6 py-1 bg-brand-primary text-center text-sm text-white dark:bg-brand-primary">
       © {new Date().getFullYear()}{" "}
       <a
         href="https://github.com/sudoers1"

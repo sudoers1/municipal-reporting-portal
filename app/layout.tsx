@@ -7,6 +7,13 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { getNotifications } from "@/lib/notifications/server";
 
+import { Inter } from 'next/font/google';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   title: "Municipal Portal Project",
   description: "Portal for municipal reporting",
@@ -23,8 +30,9 @@ export default async function RootLayout({
     : [];
 
   return (
+
     <html lang="en">
-      <body className="min-h-screen flex flex-col bg-white dark:bg-black">
+      <body className="min-h-screen flex flex-col bg-white dark:bg-black" suppressHydrationWarning={true}>
         <Navbar initialNotifications={initialNotifications} />
         <main className="flex-1">{children}</main>
         <Footer />
@@ -33,3 +41,4 @@ export default async function RootLayout({
     </html>
   );
 }
+

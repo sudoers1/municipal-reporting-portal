@@ -1,6 +1,6 @@
 /** @jest-environment node */
 
-import { POST, GET } from "../app/api/admin/assign-role/route";
+import { POST, GET } from "../app/api/workers/assign-role/route";
 import { auth } from "../lib/auth";
 import { setUserRole } from "../lib/db/users";
 import { requireRole } from "../lib/guards/route";

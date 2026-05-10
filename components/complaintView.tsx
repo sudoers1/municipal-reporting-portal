@@ -1,6 +1,9 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { authClient } from "@/lib/auth-client";
 import Spinner from "@/components/spinner";
+import FeedbackModal from "@/components/feedback/feedbackform";
+import Link from "next/link";
 
 export default function ComplaintViewer({
   onClose,
@@ -10,6 +13,32 @@ export default function ComplaintViewer({
   complaint: Record<string, any>;
 }) {
   const [loading, setLoading] = useState(true);
+  const [idloading, setIdLoading] = useState(true);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [uid, setUid] = useState<string>("");
+  
+    useEffect(() => {
+      async function loadSession() {
+        const session = await authClient.getSession();
+        if (session?.data?.user?.id) {
+          setUid(session?.data?.user?.id);
+        }
+        setIdLoading(false);
+      }
+      loadSession();
+    }, []);
+
+
+  if(idloading){return (
+    <section
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+      role="dialog"
+      aria-modal="true"
+    >
+          <Spinner splash="Report"/>
+    </section>
+    );}
+    else{
   return (
     <section
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
@@ -17,7 +46,7 @@ export default function ComplaintViewer({
       aria-modal="true"
     >
      <article
-        className={`bg-brand-accent rounded-2xl h-[85%] md:h-[70%] overflow-y-auto p-8 relative
+        className={`bg-brand-accent rounded-2xl h-[95%] md:h-[85%] overflow-y-auto p-8 relative
           ${complaint.image ? "min-w-[60%] md:max-w-5xl" : "md:max-w-lg"}
         `}
       >
@@ -36,7 +65,7 @@ export default function ComplaintViewer({
           </h2>
         </header>
 
-        <section className="flex flex-col md:flex-row md:gap-4 text-black h-[80%]">
+        <section className="flex flex-col md:flex-row md:gap-4 text-black py-2 h-[80%]">
           
 
           <section className="flex flex-col min-w-[48%] gap-4 flex-1 h-full">
@@ -48,7 +77,7 @@ export default function ComplaintViewer({
 
               <p>
                 <strong>Status:</strong>{" "}
-                {complaint.status ? "Completed" : "Pending"}
+                {complaint.status}
               </p>
 
               <p>
@@ -63,7 +92,7 @@ export default function ComplaintViewer({
               </p>
             </section>
 
-            {/* DETAILS BOX (fills remaining space) */}
+            
             <section className="flex-1 border rounded-xl border-brand-primary border-[3px] overflow-y-auto p-3 pr-2 bg-brand-secondary">
               <p>{complaint.details}</p>
             </section>
@@ -84,7 +113,7 @@ export default function ComplaintViewer({
                   alt="Complaint evidence"
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  className={`object-contain transition-opacity duration-300 ${
+                  className={`object-contain transition-opacity duration-300 p-2 ${
                     loading ? "opacity-0" : "opacity-100"
                   }`}
                   onLoad={() => setLoading(false)}
@@ -93,12 +122,32 @@ export default function ComplaintViewer({
             </section>
           )}
 
-          
+
 
         </section>
 
+        <section className="flex flex-col sm:flex-row gap-3 py-3 w-full">
+          {uid !== "" && complaint.status === "Resolved" && (
+            <button
+              onClick={() => setShowFeedback(true)}
+              className="flex-1 bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-md hover:bg-brand-secondary hover:text-black transition-colors duration-300"
+            >
+              Submit Feedback
+            </button>
+          )}
+
+          <Link
+            href={`/reportfull/${complaint.complaintid}`}
+            className="flex-1 bg-brand-secondary text-black font-semibold py-3 rounded-xl shadow-md hover:bg-brand-primary hover:text-white transition-colors duration-300 text-center"
+          >
+            View Full Report
+          </Link>
+        </section>
+
+
 
       </article>
+      {showFeedback &&(<FeedbackModal onClose={() => setShowFeedback(false) } uid={uid} cid={complaint.complaintid} />)}
     </section>
-  );
+  );}
 }

@@ -3,9 +3,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --brand-primary: #0F3B0C;   
-  --brand-secondary: #0F630A; 
-  --brand-accent: #2DD124; 
+  --brand-primary: teal; 
+  --brand-secondary:#20b2aa;
+  --brand-accent:turquoise;
 }
 
 @theme inline {
@@ -28,5 +28,6 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* font-family: Arial, Helvetica, sans-serif; */
+  font-family: Inter, Arial, Helvetica, sans-serif;
 }
