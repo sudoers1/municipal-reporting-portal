@@ -13,21 +13,20 @@ import {
   CellContext,
   Row,
 } from "@tanstack/react-table";
-import ComplaintViewer from "@/components/complaintView";
-import ComplaintsFilters from "@/components/complaintsFilters";
+import FeedbackViewer from "@/components/feedback/feedbackView";
+import FeedbackFilters from "@/components/feedback/feedbackFilters";
 
-type Complaint = {
-  complaintid: string;
-  municipality: string;
-  status: string;
-  issuetype: string;
+type Feedback = {
+  name: string;
+  feedbackId: number;
+  complaintId: number;
+  userId: string;
+  details: string;
+  image?: string | null;
   creationtime: string;
-  image?: string;      // for the viewer
-  details: string;    // for the viewer
-  // any other fields from the original complaint
 };
 
-const dateRangeFilter = (row: Row<Complaint>, columnId: string, value: any) => {
+const dateRangeFilter = (row: Row<Feedback>, columnId: string, value: any) => {
   const rowDate = new Date(row.getValue(columnId)).getTime();
   const start = value?.start ? new Date(value.start).getTime() : null;
   const end = value?.end ? new Date(value.end).getTime() : null;
@@ -36,11 +35,10 @@ const dateRangeFilter = (row: Row<Complaint>, columnId: string, value: any) => {
   return true;
 };
 
-
-const dateCell = (info: CellContext<Complaint, string>) =>
+const dateCell = (info: CellContext<Feedback, string>) =>
   new Date(info.getValue()).toLocaleString();
 
-const actionsCell = (setSelected: (c: Complaint) => void) => (info: CellContext<Complaint, any>) => (
+const actionsCell = (setSelected: (c: Feedback) => void) => (info: CellContext<Feedback, any>) => (
   <button
     onClick={() => setSelected(info.row.original)}
     className="bg-brand-accent text-black px-3 py-1 rounded hover:bg-brand-accent/70"
@@ -49,36 +47,33 @@ const actionsCell = (setSelected: (c: Complaint) => void) => (info: CellContext<
   </button>
 );
 
-export default function ComplaintsTable({ complaints }: { complaints: Record<string, any>[] }) {
-  const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
+export default function FeedbackTable({ feedbacks }: { feedbacks: Record<string, any>[] }) {
+  const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [dateRange, setDateRange] = useState<{ start?: string; end?: string }>({});
 
-  const { data, municipalityOptions, issueTypeOptions } = useMemo(() => {
-    const mapped: Complaint[] = complaints.map((d) => ({
-      complaintid: d.complaintid,
-      municipality: d.municipality,
-      status: d.status,
-      issuetype: d.issuetype,
-      creationtime: d.creationtime,
-      image: d.image,          // preserve image URL
-      details: d.details,      // preserve description
-    }));
-    return {
-      data: mapped,
-      municipalityOptions: [...new Set(mapped.map((d) => d.municipality))],
-      issueTypeOptions: [...new Set(mapped.map((d) => d.issuetype))],
-    };
-  }, [complaints]);
+const { data } = useMemo(() => {
+  const mapped: Feedback[] = feedbacks.map((d) => ({
+    name: d.name,
+    feedbackId: d.feedbackId,
+    complaintId: d.complaintId,
+    userId: d.userId,
+    details: d.details,
+    image: d.image,
+    creationtime: d.creationtime,
+  }));
+
+  return {
+    data: mapped,
+  };
+}, [feedbacks]);
 
   const columns = useMemo(
     () => [
-      { accessorKey: "municipality", header: "Municipality", filterFn: filterFns.equals },
-      { accessorKey: "status", header: "Status", filterFn: filterFns.equals},
-      { accessorKey: "issuetype", header: "Issue Type", filterFn: filterFns.equals },
+      { accessorKey: "name", header: "Creator", filterFn: filterFns.equals },
       { accessorKey: "creationtime", header: "Date", filterFn: dateRangeFilter, cell: dateCell },
-      { id: "actions", header: "", cell: actionsCell(setSelectedComplaint) },
+      { id: "actions", header: "", cell: actionsCell(setSelectedFeedback) },
     ],
     []
   );
@@ -102,10 +97,8 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
 
   return (
     <section className="flex flex-col gap-3">
-      <ComplaintsFilters
+      <FeedbackFilters
         table={table}
-        municipalityOptions={municipalityOptions}
-        issueTypeOptions={issueTypeOptions}
         dateRange={dateRange}
         setDateRange={setDateRange}
       />
@@ -147,11 +140,11 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
             </tbody>
           </table>
 
-
-      {selectedComplaint && (
-        <ComplaintViewer
-          complaint={selectedComplaint}
-          onClose={() => setSelectedComplaint(null)}
+      
+      {selectedFeedback && (
+        <FeedbackViewer
+          feedback={selectedFeedback}
+          onClose={() => setSelectedFeedback(null)}
         />
       )}
     </section>
