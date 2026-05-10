@@ -95,6 +95,7 @@ export default function ComplaintsModal({
           form.category,
           new Date(),
           form.created_by,
+          Priority.Low,
           uploaded.url,
           form.description
         );
