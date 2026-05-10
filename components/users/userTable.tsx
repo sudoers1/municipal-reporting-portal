@@ -13,8 +13,8 @@ import {
   CellContext,
   Row,
 } from "@tanstack/react-table";
-import UserViewer from "@/components/users/userView";
-import UserFilters from "@/components/users/userFilters";
+import UserViewer from "@/components/Users/userView";
+import UserFilters from "@/components/Users/userFilters";
 
 type User = {
   id: string;
@@ -23,7 +23,7 @@ type User = {
   image: string | null;
   createdAt: string;
   updatedAt: string;
-  user_types_id: number; // always normalized
+  user_types_id: number;
   municipality: string;
 };
 
@@ -42,6 +42,7 @@ const dateRangeFilter = (row: Row<User>, columnId: string, value: any) => {
   const rowDate = new Date(row.getValue(columnId)).getTime();
   const start = value?.start ? new Date(value.start).getTime() : null;
   const end = value?.end ? new Date(value.end).getTime() : null;
+
   if (start && rowDate < start) return false;
   if (end && rowDate > end) return false;
   return true;
@@ -67,8 +68,8 @@ export default function UserTable({ users }: { users: Record<string, any>[] }) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [dateRange, setDateRange] = useState<{ start?: string; end?: string }>({});
 
-  const data = useMemo(() => {
-    return users.map((d) => ({
+  const { data, municipalityOptions } = useMemo(() => {
+    const mapped: User[] = users.map((d) => ({
       id: d.id,
       name: d.name,
       email: d.email,
@@ -78,12 +79,25 @@ export default function UserTable({ users }: { users: Record<string, any>[] }) {
       user_types_id: d.user_types_id ?? 0,
       municipality: d.municipality ?? "Not assigned",
     }));
+
+    return {
+      data: mapped,
+      municipalityOptions: [...new Set(mapped.map((d) => d.municipality))],
+    };
   }, [users]);
 
   const columns = useMemo(
     () => [
-      { accessorKey: "name", header: "Name", filterFn: filterFns.includesString },
-      { accessorKey: "email", header: "Email", filterFn: filterFns.includesString },
+      {
+        accessorKey: "name",
+        header: "Name",
+        filterFn: filterFns.includesString,
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+        filterFn: filterFns.includesString,
+      },
       {
         accessorKey: "municipality",
         header: "Municipality",
@@ -92,9 +106,11 @@ export default function UserTable({ users }: { users: Record<string, any>[] }) {
       {
         accessorKey: "user_types_id",
         header: "Role",
-        cell: (info: CellContext<User, number>) =>
-          roleLabel(info.getValue() ?? 0),
-        filterFn: filterFns.equals,
+        cell: (info: CellContext<User, number>) => roleLabel(info.getValue() ?? 0),
+        filterFn: (  row: Row<User>,columnId: string,value: string | undefined) => {
+          if (value === undefined || value === "") return true;
+          return row.getValue(columnId) === Number(value);
+        },
       },
       {
         accessorKey: "createdAt",
@@ -128,7 +144,12 @@ export default function UserTable({ users }: { users: Record<string, any>[] }) {
 
   return (
     <section className="flex flex-col gap-3">
-      <UserFilters table={table} dateRange={dateRange} setDateRange={setDateRange} />
+      <UserFilters
+        table={table}
+        municipalityOptions={municipalityOptions}
+        dateRange={dateRange}
+        setDateRange={setDateRange}
+      />
 
       <table className="w-[85vw] bg-brand-primary rounded-2xl overflow-hidden text-white">
         <thead className="bg-brand-accent text-black">
@@ -136,6 +157,7 @@ export default function UserTable({ users }: { users: Record<string, any>[] }) {
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 const sort = header.column.getIsSorted();
+
                 return (
                   <th
                     key={header.id}
@@ -168,10 +190,7 @@ export default function UserTable({ users }: { users: Record<string, any>[] }) {
                   key={cell.id}
                   className="p-3 border-r last:border-r-0 border-black"
                 >
-                  {flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext()
-                  )}
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
             </tr>
@@ -180,7 +199,10 @@ export default function UserTable({ users }: { users: Record<string, any>[] }) {
       </table>
 
       {selectedUser && (
-        <UserViewer user={selectedUser} onClose={() => setSelectedUser(null)} />
+        <UserViewer
+          user={selectedUser}
+          onClose={() => setSelectedUser(null)}
+        />
       )}
     </section>
   );
