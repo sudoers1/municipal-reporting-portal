@@ -98,6 +98,7 @@ export default function ComplaintsModal({
           uploaded.url,
           form.description
         );
+        
         await insertComplaintwIMG(
           report.getUserID(),
           report.getIssueType(),
