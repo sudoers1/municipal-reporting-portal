@@ -113,7 +113,8 @@ export default function ComplaintsModal({
           form.category,
           new Date(),
           form.created_by,
-          "Low" as Priority,
+          Priority.Low,
+          undefined,
           form.description
         );
         await insertComplaint(
