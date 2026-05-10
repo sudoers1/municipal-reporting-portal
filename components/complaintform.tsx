@@ -132,19 +132,53 @@ export default function ComplaintsModal({
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Category */}
-          <section>
-            <label className="block font-semibold mb-2 text-black">Category</label>
-            <select
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className="w-full border rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none"
-              required
-            >
-              <option value="">Select category</option>
-              {/* ...optgroups same as before */}
-            </select>
-          </section>
+    {/* Category */}
+<section>
+  <label className="block font-semibold mb-2 text-black">Category</label>
+  <select
+    value={form.category}
+    onChange={(e) => setForm({ ...form, category: e.target.value })}
+    className="w-full border rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none"
+    required
+  >
+    <option value="">Select category</option>
+
+    <optgroup label="Water">
+      <option value="No Water Supply">No Water Supply</option>
+      <option value="Water Leaks">Water Leaks</option>
+      <option value="Low Water Pressure">Low Water Pressure</option>
+      <option value="Contaminated/Dirty Water">Contaminated/Dirty Water</option>
+    </optgroup>
+
+    <optgroup label="Electricity">
+      <option value="Power Outages">Power Outages</option>
+      <option value="Downed Power Lines">Downed Power Lines</option>
+      <option value="Electricity Meter Issues">Electricity Meter Issues</option>
+    </optgroup>
+
+    <optgroup label="Waste Management">
+      <option value="Missed Garbage Collection">Missed Garbage Collection</option>
+      <option value="Illegal Dumping">Illegal Dumping</option>
+      <option value="Overflowing Bins">Overflowing Bins</option>
+      <option value="Broken Refuse Bins">Broken Refuse Bins</option>
+    </optgroup>
+
+    <optgroup label="Roads & Transport">
+      <option value="Potholes">Potholes</option>
+      <option value="Damaged or Collapsed Roads">Damaged or Collapsed Roads</option>
+      <option value="Missing Road Signs">Missing Road Signs</option>
+      <option value="Faulty Traffic Lights">Faulty Traffic Lights</option>
+      <option value="Poor Stormwater Drainage">Poor Stormwater Drainage</option>
+    </optgroup>
+
+    <optgroup label="Environmental & Sanitation Issues">
+      <option value="Sewage Spills">Sewage Spills</option>
+      <option value="Blocked Drains">Blocked Drains</option>
+      <option value="Flooding">Flooding</option>
+    </optgroup>
+  </select>
+</section>
+
 
           {/* Description */}
           <section>
