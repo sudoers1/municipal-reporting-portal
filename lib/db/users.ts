@@ -75,4 +75,19 @@ export async function setAdmin(userId: string): Promise<void> {
   } finally {
     client.release();
   }
+
+}  
+export async function getName(userId: string): Promise<string> {
+  const result = await pool.query(`SELECT name FROM user WHERE id = $1`, [userId]);
+  return result.rows[0]?.name ?? "Unknown";
+}
+
+export async function getEmail(userId: string): Promise<string> {
+  const result = await pool.query(`SELECT email FROM user WHERE id = $1`, [userId]);
+  return result.rows[0]?.email ?? "Unknown";
+}
+
+export async function getImage(userId: string): Promise<string> {
+  const result = await pool.query(`SELECT image FROM user WHERE id = $1`, [userId]);
+  return result.rows[0]?.image ?? "";
 }
