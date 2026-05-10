@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import MunicipalityAssignModal from "./municipalityassignmodal";
+import MunicipalityAssignModal from "@/components/Users/municipalityassignmodal";
 import Spinner from "@/components/spinner";
 
 export default function UserViewer({
