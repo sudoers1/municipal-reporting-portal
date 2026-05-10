@@ -43,3 +43,20 @@ export async function readoneComplaint(complaintid: string) {
 
   return result[0] || null;
 }
+
+// added the two below for worker dashboard
+export async function claimComplaint(complaintid: string, workerid: string) {
+  await sql`
+    UPDATE complaints
+    SET workerid = ${workerid}, status = 'in_progress'
+    WHERE complaintid = ${complaintid}
+  `;
+}
+export async function updateComplaintStatus(complaintid: string, status: string) {
+  await sql`
+    UPDATE complaints
+    SET status = ${status}
+    WHERE complaintid = ${complaintid}
+  `;
+}
+// end here
