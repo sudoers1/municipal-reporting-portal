@@ -62,11 +62,13 @@ const actionsCell =
       </button>
     );
 
-export default function UserTable({ users }: { users: Record<string, any>[] }) {
+export default function UserTable({ onSuccess, users }: { onSuccess: () => void; users: Record<string, any>[] }) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [dateRange, setDateRange] = useState<{ start?: string; end?: string }>({});
+
+
 
   const { data, municipalityOptions } = useMemo(() => {
     const mapped: User[] = users.map((d) => ({
@@ -202,6 +204,7 @@ export default function UserTable({ users }: { users: Record<string, any>[] }) {
         <UserViewer
           user={selectedUser}
           onClose={() => setSelectedUser(null)}
+          onSuccess={onSuccess}
         />
       )}
     </section>

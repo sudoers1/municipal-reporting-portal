@@ -2,16 +2,20 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import MunicipalityAssignModal from "./municipalityassignmodal";
 import Spinner from "@/components/spinner";
 
 export default function UserViewer({
+  onSuccess,
   onClose,
   user,
 }: {
   onClose: () => void;
+  onSuccess: () => void;
   user: Record<string, any>;
 }) {
   const [loading, setLoading] = useState(true);
+  const [showAssignForm, setShowAssignForm] = useState(false);
 
   const getRoleName = (role: number | null | undefined) => {
     switch (role ?? 0) {
@@ -110,13 +114,24 @@ export default function UserViewer({
 
         <section className="flex flex-col sm:flex-row gap-3 md:mt-3 w-full">
           {((user.user_types_id ?? 0) === 1 && user.municipality==="Not assigned") && (
-              <button className="w-full bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-md hover:bg-brand-secondary hover:text-black transition-colors duration-300">
+              <button onClick={() => setShowAssignForm(true)} className="w-full bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-md hover:bg-brand-secondary hover:text-black transition-colors duration-300">
                 Assign Municipality
               </button>
             )}
         </section>
         
       </article>
+      
+      {showAssignForm && (
+        <MunicipalityAssignModal 
+          onSuccess={() => {
+            onSuccess();
+            onClose();
+          }} 
+          onClose={() => setShowAssignForm(false)} 
+          uid={user.id}
+        />
+      )}
 
     </section>
   );

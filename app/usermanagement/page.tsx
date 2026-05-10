@@ -14,6 +14,9 @@ export default function UserManagement() {
   const [loading, setLoading] = useState(true);
   const { data: session, isPending  } = authClient.useSession();
 
+  const [refreshKey, setRefreshKey] = useState(0);
+  const reload = () => setRefreshKey((k) => k + 1);
+
 
   const router = useRouter();
   
@@ -21,10 +24,12 @@ export default function UserManagement() {
     useEffect(() => {
       if (!isPending) 
       {
-        if(!session)
-        {
-          router.push('/'); // Redirect to public
-        }
+        
+          if (session?.user.role!="Admin")
+          {
+              router.push('/'); // Redirect to public
+          }
+        
           async function getUsers() {
             const data= await readUsers();
             setUsers(data);
@@ -32,7 +37,7 @@ export default function UserManagement() {
           }
           getUsers();
       }
-    }, [session, isPending, router]);
+    }, [session, isPending, router,refreshKey]);
     
    
     
@@ -70,7 +75,7 @@ export default function UserManagement() {
 
 
         <figure className="flex md:justify-center">
-          <UsersTable users={users} />
+          <UsersTable users={users} onSuccess={reload} />
         </figure>
 
 
