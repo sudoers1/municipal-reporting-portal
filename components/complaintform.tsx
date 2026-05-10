@@ -85,8 +85,6 @@ export default function ComplaintsModal({
 
     try {
 
-           const coords = await getCurrentCoords();
-
       if (form.photo) {
         const uploaded = await uploadHandler(form.photo);
         const report = new Report(
@@ -98,7 +96,7 @@ export default function ComplaintsModal({
           uploaded.url,
           form.description
         );
-        
+
         await insertComplaintwIMG(
           report.getUserID(),
           report.getIssueType(),
