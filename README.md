@@ -1,9 +1,7 @@
-![Lines](./badges/badge-lines.svg)
-![Statements](./badges/badge-statements.svg)
-![Functions](./badges/badge-functions.svg)
-![Branches](./badges/badge-branches.svg)
-
-
+![Lines](https://raw.githubusercontent.com/sudoers1/municipal-reporting-portal/badges/badges/badge-lines.svg)
+![Statements](https://raw.githubusercontent.com/sudoers1/municipal-reporting-portal/badges/badges/badge-statements.svg)
+![Functions](https://raw.githubusercontent.com/sudoers1/municipal-reporting-portal/badges/badges/badge-functions.svg)
+![Branches](https://raw.githubusercontent.com/sudoers1/municipal-reporting-portal/badges/badges/badge-branches.svg)
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
