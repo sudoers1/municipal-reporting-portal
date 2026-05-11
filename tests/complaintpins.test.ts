@@ -17,7 +17,7 @@ jest.mock("@turf/turf", () => ({
 import { sql } from "@/lib/db/neon";
 import * as turf from "@turf/turf";
 
-const mockSql = sql as jest.Mock;
+const mockSql = sql as jest.MockedFunction<typeof sql>;
 const mockBooleanPointInPolygon = turf.booleanPointInPolygon as jest.Mock;
 
 describe("POST /api/complaintpins", () => {
