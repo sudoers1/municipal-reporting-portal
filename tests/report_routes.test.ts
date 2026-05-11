@@ -1,6 +1,7 @@
 let mockSession = {
   user: {
     id: 10,
+    role: "Worker",
   },
 };
 
@@ -29,13 +30,14 @@ jest.mock("next/server", () => ({
   },
 }));
 
-import * as ReportsRoute from "@/app/api/reports/route";
-import * as ReportByIdRoute from "@/app/api/reports/[id]/route";
-import * as AssignedRoute from "@/app/api/reports/assigned/route";
-import * as ClaimRoute from "@/app/api/reports/claim/route";
-import * as CompletedRoute from "@/app/api/reports/completed/route";
-import * as MyReportsRoute from "@/app/api/reports/my/route";
-import * as UnassignedRoute from "@/app/api/reports/unassigned/route";
+const ReportsRoute = require("@/app/api/reports/route");
+const ReportByIdRoute = require("@/app/api/reports/[id]/route");
+const AssignedRoute = require("@/app/api/reports/assigned/route");
+const ClaimRoute = require("@/app/api/reports/claim/route");
+const CompletedRoute = require("@/app/api/reports/completed/route");
+const MyReportsRoute = require("@/app/api/reports/my/route");
+const UnassignedRoute = require("@/app/api/reports/unassigned/route");
+const AnalyticsRoute = require("@/app/api/reports/analytics/route");
 
 const makeRequest = (
   url: string,
@@ -62,6 +64,7 @@ beforeEach(() => {
   mockSession = {
     user: {
       id: 10,
+      role: "Worker",
     },
   };
 
@@ -478,6 +481,14 @@ describe("/api/reports/my", () => {
         reports,
       });
     });
+
+    it("throws when resident report query fails", async () => {
+      mockSql.mockRejectedValueOnce(new Error("DB error"));
+
+      const req = makeRequest("http://localhost/api/reports/my");
+
+      await expect(MyReportsRoute.GET(req)).rejects.toThrow("DB error");
+    });
   });
 
   describe("POST", () => {
@@ -602,14 +613,80 @@ describe("/api/reports/unassigned", () => {
   });
 });
 
+describe("/api/reports/analytics", () => {
+  describe("GET", () => {
+    it("returns public analytics data successfully", async () => {
+      const analyticsData = [
+        {
+          issuetype: "Water",
+          status: "Open",
+          municipality: "Emfuleni",
+          creationtime: "2026-05-11T10:00:00.000Z",
+        },
+        {
+          issuetype: "Electricity",
+          status: "Resolved",
+          municipality: "Midvaal",
+          creationtime: "2026-05-10T08:30:00.000Z",
+        },
+      ];
+
+      mockSql.mockResolvedValueOnce(analyticsData);
+
+      const req = makeRequest("http://localhost/api/reports/analytics");
+
+      const res = await AnalyticsRoute.GET(req);
+      const data = await readJson(res);
+
+      expect(mockSql).toHaveBeenCalledTimes(1);
+
+      expect(data.status).toBe(200);
+      expect(data.body).toEqual({
+        message: "Public analytics data",
+        data: analyticsData,
+      });
+    });
+
+    it("returns empty analytics data when there are no complaints", async () => {
+      mockSql.mockResolvedValueOnce([]);
+
+      const req = makeRequest("http://localhost/api/reports/analytics");
+
+      const res = await AnalyticsRoute.GET(req);
+      const data = await readJson(res);
+
+      expect(mockSql).toHaveBeenCalledTimes(1);
+
+      expect(data.status).toBe(200);
+      expect(data.body).toEqual({
+        message: "Public analytics data",
+        data: [],
+      });
+    });
+
+    it("throws when analytics query fails", async () => {
+      mockSql.mockRejectedValueOnce(new Error("DB error"));
+
+      const req = makeRequest("http://localhost/api/reports/analytics");
+
+      await expect(AnalyticsRoute.GET(req)).rejects.toThrow("DB error");
+
+      expect(mockSql).toHaveBeenCalledTimes(1);
+    });
+  });
+});
+
 describe("/api/reports", () => {
   describe("GET", () => {
-    it("returns all reports", async () => {
+    it("returns all reports successfully", async () => {
       const complaints = [
         {
           complaintid: 1,
           issuetype: "Electricity",
-          details: "Power outage",
+          details: "Power outage in the area",
+          creationtime: "2026-05-11T10:00:00.000Z",
+          userid: 10,
+          municipality: "Emfuleni",
         },
       ];
 
@@ -620,6 +697,8 @@ describe("/api/reports", () => {
       const res = await ReportsRoute.GET(req);
       const data = await readJson(res);
 
+      expect(mockSql).toHaveBeenCalledTimes(1);
+
       expect(data.status).toBe(200);
       expect(data.body).toEqual({
         message: "Reports fetched successfully",
@@ -627,13 +706,32 @@ describe("/api/reports", () => {
       });
     });
 
-    it("returns 500 when fetching all reports fails", async () => {
+    it("returns an empty array when there are no reports", async () => {
+      mockSql.mockResolvedValueOnce([]);
+
+      const req = makeRequest("http://localhost/api/reports");
+
+      const res = await ReportsRoute.GET(req);
+      const data = await readJson(res);
+
+      expect(mockSql).toHaveBeenCalledTimes(1);
+
+      expect(data.status).toBe(200);
+      expect(data.body).toEqual({
+        message: "Reports fetched successfully",
+        data: [],
+      });
+    });
+
+    it("returns 500 when fetching reports fails", async () => {
       mockSql.mockRejectedValueOnce(new Error("DB error"));
 
       const req = makeRequest("http://localhost/api/reports");
 
       const res = await ReportsRoute.GET(req);
       const data = await readJson(res);
+
+      expect(mockSql).toHaveBeenCalledTimes(1);
 
       expect(data.status).toBe(500);
       expect(data.body).toEqual({

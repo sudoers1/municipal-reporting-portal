@@ -18,14 +18,13 @@ const handler = async (req: Request, session?: any) => {
 
     console.log("Fetched complaints:", {
       count: complaints.length,
-      sample: complaints[0] || null
+      sample: complaints[0] || null,
     });
 
     return NextResponse.json({
       message: "Reports fetched successfully",
-      data: complaints
+      data: complaints,
     });
-
   } catch (error) {
     console.error("Error fetching complaints:", error);
 
@@ -36,9 +35,4 @@ const handler = async (req: Request, session?: any) => {
   }
 };
 
-// toggle here
-const DISABLE_AUTH = process.env.NODE_ENV === "development";
-
-export const GET = DISABLE_AUTH
-  ? (req: Request) => handler(req) // no auth
-  : withAuth(["Admin"], handler);  // with auth
+export const GET = withAuth(["Admin"], handler);
