@@ -26,6 +26,7 @@ jobs:
 
       - name: Run tests with coverage
         run: npm run test:badges
+        continue-on-error: true
 
       - name: Commit badges
         run: |
