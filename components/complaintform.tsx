@@ -4,34 +4,59 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 import { insertComplaint, insertComplaintwIMG } from "@/lib/db/complaints";
-import { Report } from "@/lib/report"; // adjust path as needed
-import { Status } from "@/lib/status"; // adjust path as needed
+import { Report } from "@/lib/report";
+import { Status } from "@/lib/status";
+import { Priority } from "@/lib/priority";
 
 async function uploadHandler(file: File) {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", "bloobase4");
 
-  try {
-    const response = await fetch(
-      "https://api.cloudinary.com/v1_1/dncfvewe2/image/upload",
-      { method: "POST", body: formData }
-    );
-    const data = await response.json();
-    console.log("Image uploaded:", data);
-    return data;
-  } catch (error) {
-    console.error("Upload error:", error);
-    throw error;
-  }
+  const response = await fetch(
+    "https://api.cloudinary.com/v1_1/dncfvewe2/image/upload",
+    { method: "POST", body: formData }
+  );
+  return response.json();
 }
 
-export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
+
+async function getCurrentCoords(): Promise<{
+      latitude: number;
+      longitude: number;
+    }> {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error("Geolocation is not supported."));
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            resolve({
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+            });
+          },
+          reject
+        );
+      });
+}
+
+export default function ComplaintsModal({
+  onClose,
+  selectedLocation,
+}: {
+  onClose: () => void;
+  selectedLocation?: { lat: number; lng: number; address?: string } | null;
+}) {
   const [form, setForm] = useState({
     category: "",
     description: "",
     photo: null as File | null,
     created_by: "",
+    address: "",
+    coords: "",
   });
 
   useEffect(() => {
@@ -44,36 +69,31 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
     loadSession();
   }, []);
 
+  // Sync location from map clicks
+  useEffect(() => {
+    if (selectedLocation) {
+      setForm((prev) => ({
+        ...prev,
+        address: selectedLocation.address || "",
+        coords: `${selectedLocation.lat.toFixed(5)}, ${selectedLocation.lng.toFixed(5)}`,
+      }));
+    }
+  }, [selectedLocation]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-
-    if (!form.created_by) {
-      toast.error("Session not loaded yet, please try again.");
-      return;
-    }
-    if (form.photo &&form.photo.size > 5_000_000) {
-      
-      toast("ERROR:File too large (max 5MB)");
-      return;
-    }
-
-    if (form.photo && !allowedTypes.includes(form.photo.type)) {
-      toast("ERROR: Only JPG, PNG, or WEBP images allowed");
-      return;
-    }
-
     try {
+
       if (form.photo) {
         const uploaded = await uploadHandler(form.photo);
-
         const report = new Report(
           "testmunicipality",
           Status.Acknowledged,
           form.category,
           new Date(),
           form.created_by,
+          Priority.Low,
           uploaded.url,
           form.description
         );
@@ -82,7 +102,9 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
           report.getUserID(),
           report.getIssueType(),
           report.getDetails(),
-          report.getImage()
+          report.getImage(),
+          form.address,
+          form.coords
         );
       } else {
         const report = new Report(
@@ -91,19 +113,28 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
           form.category,
           new Date(),
           form.created_by,
+          Priority.Low,
           undefined,
           form.description
         );
-
         await insertComplaint(
           report.getUserID(),
           report.getIssueType(),
-          report.getDetails()
+          report.getDetails(),
+          form.address,
+          form.coords
         );
       }
 
       toast.success("Complaint submitted successfully.");
-      setForm({ category: "", description: "", photo: null, created_by: form.created_by });
+      setForm({
+        category: "",
+        description: "",
+        photo: null,
+        created_by: form.created_by,
+        address: "",
+        coords: "",
+      });
       onClose();
     } catch (error) {
       console.error("Submission error:", error);
@@ -112,8 +143,8 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <section className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-8 relative">
+    <section className="fixed inset-0 h-full w-1/2 flex items-center justify-center z-50">
+      <article className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-8 relative max-h-screen overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-600 hover:text-black text-2xl font-bold"
@@ -128,59 +159,68 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <fieldset>
-            <label className="block font-semibold mb-2 text-black">Category</label>
-            <select
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className="w-full border rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none"
-              required
-            >
-              <option value="">Select category</option>
-              <optgroup label="Water">
-                <option value="No Water Supply">No Water Supply</option>
-                <option value="Water Leaks">Water Leaks</option>
-                <option value="Low Water Pressure">Low Water Pressure</option>
-                <option value="Contaminated/Dirty Water">Contaminated/Dirty Water</option>
-              </optgroup>
-              <optgroup label="Electricity">
-                <option value="Power Outages">Power Outages</option>
-                <option value="Downed Power Lines">Downed Power Lines</option>
-                <option value="Electricity Meter Issues">Electricity Meter Issues</option>
-              </optgroup>
-              <optgroup label="Waste Management">
-                <option value="Missed Garbage Collection">Missed Garbage Collection</option>
-                <option value="Illegal Dumping">Illegal Dumping</option>
-                <option value="Overflowing Bins">Overflowing Bins</option>
-                <option value="Broken Refuse Bins">Broken Refuse Bins</option>
-              </optgroup>
-              <optgroup label="Roads & Transport">
-                <option value="Potholes">Potholes</option>
-                <option value="Damaged or Collapsed Roads">Damaged or Collapsed Roads</option>
-                <option value="Missing Road Signs">Missing Road Signs</option>
-                <option value="Faulty Traffic Lights">Faulty Traffic Lights</option>
-                <option value="Poor Stormwater Drainage">Poor Stormwater Drainage</option>
-              </optgroup>
-              <optgroup label="Environmental & Sanitation Issues">
-                <option value="Sewage Spills">Sewage Spills</option>
-                <option value="Blocked Drains">Blocked Drains</option>
-                <option value="Flooding">Flooding</option>
-              </optgroup>
-            </select>
-          </fieldset>
+    {/* Category */}
+<section>
+  <label className="block font-semibold mb-2 text-black">Category</label>
+  <select
+    value={form.category}
+    onChange={(e) => setForm({ ...form, category: e.target.value })}
+    className="w-full border rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none"
+    required
+  >
+    <option value="">Select category</option>
 
-          <fieldset>
+    <optgroup label="Water">
+      <option value="No Water Supply">No Water Supply</option>
+      <option value="Water Leaks">Water Leaks</option>
+      <option value="Low Water Pressure">Low Water Pressure</option>
+      <option value="Contaminated/Dirty Water">Contaminated/Dirty Water</option>
+    </optgroup>
+
+    <optgroup label="Electricity">
+      <option value="Power Outages">Power Outages</option>
+      <option value="Downed Power Lines">Downed Power Lines</option>
+      <option value="Electricity Meter Issues">Electricity Meter Issues</option>
+    </optgroup>
+
+    <optgroup label="Waste Management">
+      <option value="Missed Garbage Collection">Missed Garbage Collection</option>
+      <option value="Illegal Dumping">Illegal Dumping</option>
+      <option value="Overflowing Bins">Overflowing Bins</option>
+      <option value="Broken Refuse Bins">Broken Refuse Bins</option>
+    </optgroup>
+
+    <optgroup label="Roads & Transport">
+      <option value="Potholes">Potholes</option>
+      <option value="Damaged or Collapsed Roads">Damaged or Collapsed Roads</option>
+      <option value="Missing Road Signs">Missing Road Signs</option>
+      <option value="Faulty Traffic Lights">Faulty Traffic Lights</option>
+      <option value="Poor Stormwater Drainage">Poor Stormwater Drainage</option>
+    </optgroup>
+
+    <optgroup label="Environmental & Sanitation Issues">
+      <option value="Sewage Spills">Sewage Spills</option>
+      <option value="Blocked Drains">Blocked Drains</option>
+      <option value="Flooding">Flooding</option>
+    </optgroup>
+  </select>
+</section>
+
+
+          {/* Description */}
+          <section>
             <label className="block font-semibold mb-2 text-black">Description</label>
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               className="w-full border rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none"
-              rows={4}
+              rows={3}
               required
             />
-          </fieldset>
+          </section>
 
-          <fieldset>
+          {/* Photo Upload */}
+          <section>
             <label className="block font-semibold mb-2 text-black">Upload Photo</label>
             <input
               type="file"
@@ -189,9 +229,30 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
               onChange={(e) => setForm({ ...form, photo: e.target.files?.[0] || null })}
               className="w-full border rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none"
             />
-          </fieldset>
+          </section>
 
-          <input type="hidden" value={form.created_by} />
+          {/* Address */}
+          <section>
+            <label className="block font-semibold mb-2 text-black">Address</label>
+            <input
+              type="text"
+              value={form.address}
+              readOnly
+              placeholder="Click on the map to select location"
+              className="w-full border rounded-xl px-4 py-3 text-black bg-gray-100 cursor-not-allowed"
+            />
+          </section>
+
+          {/* Coordinates */}
+          <section>
+            <label className="block font-semibold mb-2 text-black">Coordinates</label>
+            <input
+              type="text"
+              value={form.coords}
+              readOnly
+              className="w-full border rounded-xl px-4 py-3 text-black bg-gray-100 cursor-not-allowed"
+            />
+          </section>
 
           <button
             type="submit"
@@ -200,7 +261,7 @@ export default function ComplaintsModal({ onClose }: { onClose: () => void }) {
             Submit Complaint
           </button>
         </form>
-      </section>
-    </div>
+      </article>
+    </section>
   );
 }

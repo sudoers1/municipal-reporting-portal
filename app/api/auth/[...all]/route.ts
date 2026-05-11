@@ -2,3 +2,4 @@ import { auth } from "@/lib/auth"; //point to your auth file (when we merge auth
 import { toNextJsHandler } from "better-auth/next-js";
 
 export const { GET, POST } = toNextJsHandler(auth);
+console.log("AUTH ROUTE LOADED");

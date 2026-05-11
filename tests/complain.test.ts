@@ -3,6 +3,7 @@ import {
   insertComplaintwIMG,
   readComplaints,
   readoneComplaint,
+  readMyComplaints,
 } from "@/lib/db/complaints";
 
 import { sql } from "@/lib/db/neon";
@@ -62,5 +63,16 @@ describe("readoneComplaint", () => {
     const result = await readoneComplaint("999");
 
     expect(result).toBeNull();
+  });
+});
+
+describe("readMyComplaints", () => {
+  it("fetches my complaints", async () => {
+    (sql as jest.Mock).mockResolvedValue([{ id: 1 }, { id: 2 }]);
+
+    const result = await readMyComplaints("1");
+
+    expect(sql).toHaveBeenCalled();
+    expect(result).toHaveLength(2);
   });
 });

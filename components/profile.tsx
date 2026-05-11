@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import Link from "next/link";
 
 export default function ProfilePopup({ onClose }: { onClose: () => void }) {
   const { data: session } = authClient.useSession();
@@ -10,8 +11,9 @@ export default function ProfilePopup({ onClose }: { onClose: () => void }) {
 
   const handleLogout = async () => {
     await authClient.signOut();
-    onClose();
     router.push("/");
+    onClose();
+    
   };
 
   return (
@@ -44,6 +46,38 @@ export default function ProfilePopup({ onClose }: { onClose: () => void }) {
           {user?.role}
         </p>
 
+
+        {/* Worker Dashboard link */}
+          {user?.role?.toLowerCase() === "worker" && (
+          <Link
+          href="/worker"
+          className="w-full mt-2 px-4 py-2 rounded-xl text-center bg-green-500 text-white font-semibold hover:bg-green">
+
+          View Worker Dashboard
+          </Link>
+        )
+        }
+
+        {/* Admin Dashboard link */}
+          {user?.role?.toLowerCase() === "admin" && (
+          <Link
+          href="/admin"
+          className="w-full mt-2 px-4 py-2 rounded-xl text-center bg-green-500 text-white font-semibold hover:bg-green">
+
+          View Admin Dashboard
+          </Link>
+        )
+        }
+
+
+        <Link
+          href="/profilefull"
+          className="w-full mt-2 px-4 py-2 rounded-xl text-center bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-colors"
+        >
+          View Full Profile
+        </Link>
+
+        {/* Logout */}
         <button
           onClick={handleLogout}
           className="w-full mt-2 px-4 py-2 rounded-xl bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors"
