@@ -20,12 +20,14 @@ jest.mock("@/lib/auth/server", () => ({
 jest.mock("next/server", () => ({
   NextResponse: {
     json: (body: any, init?: ResponseInit) => {
-      return new Response(JSON.stringify(body), {
+      return {
         status: init?.status ?? 200,
         headers: {
           "content-type": "application/json",
         },
-      });
+        json: async () => body,
+        text: async () => JSON.stringify(body),
+      };
     },
   },
 }));
@@ -44,11 +46,16 @@ const makeRequest = (
   method: string = "GET",
   body?: unknown
 ): Request => {
-  return new Request(url, {
+  return {
+    url,
     method,
-    body: body ? JSON.stringify(body) : undefined,
-    headers: body ? { "content-type": "application/json" } : undefined,
-  });
+    headers: body
+      ? {
+          "content-type": "application/json",
+        }
+      : {},
+    json: jest.fn().mockResolvedValue(body ?? {}),
+  } as unknown as Request;
 };
 
 const readJson = async (res: Response) => {

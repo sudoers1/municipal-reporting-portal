@@ -17,6 +17,12 @@ jest.mock("@/lib/auth", () => ({
 
 const mockGetSession = auth.api.getSession as unknown as jest.Mock;
 
+const createMockRequest = (headers: Record<string, string> = {}) => {
+  return {
+    headers,
+  } as unknown as Request;
+};
+
 describe("auth server helpers", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -24,10 +30,8 @@ describe("auth server helpers", () => {
 
   describe("getSession", () => {
     test("calls auth.api.getSession with request headers", async () => {
-      const req = new Request("http://localhost/api/test", {
-        headers: {
-          cookie: "session=test-cookie",
-        },
+      const req = createMockRequest({
+        cookie: "session=test-cookie",
       });
 
       const mockSession = {
@@ -51,7 +55,7 @@ describe("auth server helpers", () => {
 
   describe("requireSession", () => {
     test("throws Unauthorized when session is null", async () => {
-      const req = new Request("http://localhost/api/test");
+      const req = createMockRequest();
 
       mockGetSession.mockResolvedValueOnce(null);
 
@@ -59,7 +63,7 @@ describe("auth server helpers", () => {
     });
 
     test("throws Unauthorized when session is undefined", async () => {
-      const req = new Request("http://localhost/api/test");
+      const req = createMockRequest();
 
       mockGetSession.mockResolvedValueOnce(undefined);
 
@@ -67,7 +71,7 @@ describe("auth server helpers", () => {
     });
 
     test("returns session when session exists", async () => {
-      const req = new Request("http://localhost/api/test");
+      const req = createMockRequest();
 
       const mockSession = {
         user: {
@@ -126,7 +130,7 @@ describe("auth server helpers", () => {
 
   describe("withAuth", () => {
     test("runs handler when user is authenticated and has required role", async () => {
-      const req = new Request("http://localhost/api/test");
+      const req = createMockRequest();
 
       const mockSession = {
         user: {
@@ -135,11 +139,11 @@ describe("auth server helpers", () => {
         },
       };
 
-      const handler = jest.fn().mockResolvedValue(
-        new Response(JSON.stringify({ success: true }), {
-          status: 200,
-        })
-      );
+      const mockResponse = {
+        status: 200,
+      } as Response;
+
+      const handler = jest.fn().mockResolvedValue(mockResponse);
 
       mockGetSession.mockResolvedValueOnce(mockSession);
 
@@ -152,7 +156,7 @@ describe("auth server helpers", () => {
     });
 
     test("throws Unauthorized when user is not authenticated", async () => {
-      const req = new Request("http://localhost/api/test");
+      const req = createMockRequest();
 
       const handler = jest.fn();
 
@@ -165,7 +169,7 @@ describe("auth server helpers", () => {
     });
 
     test("throws Forbidden when user does not have required role", async () => {
-      const req = new Request("http://localhost/api/test");
+      const req = createMockRequest();
 
       const mockSession = {
         user: {
