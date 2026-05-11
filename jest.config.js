@@ -47,6 +47,7 @@ module.exports = {
     "!components/login.tsx",
     "!components/signup.tsx",
     "!**/*.d.ts",
+    "!lib/notifications/types.ts"
   ],
 
   // Coverage thresholds
