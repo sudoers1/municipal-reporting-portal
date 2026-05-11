@@ -12,7 +12,7 @@ export default function Tiles(){
             <section className="bg-brand-secondary/50 text-2xl w-64 h-fit p-4 flex flex-col justify-center items-center gap-4 rounded-md shadow-2xl"> 
                 <h2 className="font-semibold text-3xl">Manage</h2>
                 <p className="text-sm">Oversee your team by managing system users and field workers to ensure resources are effectively distributed across all active projects.</p>
-                <button className="bg-brand-secondary/50 px-4 py-1 rounded-md shadow-sm"><a href="">Users</a></button>
+                <button className="bg-brand-secondary/50 px-4 py-1 rounded-md shadow-sm"><a href="/admin/usermanagement">Users</a></button>
                 <button className="bg-brand-secondary/50 px-4 py-1 rounded-md shadow-sm"><a href="">workers</a></button>
             </section>
         </main>
