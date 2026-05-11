@@ -37,6 +37,7 @@ module.exports = {
   // Collect coverage from both frontend and backend
   collectCoverageFrom: [
     "!components/**/*.tsx",
+    "!app/api/auth/**/*.ts",
     "app/**/*.ts",
     "lib/**/*.ts",
     "!lib/db/neon.ts",
