@@ -27,6 +27,9 @@ jobs:
       - name: Run tests with coverage
         run: npm run test:badges
         continue-on-error: true
+        
+      - name: Remove badges folder
+        run: rm -rf badges
 
       - name: Commit badges
         run: |
