@@ -143,7 +143,7 @@ export default function ComplaintsModal({
   }
 
   return (
-    <section className="fixed inset-0 h-full w-1/2 flex items-center justify-center z-50">
+    <section className="fixed inset-0 h-full w-1/2 flex items-center bg-transparent justify-center z-50">
       <article className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-8 relative max-h-screen overflow-y-auto">
         <button
           onClick={onClose}

@@ -6,35 +6,13 @@ import * as turf from "@turf/turf";
 import "leaflet/dist/leaflet.css";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
 
-// Status-based icons
+// Status-based icons (no Pending)
 const statusIcons: Record<string, Icon> = {
-  Pending: L.icon({
-    iconUrl: "/complaintpins/marker-pending.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [0, -41],
-  }),
-  Acknowledged: L.icon({
-    iconUrl: "/complaintpins/marker-acknowledged.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [0, -41],
-  }),
-  "In Progress": L.icon({
-    iconUrl: "/complaintpins/marker-inprogress.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [0, -41],
-  }),
-  Resolved: L.icon({
-    iconUrl: "/complaintpins/marker-resolved.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [0, -41],
-  }),
+  Acknowledged: L.icon({ iconUrl: "/complaintpins/marker-acknowledged.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
+  "In Progress": L.icon({ iconUrl: "/complaintpins/marker-inprogress.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
+  Resolved: L.icon({ iconUrl: "/complaintpins/marker-resolved.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
 };
 
-// Default icon for new complaint marker
 const defaultIcon = L.icon({
   iconUrl: "/marker-icon.png",
   iconRetinaUrl: "/marker-icon-2x.png",
@@ -46,7 +24,7 @@ L.Marker.prototype.options.icon = defaultIcon;
 
 type WardFeature = GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon>;
 
-interface Complaint {
+export interface Complaint {
   complaintid: number;
   status: string;
   issuetype: string;
@@ -60,12 +38,16 @@ interface Props {
   wardsUrl?: string;
   complaintMode?: boolean;
   onLocationSelect?: (coords: { lat: number; lng: number; address?: string }) => void;
+  onComplaintsLoad?: (complaints: Complaint[]) => void;
+  onComplaintSelect?: (complaint: Complaint | null) => void;
 }
 
 export default function WardMap({
   wardsUrl = "/api/wards",
   complaintMode = false,
   onLocationSelect,
+  onComplaintsLoad,
+  onComplaintSelect,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -114,6 +96,7 @@ export default function WardMap({
       markerRef.current = null;
     };
   }, []);
+
   // Auto-detect ward from geolocation
   useEffect(() => {
     if (complaintMode) return;
@@ -133,7 +116,7 @@ export default function WardMap({
     return () => { cancelled = true; };
   }, [complaintMode, wardsUrl, zoomToWard]);
 
-  // Click handler
+  // Click handler for selecting ward by clicking map
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -173,7 +156,7 @@ export default function WardMap({
     if (complaintMode || !selectedWard) return;
     L.geoJSON(selectedWard, {
       style: {
-        color: "#1e40af",
+        color: "#20b2aa",
         weight: 2,
         opacity: 0.8,
         fillColor: "#20b2aa",
@@ -182,21 +165,27 @@ export default function WardMap({
     }).addTo(geojsonLayer);
   }, [selectedWard, complaintMode]);
 
-  // Complaint pins (filtered by backend)
+  // Complaint pins (filtered by backend, no Pending)
   useEffect(() => {
     const pinsLayer = pinsLayerRef.current;
     const map = mapRef.current;
     if (!pinsLayer || !map) return;
     pinsLayer.clearLayers();
+
     if (!complaintMode && selectedWard) {
-      fetch("/api/complaintpins", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ward: selectedWard }),
-      })
-        .then((res) => res.json())
-        .then((complaints: Complaint[]) => {
+      (async () => {
+        try {
+          const res = await fetch("/api/complaintpins", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ward: selectedWard }),
+          });
+          const complaints: Complaint[] = await res.json();
+
+          onComplaintsLoad?.(complaints);
+
           complaints.forEach((c) => {
+            if (c.status === "Pending") return; // skip pending
             const [latStr, lngStr] = c.coords.split(",").map((s) => s.trim());
             const lat = parseFloat(latStr);
             const lng = parseFloat(lngStr);
@@ -204,38 +193,21 @@ export default function WardMap({
               const marker = L.marker([lat, lng], {
                 icon: statusIcons[c.status] || defaultIcon,
               }).addTo(pinsLayer);
-              const popupContent = `
-                <div style="font-family: sans-serif; font-size: 14px; line-height: 1.4; max-width: 220px;">
-                  <div style="font-weight: bold; color: #1e40af; margin-bottom: 6px;">
-                    ${c.issuetype}
-                  </div>
-                  <div style="margin-bottom: 6px;">${c.details}</div>
-                  <div style="color: #374151; margin-bottom: 6px;">
-                    <strong>Status:</strong> ${c.status}
-                  </div>
-                  ${c.address ? `<div style="color: #6b7280; margin-bottom: 6px;">${c.address}</div>` : ""}
-                  ${c.image ? `<div style="margin-top: 8px;"><img src="${c.image}" width="120" style="border-radius: 6px;"/></div>` : ""}
-                </div>
-              `;
-              marker.bindPopup(popupContent);
               marker.on("click", () => {
-                const zoom = 15;
-                const pxPoint = map.project([lat, lng], zoom);
-                const offsetPx = pxPoint.subtract([0, 200]);
-                const offsetLatLng = map.unproject(offsetPx, zoom);
-                map.setView(offsetLatLng, zoom, { animate: true });
+                onComplaintSelect?.(c);
               });
             }
           });
-        })
-        .catch((err) => console.error("Error loading complaint pins:", err));
+        } catch (err) {
+          console.error("Error loading complaint pins:", err);
+        }
+      })();
     }
-  }, [complaintMode, selectedWard]);
+  }, [selectedWard]); // only rerun when ward changes
 
   return (
-    <div className="relative w-full h-[500px] rounded-xl overflow-hidden shadow-lg">
+    <section className="relative w-full h-[400px] rounded-xl overflow-hidden shadow-lg">
       <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
-    </div>
+    </section>
   );
 }
-
