@@ -1,3 +1,4 @@
+import { Priority } from "@/lib/priority";
 import { Report } from "@/lib/report";
 import { Status } from "@/lib/status";
 
@@ -6,12 +7,22 @@ describe("Status enum", () => {
     expect(Status.Acknowledged).toBe("Acknowledged");
     expect(Status.InProgress).toBe("In progress");
     expect(Status.Resolved).toBe("Resolved");
+    expect(Status.Pending).toBe("Pending")
   });
 
   test("has exactly three statuses", () => {
-    expect(Object.keys(Status)).toHaveLength(3);
+    expect(Object.keys(Status)).toHaveLength(4);
   });
 });
+
+describe("Priority enum", () => {
+  test("has correct values", () => {
+    expect(Priority.Critical).toBe("Critical");
+    expect(Priority.High).toBe("High");
+    expect(Priority.Medium).toBe("Medium");
+    expect(Priority.Low).toBe("Low");
+  });
+})
 
 describe("Report", () => {
   const creationTime = new Date("2024-01-01");
@@ -22,6 +33,7 @@ describe("Report", () => {
     issuetype: string;
     creationtime: Date;
     userid: string;
+    priority: Priority;
     image: string;
     details: string;
   }>) {
@@ -31,6 +43,7 @@ describe("Report", () => {
       overrides?.issuetype ?? "Potholes",
       overrides?.creationtime ?? creationTime,
       overrides?.userid ?? "user1",
+      overrides?.priority ?? Priority.Low,
       overrides?.image,
       overrides?.details,
     );
@@ -61,6 +74,11 @@ describe("Report", () => {
       const report = makeReport({ userid: "user42" });
       expect(report.getUserID()).toBe("user42");
     });
+
+    test("getPriority returns correct value", () => {
+      const report = makeReport({priority: Priority.Low})
+      expect(report.getPriority()).toBe(Priority.Low);
+    })
   });
 
   describe("optional fields", () => {
@@ -128,6 +146,11 @@ describe("Report", () => {
       report.setUserID("user99");
       expect(report.getUserID()).toBe("user99");
     });
+    test("setPriority updates priority", () => {
+      const report = makeReport();
+      report.setPriority(Priority.Low);
+      expect(report.getPriority()).toBe(Priority.Low);
+    })
   });
 
   describe("status transitions", () => {
