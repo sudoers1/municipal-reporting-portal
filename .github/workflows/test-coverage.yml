@@ -24,9 +24,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Remove badges folder
-        run: rm -rf badges
-
 
       - name: Run tests with coverage
         run: npm run test:badges
