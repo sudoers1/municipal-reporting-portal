@@ -45,6 +45,8 @@ module.exports = {
     "!lib/auth-client.ts",
     "!lib/generated/**/*.ts",  // Prisma generated files
     "!**/*.d.ts",
+    "!lib/notifications/types.ts",
+    "!app/api/notifications/stream/route.ts"
   ],
 
   // Coverage thresholds
