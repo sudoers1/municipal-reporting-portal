@@ -14,6 +14,11 @@ const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
 export default function DashboardPage() {
   const [showComplaints, setShowComplaints] = useState(false);
   const [clickedLocation, setClickedLocation] = useState<{ lat: number; lng: number; address?: string } | null>(null);
+  const [clickedMunicipality, setClickedMunicipality] = useState<{ municipality:string,ward:string } | null>(null);
+
+  const getMunicipality = (municipality: string,ward:string) => {
+  setClickedMunicipality({municipality,ward});
+};
 
   const { data: session, isPending } = authClient.useSession();
   const name = session?.user?.name;
@@ -82,6 +87,7 @@ export default function DashboardPage() {
             <WardMap
               complaintMode={showComplaints}
               onLocationSelect={(coords) => setClickedLocation(coords)}
+              onMunicipalSelect={getMunicipality}
             />
           </aside>
         </section>
@@ -91,6 +97,7 @@ export default function DashboardPage() {
           <ComplaintsModal
             onClose={() => setShowComplaints(false)}
             selectedLocation={clickedLocation}
+            clickedMunicipality={clickedMunicipality}
           />
         )}
       </section>
