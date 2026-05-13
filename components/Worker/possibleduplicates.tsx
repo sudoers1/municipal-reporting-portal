@@ -21,6 +21,7 @@ type Report = {
 type PossibleDuplicate = {
   id: number;
   distance_meters: number | string | null;
+  review_status: string;
 
   original_id: number;
   original_issuetype: string;
@@ -46,14 +47,14 @@ type PossibleDuplicatesCardProps = {
   duplicates: PossibleDuplicate[];
   onConfirm: (id: number) => void;
   onReject: (id: number) => void;
-  onSelectReport: (report: Report) => void;
+  onViewReview: (review: PossibleDuplicate) => void;
 };
 
 export default function PossibleDuplicatesCard({
   duplicates,
   onConfirm,
   onReject,
-  onSelectReport,
+  onViewReview,
 }: PossibleDuplicatesCardProps) {
   return (
     <Card title="Possible Duplicate Reports">
@@ -83,7 +84,7 @@ export default function PossibleDuplicatesCard({
               <section className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                 <button
                   type="button"
-                  onClick={() => onSelectReport(item.original_report)}
+                  onClick={() => onViewReview(item)}
                   className="text-left bg-black/20 rounded-lg p-3 border border-white/10 hover:bg-black/30 hover:border-white/30 transition"
                 >
                   <h4 className="text-sm font-semibold mb-1">
@@ -109,7 +110,7 @@ export default function PossibleDuplicatesCard({
 
                 <button
                   type="button"
-                  onClick={() => onSelectReport(item.duplicate_report)}
+                  onClick={() => onViewReview(item)}
                   className="text-left bg-black/20 rounded-lg p-3 border border-white/10 hover:bg-black/30 hover:border-white/30 transition"
                 >
                   <h4 className="text-sm font-semibold mb-1">
