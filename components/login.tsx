@@ -17,16 +17,16 @@ export default function LoginModal({
 
   return (
     <section
-      className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50"
+      className="fixed inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm z-50"
       onClick={onClose}
     >
       <article
-        className="bg-white/30 dark:bg-zinc-800/70 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl w-96 relative p-6"
+        className="bg-white/30  backdrop-blur-md border border-white/20 rounded-xl shadow-2xl w-96 relative p-6"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
-          className="absolute top-3 right-3 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white text-xl font-bold"
+          className="absolute top-3 right-3 text-gray-700  text-xl font-bold"
           onClick={onClose}
         >
           ×

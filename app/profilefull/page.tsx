@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import ComplaintsTable from "@/components/complaintsTable";
+import ComplaintViewer from "@/components/complaintView";
 import { readMyComplaints } from "@/lib/db/complaints";
 import Spinner from "@/components/spinner";
 
@@ -11,6 +12,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const { data: session, isPending } = authClient.useSession();
   const [complaints, setComplaints] = useState<Record<string, any>[]>([]);
+  const [selectedComplaint, setSelectedComplaint] = useState<Record<string, any> | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -29,7 +31,7 @@ export default function Home() {
 
   if (isPending || loading) {
     return (
-      <main className="w-screen min-h-screen bg-linear-to-br from-teal-200 via-white to-teal-300">
+      <main className="w-screen min-h-screen bg-gradient-to-br from-teal-200 via-white to-teal-300">
         <section className="flex flex-col items-center justify-center min-h-screen gap-4">
           <Spinner splash="Profile" />
         </section>
@@ -87,10 +89,18 @@ export default function Home() {
             My Reports
           </h2>
           <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-4">
-            <ComplaintsTable complaints={complaints} />
+            <ComplaintsTable complaints={complaints} onSelectComplaint={setSelectedComplaint} />
           </article>
         </section>
       </section>
+
+      {/* Complaint Viewer Modal */}
+      {selectedComplaint && (
+        <ComplaintViewer
+          complaint={selectedComplaint}
+          onClose={() => setSelectedComplaint(null)}
+        />
+      )}
     </main>
   );
 }

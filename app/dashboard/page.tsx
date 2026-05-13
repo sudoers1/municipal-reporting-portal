@@ -40,7 +40,7 @@ export default function DashboardPage() {
     >
       <section className="p-6 space-y-8 min-h-screen">
         <header>
-          <h1 className="text-3xl md:text-5xl font-bold text-gray-900 text-center drop-shadow-md">
+          <h1 className="text-3xl md:text-5xl font-bold text-gray-900 text-center drop-shadow-mlg">
             {name}&apos;s Dashboard
           </h1>
         </header>

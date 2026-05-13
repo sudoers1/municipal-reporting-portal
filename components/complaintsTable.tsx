@@ -13,7 +13,6 @@ import {
   CellContext,
   Row,
 } from "@tanstack/react-table";
-import ComplaintViewer from "@/components/complaintView";
 import ComplaintsFilters from "@/components/complaintsFilters";
 
 type Complaint = {
@@ -38,19 +37,13 @@ const dateRangeFilter = (row: Row<Complaint>, columnId: string, value: any) => {
 const dateCell = (info: CellContext<Complaint, string>) =>
   new Date(info.getValue()).toLocaleString();
 
-const actionsCell = (setSelected: (c: Complaint) => void) => (
-  info: CellContext<Complaint, any>
-) => (
-  <button
-    onClick={() => setSelected(info.row.original)}
-    className="px-3 py-1 rounded-lg bg-teal-500/80 text-white text-sm font-semibold hover:bg-teal-500 transition-colors shadow-sm"
-  >
-    View
-  </button>
-);
-
-export default function ComplaintsTable({ complaints }: { complaints: Record<string, any>[] }) {
-  const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
+export default function ComplaintsTable({
+  complaints,
+  onSelectComplaint,
+}: {
+  complaints: Record<string, any>[];
+  onSelectComplaint: (c: Complaint) => void;
+}) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [dateRange, setDateRange] = useState<{ start?: string; end?: string }>({});
@@ -81,10 +74,7 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
         size: 180,
         maxSize: 200,
         cell: (info: CellContext<Complaint, string>) => (
-          <span
-            className="truncate max-w-[160px]"
-            title={info.getValue()}
-          >
+          <span className="truncate max-w-[160px]" title={info.getValue()}>
             {info.getValue()}
           </span>
         ),
@@ -121,11 +111,18 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
       {
         id: "actions",
         header: "",
-        cell: actionsCell(setSelectedComplaint),
+        cell: (info: CellContext<Complaint, any>) => (
+          <button
+            onClick={() => onSelectComplaint(info.row.original)}
+            className="px-3 py-1 rounded-lg bg-teal-500/80 text-white text-sm font-semibold hover:bg-teal-500 transition-colors shadow-sm"
+          >
+            View
+          </button>
+        ),
         size: 80,
       },
     ],
-    []
+    [onSelectComplaint]
   );
 
   const table = useReactTable({
@@ -201,14 +198,6 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
           </tbody>
         </table>
       </article>
-
-      {/* Complaint Viewer */}
-      {selectedComplaint && (
-        <ComplaintViewer
-          complaint={selectedComplaint}
-          onClose={() => setSelectedComplaint(null)}
-        />
-      )}
     </section>
   );
 }

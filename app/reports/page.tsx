@@ -2,12 +2,14 @@
 
 import { readComplaints } from "@/lib/db/complaints";
 import ComplaintsTable from "@/components/complaintsTable";
+import ComplaintViewer from "@/components/complaintView";
 import { useState, useEffect } from "react";
 import Spinner from "@/components/spinner";
 
 export default function Reports() {
   const [complaints, setComplaints] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedComplaint, setSelectedComplaint] = useState<Record<string, any> | null>(null);
 
   useEffect(() => {
     async function getComplaints() {
@@ -38,9 +40,17 @@ export default function Reports() {
         </header>
 
         <article className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5">
-          <ComplaintsTable complaints={complaints} />
+          <ComplaintsTable complaints={complaints} onSelectComplaint={setSelectedComplaint} />
         </article>
       </section>
+
+      {selectedComplaint && (
+        <ComplaintViewer
+          complaint={selectedComplaint}
+          onClose={() => setSelectedComplaint(null)}
+        />
+      )}
     </main>
   );
 }
+
