@@ -98,7 +98,7 @@ export default function PendingVerificationsTable({
       <section className="flex gap-4 justify-center items-center px-2">
         {/* <h2 className="text-xl font-medium ">Approved Verifications</h2> */}
         {/* <h2 className="text-3xl p-4">Approved Requests</h2> */}
-        <p className=" text-3xl p-8">{data.length} Workers Approved</p>
+        <p className=" text-3xl p-8">{data.length} Requests Pending</p>
       </section>
 
       

@@ -50,7 +50,7 @@ export default function ApprovedVerificationsTable({
           </section>
         )
       },
-      { accessorKey: "email", header: "Email Address" },
+      { accessorKey: "email", header: "Email" },
       {
         accessorKey: "approved",
         header: "Status",
