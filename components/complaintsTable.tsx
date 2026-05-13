@@ -22,9 +22,8 @@ type Complaint = {
   status: string;
   issuetype: string;
   creationtime: string;
-  image?: string;      // for the viewer
-  details: string;    // for the viewer
-  // any other fields from the original complaint
+  image?: string;
+  details: string;
 };
 
 const dateRangeFilter = (row: Row<Complaint>, columnId: string, value: any) => {
@@ -36,14 +35,15 @@ const dateRangeFilter = (row: Row<Complaint>, columnId: string, value: any) => {
   return true;
 };
 
-
 const dateCell = (info: CellContext<Complaint, string>) =>
   new Date(info.getValue()).toLocaleString();
 
-const actionsCell = (setSelected: (c: Complaint) => void) => (info: CellContext<Complaint, any>) => (
+const actionsCell = (setSelected: (c: Complaint) => void) => (
+  info: CellContext<Complaint, any>
+) => (
   <button
     onClick={() => setSelected(info.row.original)}
-    className="bg-brand-accent text-black px-3 py-1 rounded hover:bg-brand-accent/70"
+    className="px-3 py-1 rounded-lg bg-teal-500/80 text-white text-sm font-semibold hover:bg-teal-500 transition-colors shadow-sm"
   >
     View
   </button>
@@ -62,8 +62,8 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
       status: d.status,
       issuetype: d.issuetype,
       creationtime: d.creationtime,
-      image: d.image,          // preserve image URL
-      details: d.details,      // preserve description
+      image: d.image,
+      details: d.details,
     }));
     return {
       data: mapped,
@@ -74,11 +74,22 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
 
   const columns = useMemo(
     () => [
-      { accessorKey: "municipality", header: "Municipality", filterFn: filterFns.equals },
-      { accessorKey: "status", header: "Status", filterFn: filterFns.equals},
-      { accessorKey: "issuetype", header: "Issue Type", filterFn: filterFns.equals },
-      { accessorKey: "creationtime", header: "Date", filterFn: dateRangeFilter, cell: dateCell },
-      { id: "actions", header: "", cell: actionsCell(setSelectedComplaint) },
+      {
+        accessorKey: "municipality",
+        header: "Municipality",
+        filterFn: filterFns.equals,
+        size: 180,
+        maxSize: 200,
+        cell: (info) => (
+          <span className="truncate max-w-[160px]" title={info.getValue()}>
+            {info.getValue()}
+          </span>
+        ),
+      },
+      { accessorKey: "status", header: "Status", filterFn: filterFns.equals, size: 120 },
+      { accessorKey: "issuetype", header: "Issue Type", filterFn: filterFns.equals, size: 160 },
+      { accessorKey: "creationtime", header: "Date", filterFn: dateRangeFilter, cell: dateCell, size: 160 },
+      { id: "actions", header: "", cell: actionsCell(setSelectedComplaint), size: 80 },
     ],
     []
   );
@@ -98,56 +109,62 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
     table.getColumn("creationtime")?.setFilterValue(dateRange);
   }, [dateRange, table]);
 
- 
-
   return (
-    <section className="flex flex-col gap-3">
-      <ComplaintsFilters
-        table={table}
-        municipalityOptions={municipalityOptions}
-        issueTypeOptions={issueTypeOptions}
-        dateRange={dateRange}
-        setDateRange={setDateRange}
-      />
-      
-      {/*the table*/}
-          <table className="w-[85vw] bg-brand-primary rounded-2xl overflow-hidden text-white">
-            <thead className="bg-brand-accent text-black">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    const sort = header.column.getIsSorted();
-                    return (
-                      <th
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        className="p-3 text-left border-r last:border-r-0 cursor-pointer"
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
-                        {sort === "asc" ? " ↑" : sort === "desc" ? " ↓" : null}
-                      </th>
-                    );
-                  })}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="border-t hover:bg-brand-secondary border-black">
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="p-3 border-r last:border-r-0 border-black">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <section className="flex flex-col gap-6">
+      {/* Filters */}
+      <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-4">
+        <ComplaintsFilters
+          table={table}
+          municipalityOptions={municipalityOptions}
+          issueTypeOptions={issueTypeOptions}
+          dateRange={dateRange}
+          setDateRange={setDateRange}
+        />
+      </article>
 
+      {/* Table */}
+      <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg overflow-hidden">
+        <table className="w-full table-fixed text-sm text-gray-900">
+          <thead className="bg-teal-500/80 text-white">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  const sort = header.column.getIsSorted();
+                  return (
+                    <th
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      className="p-2 text-left font-semibold cursor-pointer select-none"
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                      {sort === "asc" ? " ↑" : sort === "desc" ? " ↓" : null}
+                    </th>
+                  );
+                })}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr
+                key={row.id}
+                className="border-t border-white/20 hover:bg-white/10 transition-colors"
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="p-2 truncate max-w-[160px]" title={String(cell.getValue())}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </article>
 
+      {/* Complaint Viewer */}
       {selectedComplaint && (
         <ComplaintViewer
           complaint={selectedComplaint}

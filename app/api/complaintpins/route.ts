@@ -1,34 +1,28 @@
 // app/api/complaintpins/route.ts
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db/neon";
-import * as turf from "@turf/turf";
 
 export async function POST(req: Request) {
   try {
     const { ward } = await req.json();
     if (!ward) {
-      return NextResponse.json({ error: "Ward polygon required" }, { status: 400 });
+      return NextResponse.json({ error: "Ward object required" }, { status: 400 });
     }
 
-    // Fetch all complaints from DB
+    // Extract WardID from the selected ward's properties
+    const wardId = ward.properties?.WardID;
+    if (!wardId) {
+      return NextResponse.json({ error: "WardID missing in ward properties" }, { status: 400 });
+    }
+
+    // Fetch complaints that match this ward_id directly
     const complaints = await sql`
-      SELECT complaintid, status, issuetype, details, image, coords, address
+      SELECT complaintid, status, issuetype, details, image, coords, address, ward_id, municipality
       FROM complaints
+      WHERE ward_id = ${wardId}
     `;
 
-    // Filter server-side
-    const filtered = complaints.filter((c: any) => {
-      if (!c.coords) return false;
-      const [latStr, lngStr] = c.coords.split(",").map((s: string) => s.trim());
-      const lat = parseFloat(latStr);
-      const lng = parseFloat(lngStr);
-      if (isNaN(lat) || isNaN(lng)) return false;
-
-      const point = turf.point([lng, lat]);
-      return turf.booleanPointInPolygon(point, ward);
-    });
-
-    return NextResponse.json(filtered);
+    return NextResponse.json(complaints);
   } catch (error) {
     console.error("Error fetching complaint pins:", error);
     return NextResponse.json(

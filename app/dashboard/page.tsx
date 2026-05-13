@@ -41,19 +41,13 @@ export default function DashboardPage() {
       <section className="p-6 space-y-8 min-h-screen">
         <header>
           <h1 className="text-3xl md:text-5xl font-bold text-gray-900 text-center drop-shadow-md">
-            Hello, {name}!
+            {name}&apos;s Dashboard
           </h1>
-          <p className="text-lg text-gray-700 max-w-3xl mx-auto text-center mt-4">
-            Welcome to the Municipal Portal Dashboard. You can log complaints, track progress, and stay informed about your ward.
-          </p>
         </header>
 
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 drop-shadow-sm">
-          Dashboard
-        </h2>
 
         {/* KPI Cards */}
-        <ResidentKPICards complaints={complaints} />
+        <ResidentKPICards complaints={complaints}/>
 
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left tile: complaints list */}

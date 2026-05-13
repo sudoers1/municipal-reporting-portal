@@ -4,7 +4,7 @@ import type { Complaint } from "@/components/wardmap";
 export default function ResidentKPICards({ complaints = [] }: { complaints: Complaint[] }) {
   // Filter complaints by status
   const resolved = complaints.filter(c => c.status === "Resolved").length;
-  const inProgress = complaints.filter(c => c.status === "In Progress").length;
+  const inProgress = complaints.filter(c => c.status === "In progress").length;
   const acknowledged = complaints.filter(c => c.status === "Acknowledged").length;
 
   const stats = [

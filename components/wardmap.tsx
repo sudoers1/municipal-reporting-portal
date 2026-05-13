@@ -8,9 +8,9 @@ import { OpenStreetMapProvider } from "leaflet-geosearch";
 
 // Status-based icons (no Pending)
 const statusIcons: Record<string, Icon> = {
-  Acknowledged: L.icon({ iconUrl: "/complaintpins/marker-acknowledged.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
-  "In Progress": L.icon({ iconUrl: "/complaintpins/marker-inprogress.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
-  Resolved: L.icon({ iconUrl: "/complaintpins/marker-resolved.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
+  Acknowledged: L.icon({ iconUrl: "/complaintpins/marker-acknowledgedv2.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
+  "In Progress": L.icon({ iconUrl: "/complaintpins/marker-inprogressv2.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
+  Resolved: L.icon({ iconUrl: "/complaintpins/marker-resolvedv2.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
 };
 
 const defaultIcon = L.icon({
@@ -37,10 +37,17 @@ export interface Complaint {
 interface Props {
   wardsUrl?: string;
   complaintMode?: boolean;
-  onLocationSelect?: (coords: { lat: number; lng: number; address?: string }) => void;
+  onLocationSelect?: (coords: {
+    lat: number;
+    lng: number;
+    address?: string;
+    ward_id?: string;
+    municipality?: string;
+  }) => void;
   onComplaintsLoad?: (complaints: Complaint[]) => void;
   onComplaintSelect?: (complaint: Complaint | null) => void;
 }
+
 
 export default function WardMap({
   wardsUrl = "/api/wards",
@@ -80,7 +87,7 @@ export default function WardMap({
     if (!containerRef.current || mapRef.current) return;
     const map = L.map(containerRef.current).setView([-26.2041, 28.0473], 10);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
+      maxZoom: 24,
       attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
     const geojsonLayer = L.layerGroup().addTo(map);
@@ -116,37 +123,51 @@ export default function WardMap({
     return () => { cancelled = true; };
   }, [complaintMode, wardsUrl, zoomToWard]);
 
-  // Click handler for selecting ward by clicking map
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    const clickHandler = async (e: L.LeafletMouseEvent): Promise<void> => {
-      const { lat, lng } = e.latlng;
-      if (complaintMode) {
-        let address = "";
-        try {
-          const results = await provider.search({ query: `${lat}, ${lng}` });
-          address = results[0]?.label || "";
-        } catch {
-          address = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-        }
-        onLocationSelect?.({ lat, lng, address });
-        if (markerRef.current) markerRef.current.setLatLng([lat, lng]);
-        else markerRef.current = L.marker([lat, lng]).addTo(map);
-        return;
+// Click handler for selecting ward or placing complaint pin
+useEffect(() => {
+  const map = mapRef.current;
+  if (!map) return;
+  const clickHandler = async (e: L.LeafletMouseEvent): Promise<void> => {
+    const { lat, lng } = e.latlng;
+    if (complaintMode) {
+      let address = "";
+      try {
+        const results = await provider.search({ query: `${lat}, ${lng}` });
+        address = results[0]?.label || "";
+      } catch {
+        address = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
       }
+      // Fetch ward info for metadata
       try {
         const res = await fetch(`${wardsUrl}?lat=${lat}&lng=${lng}`);
-        if (!res.ok) return;
-        const ward = (await res.json()) as WardFeature;
-        zoomToWard(ward);
-      } catch (err) {
-        console.error("Error fetching ward:", err);
+        const ward = await res.json();
+        onLocationSelect?.({
+          lat,
+          lng,
+          address,
+          ward_id: ward.properties?.WardID,
+          municipality: ward.properties?.Municipali,
+        });
+      } catch {
+        onLocationSelect?.({ lat, lng, address });
       }
-    };
-    map.on("click", clickHandler);
-    return () => { map.off("click", clickHandler); };
-  }, [complaintMode, onLocationSelect, provider, wardsUrl, zoomToWard]);
+      if (markerRef.current) markerRef.current.setLatLng([lat, lng]);
+      else markerRef.current = L.marker([lat, lng]).addTo(map);
+      return;
+    }
+    try {
+      const res = await fetch(`${wardsUrl}?lat=${lat}&lng=${lng}`);
+      if (!res.ok) return;
+      const ward = (await res.json()) as WardFeature;
+      zoomToWard(ward);
+    } catch (err) {
+      console.error("Error fetching ward:", err);
+    }
+  };
+  map.on("click", clickHandler);
+  return () => { map.off("click", clickHandler); };
+}, [complaintMode, onLocationSelect, provider, wardsUrl, zoomToWard]);
+
 
   // Update ward polygons
   useEffect(() => {

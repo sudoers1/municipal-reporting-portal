@@ -21,34 +21,18 @@ async function uploadHandler(file: File) {
 }
 
 
-async function getCurrentCoords(): Promise<{
-      latitude: number;
-      longitude: number;
-    }> {
-      return new Promise((resolve, reject) => {
-        if (!navigator.geolocation) {
-          reject(new Error("Geolocation is not supported."));
-          return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            resolve({
-              latitude: pos.coords.latitude,
-              longitude: pos.coords.longitude,
-            });
-          },
-          reject
-        );
-      });
-}
-
 export default function ComplaintsModal({
   onClose,
   selectedLocation,
 }: {
   onClose: () => void;
-  selectedLocation?: { lat: number; lng: number; address?: string } | null;
+  selectedLocation?: {
+    lat: number;
+    lng: number;
+    address?: string;
+    ward_id?: string;        // ✅ add this
+    municipality?: string;   // ✅ add this
+  } | null;
 }) {
   const [form, setForm] = useState({
     category: "",
@@ -57,6 +41,8 @@ export default function ComplaintsModal({
     created_by: "",
     address: "",
     coords: "",
+    ward_id: "",        // ✅ add this
+    municipality: ""
   });
 
   useEffect(() => {
@@ -69,78 +55,88 @@ export default function ComplaintsModal({
     loadSession();
   }, []);
 
-  // Sync location from map clicks
-  useEffect(() => {
-    if (selectedLocation) {
-      setForm((prev) => ({
-        ...prev,
-        address: selectedLocation.address || "",
-        coords: `${selectedLocation.lat.toFixed(5)}, ${selectedLocation.lng.toFixed(5)}`,
-      }));
-    }
-  }, [selectedLocation]);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
-    try {
-
-      if (form.photo) {
-        const uploaded = await uploadHandler(form.photo);
-        const report = new Report(
-          "testmunicipality",
-          Status.Acknowledged,
-          form.category,
-          new Date(),
-          form.created_by,
-          Priority.Low,
-          uploaded.url,
-          form.description
-        );
-
-        await insertComplaintwIMG(
-          report.getUserID(),
-          report.getIssueType(),
-          report.getDetails(),
-          report.getImage(),
-          form.address,
-          form.coords
-        );
-      } else {
-        const report = new Report(
-          "testmunicipality",
-          Status.Acknowledged,
-          form.category,
-          new Date(),
-          form.created_by,
-          Priority.Low,
-          undefined,
-          form.description
-        );
-        await insertComplaint(
-          report.getUserID(),
-          report.getIssueType(),
-          report.getDetails(),
-          form.address,
-          form.coords
-        );
-      }
-
-      toast.success("Complaint submitted successfully.");
-      setForm({
-        category: "",
-        description: "",
-        photo: null,
-        created_by: form.created_by,
-        address: "",
-        coords: "",
-      });
-      onClose();
-    } catch (error) {
-      console.error("Submission error:", error);
-      toast.error("Failed to submit complaint. Please try again.");
-    }
+// Sync location from map clicks
+useEffect(() => {
+  if (selectedLocation) {
+    setForm((prev) => ({
+      ...prev,
+      address: selectedLocation.address || "",
+      coords: `${selectedLocation.lat.toFixed(5)}, ${selectedLocation.lng.toFixed(5)}`,
+      ward_id: selectedLocation.ward_id || "",
+      municipality: selectedLocation.municipality || ""
+    }));
   }
+}, [selectedLocation]);
+
+
+ async function handleSubmit(e: React.FormEvent) {
+  e.preventDefault();
+
+  try {
+    if (form.photo) {
+      const uploaded = await uploadHandler(form.photo);
+      const report = new Report(
+        form.municipality,              // ✅ now from form
+        Status.Acknowledged,
+        form.category,
+        new Date(),
+        form.created_by,
+        Priority.Low,
+        uploaded.url,
+        form.description
+      );
+
+      await insertComplaintwIMG(
+        report.getUserID(),
+        form.ward_id,                  // ✅ pass ward_id
+        report.getMunicipality(),      // ✅ pass municipality
+        report.getIssueType(),
+        report.getDetails(),
+        report.getImage(),
+        form.address,
+        form.coords
+      );
+    } else {
+      const report = new Report(
+        form.municipality,
+        Status.Acknowledged,
+        form.category,
+        new Date(),
+        form.created_by,
+        Priority.Low,
+        undefined,
+        form.description
+      );
+
+      await insertComplaint(
+        report.getUserID(),
+        form.ward_id,                  // ✅ pass ward_id
+        report.getMunicipality(),      // ✅ pass municipality
+        report.getIssueType(),
+        report.getDetails(),
+        form.address,
+        form.coords
+      );
+    }
+
+    toast.success("Complaint submitted successfully.");
+    setForm({
+      category: "",
+      description: "",
+      photo: null,
+      created_by: form.created_by,
+      address: "",
+      coords: "",
+      ward_id: "",
+      municipality: ""
+    });
+    onClose();
+  } catch (error) {
+    console.error("Submission error:", error);
+    toast.error("Failed to submit complaint. Please try again.");
+  }
+}
+
 
   return (
     <section className="fixed inset-0 h-full w-1/2 flex items-center bg-transparent justify-center z-50">

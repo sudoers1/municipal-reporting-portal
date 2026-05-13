@@ -17,16 +17,16 @@ export default function LoginModal({
 
   return (
     <section
-      className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
-      onClick={onClose} 
+      className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50"
+      onClick={onClose}
     >
       <article
-        className="bg-white dark:bg-zinc-900 p-6 rounded shadow-lg w-96 relative"
-        onClick={(e) => e.stopPropagation()} 
+        className="bg-white/30 dark:bg-zinc-800/70 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl w-96 relative p-6"
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button (X) */}
+        {/* Close button */}
         <button
-          className="absolute top-2 right-2 text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white text-xl font-bold"
+          className="absolute top-3 right-3 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white text-xl font-bold"
           onClick={onClose}
         >
           ×
@@ -35,13 +35,14 @@ export default function LoginModal({
         {!showSignup ? (
           <>
             <header>
-              <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">
+              <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white text-center drop-shadow-sm">
                 Login
               </h2>
             </header>
+
             <main className="flex flex-col gap-3">
               <button
-                className="px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-900"
+                className="px-4 py-2 rounded-lg bg-gray-800 text-white font-semibold shadow hover:bg-gray-900 transition-colors"
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "github",
@@ -52,7 +53,7 @@ export default function LoginModal({
                 Continue with GitHub
               </button>
               <button
-                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+                className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 transition-colors"
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "google",
@@ -63,7 +64,7 @@ export default function LoginModal({
                 Continue with Google
               </button>
               <button
-                className="px-4 py-2 rounded bg-blue-700 text-white hover:bg-blue-800"
+                className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold shadow hover:bg-indigo-700 transition-colors"
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "discord",
@@ -74,7 +75,7 @@ export default function LoginModal({
                 Continue with Discord
               </button>
               <button
-                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition-colors"
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "facebook",
@@ -85,7 +86,7 @@ export default function LoginModal({
                 Continue with Facebook
               </button>
               <button
-                className="px-4 py-2 rounded bg-sky-500 text-white hover:bg-sky-600"
+                className="px-4 py-2 rounded-lg bg-sky-500 text-white font-semibold shadow hover:bg-sky-600 transition-colors"
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "linkedin",
@@ -96,11 +97,12 @@ export default function LoginModal({
                 Continue with LinkedIn
               </button>
             </main>
-            <footer className="mt-4">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+
+            <footer className="mt-6 text-center">
+              <p className="text-sm text-gray-700 dark:text-gray-400">
                 Don’t have an account?{" "}
                 <button
-                  className="text-blue-600 hover:underline"
+                  className="text-teal-600 font-semibold hover:underline"
                   onClick={() => setShowSignup(true)}
                 >
                   Sign up

@@ -18,17 +18,9 @@ export default function Home() {
     >
       <section className="p-8 space-y-10 min-h-screen">
         <h1 className="text-3xl md:text-5xl font-bold text-gray-900 text-center drop-shadow-md">
-          Municipal Portal Landing Page
+          General Dashboard
         </h1>
 
-        <p className="text-lg text-gray-700 max-w-3xl mx-auto text-center mt-4">
-          Welcome to the Municipal Portal. Explore general information about your municipality,
-          track ward statistics, and stay informed about community updates.
-        </p>
-
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 drop-shadow-sm">
-          General Dashboard
-        </h2>
 
         {/* KPI Cards */}
         <ResidentKPICards complaints={complaints} />
