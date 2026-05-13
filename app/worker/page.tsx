@@ -11,6 +11,7 @@ import AssignedTasksCard from "@/components/Worker/assignedtask";
 import CompletedTasksCard from "@/components/Worker/completedtask";
 import UpdateStatusCard from "@/components/Worker/updatestatus";
 import ReportDetailsCard from "@/components/Worker/reportdetails";
+import PossibleDuplicatesCard from "@/components/Worker/possibleduplicates";
 
 export default function WorkerDashboard() {
   const { data: session, isPending } = authClient.useSession();
@@ -20,30 +21,47 @@ export default function WorkerDashboard() {
   const [unassigned, setUnassigned] = useState<any[]>([]);
   const [completed, setCompleted] = useState<any[]>([]);
   const [selected, setSelected] = useState<any>(null);
+  const [duplicates, setDuplicates] = useState<any[]>([]);
 
   useEffect(() => {
     if (!isPending && !session) router.push("/");
   }, [session, isPending, router]);
 
   const fetchData = async () => {
-    const [assignedRes, unassignedRes, completedRes] = await Promise.all([
-      fetch("/api/reports/assigned"),
-      fetch("/api/reports/unassigned"),
-      fetch("/api/reports/completed"),
-    ]);
+    const [assignedRes, unassignedRes, completedRes, duplicatesRes] =
+      await Promise.all([
+        fetch("/api/reports/assigned"),
+        fetch("/api/reports/unassigned"),
+        fetch("/api/reports/completed"),
+        fetch("/api/duplicates/pending"),
+      ]);
 
     const assignedData = await assignedRes.json();
     const unassignedData = await unassignedRes.json();
     const completedData = await completedRes.json();
-
-    console.log("assignedRes", assignedRes.status);
-    console.log("unassignedRes", unassignedRes.status);
-    console.log("completedRes", completedRes.status);
+    const duplicatesData = await duplicatesRes.json();
 
     setAssigned(assignedData.data ?? []);
     setUnassigned(unassignedData.data ?? []);
     setCompleted(completedData.data ?? []);
+    setDuplicates(duplicatesData.data ?? []);
   };
+
+  async function handleConfirmDuplicate(id: number) {
+    await fetch(`/api/duplicates/${id}/confirm`, {
+      method: "POST",
+    });
+
+    await fetchData();
+  }
+
+  async function handleRejectDuplicate(id: number) {
+    await fetch(`/api/duplicates/${id}/reject`, {
+      method: "POST",
+    });
+
+    await fetchData();
+  }
 
   useEffect(() => {
     if (session) fetchData();
@@ -101,6 +119,13 @@ export default function WorkerDashboard() {
           <WorkerInfoCard worker={session?.user} />
 
           <UnassignedTasksCard tasks={unassigned} onClaim={handleClaim} />
+
+          <PossibleDuplicatesCard
+            duplicates={duplicates}
+            onConfirm={handleConfirmDuplicate}
+            onReject={handleRejectDuplicate}
+            onSelectReport={setSelected}
+          />
 
           <AssignedTasksCard
             tasks={assigned}
