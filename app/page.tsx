@@ -27,11 +27,13 @@ export default function Home() {
 
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left tile: complaints list */}
-          <ComplaintsList
-            complaints={complaints}
-            selectedComplaint={selectedComplaint}
-            onSelectComplaint={setSelectedComplaint}
-          />
+                    <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-[200px] max-h-[500px] overflow-y-auto">
+            <ComplaintsList
+              complaints={complaints}
+              selectedComplaint={selectedComplaint}
+              onSelectComplaint={setSelectedComplaint}
+            />
+          </aside>
 
           {/* Right tile: map */}
           <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-[220px]">
