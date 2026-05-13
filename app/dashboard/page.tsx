@@ -58,7 +58,7 @@ export default function DashboardPage() {
           />
 
           {/* Right tile: map */}
-          <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-[220px]">
+          <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl z-40 shadow-lg p-5 min-h-[220px]">
             <WardMap
               complaintMode={showComplaints}
               onLocationSelect={(coords) => setClickedLocation(coords)}
@@ -70,7 +70,7 @@ export default function DashboardPage() {
 
         {/* Complaint button tile */}
         <section className="flex justify-center">
-          <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-3 w-fit">
+          <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-1 w-fit">
             <ComplaintButton
               onClick={() => setShowComplaints(!showComplaints)}
               showComplaints={showComplaints}

@@ -6,11 +6,11 @@ import * as turf from "@turf/turf";
 import "leaflet/dist/leaflet.css";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
 
-// Status-based icons (no Pending)
+// Status-based icons (no Pending) - keys normalized to lowercase
 const statusIcons: Record<string, Icon> = {
-  Acknowledged: L.icon({ iconUrl: "/complaintpins/marker-acknowledgedv2.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
-  "In Progress": L.icon({ iconUrl: "/complaintpins/marker-inprogressv2.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
-  Resolved: L.icon({ iconUrl: "/complaintpins/marker-resolvedv2.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
+  "acknowledged": L.icon({ iconUrl: "/complaintpins/marker-acknowledgedv2.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
+  "in progress": L.icon({ iconUrl: "/complaintpins/marker-inprogressv2.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
+  "resolved": L.icon({ iconUrl: "/complaintpins/marker-resolvedv2.png", iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [0, -41] }),
 };
 
 const defaultIcon = L.icon({
@@ -48,7 +48,6 @@ interface Props {
   onComplaintSelect?: (complaint: Complaint | null) => void;
 }
 
-
 export default function WardMap({
   wardsUrl = "/api/wards",
   complaintMode = false,
@@ -74,7 +73,6 @@ export default function WardMap({
     setSelectedWard(ward);
   }, []);
 
-  // Remove complaint marker when leaving complaint mode
   useEffect(() => {
     if (!complaintMode && markerRef.current) {
       markerRef.current.remove();
@@ -82,7 +80,6 @@ export default function WardMap({
     }
   }, [complaintMode]);
 
-  // Initialize map
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
     const map = L.map(containerRef.current).setView([-26.2041, 28.0473], 10);
@@ -104,7 +101,6 @@ export default function WardMap({
     };
   }, []);
 
-  // Auto-detect ward from geolocation
   useEffect(() => {
     if (complaintMode) return;
     if (!navigator.geolocation) return;
@@ -123,53 +119,49 @@ export default function WardMap({
     return () => { cancelled = true; };
   }, [complaintMode, wardsUrl, zoomToWard]);
 
-// Click handler for selecting ward or placing complaint pin
-useEffect(() => {
-  const map = mapRef.current;
-  if (!map) return;
-  const clickHandler = async (e: L.LeafletMouseEvent): Promise<void> => {
-    const { lat, lng } = e.latlng;
-    if (complaintMode) {
-      let address = "";
-      try {
-        const results = await provider.search({ query: `${lat}, ${lng}` });
-        address = results[0]?.label || "";
-      } catch {
-        address = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const clickHandler = async (e: L.LeafletMouseEvent): Promise<void> => {
+      const { lat, lng } = e.latlng;
+      if (complaintMode) {
+        let address = "";
+        try {
+          const results = await provider.search({ query: `${lat}, ${lng}` });
+          address = results[0]?.label || "";
+        } catch {
+          address = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        }
+        try {
+          const res = await fetch(`${wardsUrl}?lat=${lat}&lng=${lng}`);
+          const ward = await res.json();
+          onLocationSelect?.({
+            lat,
+            lng,
+            address,
+            ward_id: ward.properties?.WardID,
+            municipality: ward.properties?.Municipali,
+          });
+        } catch {
+          onLocationSelect?.({ lat, lng, address });
+        }
+        if (markerRef.current) markerRef.current.setLatLng([lat, lng]);
+        else markerRef.current = L.marker([lat, lng]).addTo(map);
+        return;
       }
-      // Fetch ward info for metadata
       try {
         const res = await fetch(`${wardsUrl}?lat=${lat}&lng=${lng}`);
-        const ward = await res.json();
-        onLocationSelect?.({
-          lat,
-          lng,
-          address,
-          ward_id: ward.properties?.WardID,
-          municipality: ward.properties?.Municipali,
-        });
-      } catch {
-        onLocationSelect?.({ lat, lng, address });
+        if (!res.ok) return;
+        const ward = (await res.json()) as WardFeature;
+        zoomToWard(ward);
+      } catch (err) {
+        console.error("Error fetching ward:", err);
       }
-      if (markerRef.current) markerRef.current.setLatLng([lat, lng]);
-      else markerRef.current = L.marker([lat, lng]).addTo(map);
-      return;
-    }
-    try {
-      const res = await fetch(`${wardsUrl}?lat=${lat}&lng=${lng}`);
-      if (!res.ok) return;
-      const ward = (await res.json()) as WardFeature;
-      zoomToWard(ward);
-    } catch (err) {
-      console.error("Error fetching ward:", err);
-    }
-  };
-  map.on("click", clickHandler);
-  return () => { map.off("click", clickHandler); };
-}, [complaintMode, onLocationSelect, provider, wardsUrl, zoomToWard]);
+    };
+    map.on("click", clickHandler);
+    return () => { map.off("click", clickHandler); };
+  }, [complaintMode, onLocationSelect, provider, wardsUrl, zoomToWard]);
 
-
-  // Update ward polygons
   useEffect(() => {
     const geojsonLayer = geojsonLayerRef.current;
     if (!geojsonLayer) return;
@@ -186,7 +178,6 @@ useEffect(() => {
     }).addTo(geojsonLayer);
   }, [selectedWard, complaintMode]);
 
-  // Complaint pins (filtered by backend, no Pending)
   useEffect(() => {
     const pinsLayer = pinsLayerRef.current;
     const map = mapRef.current;
@@ -206,13 +197,14 @@ useEffect(() => {
           onComplaintsLoad?.(complaints);
 
           complaints.forEach((c) => {
-            if (c.status === "Pending") return; // skip pending
+            if (c.status === "Pending") return;
             const [latStr, lngStr] = c.coords.split(",").map((s) => s.trim());
             const lat = parseFloat(latStr);
             const lng = parseFloat(lngStr);
             if (!isNaN(lat) && !isNaN(lng)) {
+              const statusKey = (c.status || "").toLowerCase();
               const marker = L.marker([lat, lng], {
-                icon: statusIcons[c.status] || defaultIcon,
+                icon: statusIcons[statusKey] || defaultIcon,
               }).addTo(pinsLayer);
               marker.on("click", () => {
                 onComplaintSelect?.(c);
@@ -224,7 +216,7 @@ useEffect(() => {
         }
       })();
     }
-  }, [selectedWard]); // only rerun when ward changes
+  }, [selectedWard]);
 
   return (
     <section className="relative w-full h-[400px] rounded-xl overflow-hidden shadow-lg">
