@@ -80,16 +80,50 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
         filterFn: filterFns.equals,
         size: 180,
         maxSize: 200,
-        cell: (info) => (
-          <span className="truncate max-w-[160px]" title={info.getValue()}>
+        cell: (info: CellContext<Complaint, string>) => (
+          <span
+            className="truncate max-w-[160px]"
+            title={info.getValue()}
+          >
             {info.getValue()}
           </span>
         ),
       },
-      { accessorKey: "status", header: "Status", filterFn: filterFns.equals, size: 120 },
-      { accessorKey: "issuetype", header: "Issue Type", filterFn: filterFns.equals, size: 160 },
-      { accessorKey: "creationtime", header: "Date", filterFn: dateRangeFilter, cell: dateCell, size: 160 },
-      { id: "actions", header: "", cell: actionsCell(setSelectedComplaint), size: 80 },
+      {
+        accessorKey: "status",
+        header: "Status",
+        filterFn: filterFns.equals,
+        size: 120,
+        cell: (info: CellContext<Complaint, string>) => (
+          <span className="truncate" title={info.getValue()}>
+            {info.getValue()}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "issuetype",
+        header: "Issue Type",
+        filterFn: filterFns.equals,
+        size: 160,
+        cell: (info: CellContext<Complaint, string>) => (
+          <span className="truncate" title={info.getValue()}>
+            {info.getValue()}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "creationtime",
+        header: "Date",
+        filterFn: dateRangeFilter,
+        cell: dateCell,
+        size: 160,
+      },
+      {
+        id: "actions",
+        header: "",
+        cell: actionsCell(setSelectedComplaint),
+        size: 80,
+      },
     ],
     []
   );
@@ -154,7 +188,11 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
                 className="border-t border-white/20 hover:bg-white/10 transition-colors"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="p-2 truncate max-w-[160px]" title={String(cell.getValue())}>
+                  <td
+                    key={cell.id}
+                    className="p-2 truncate max-w-[160px]"
+                    title={String(cell.getValue())}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
