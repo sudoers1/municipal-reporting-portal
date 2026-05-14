@@ -26,7 +26,7 @@ const getMunicipality = (municipality: string,ward:string) => {
       toast.error("Please choose a municipality");
       return;
     }
-   await insertUserMunicipality(form.userid,form.municipality+":"+form.ward);
+   await insertUserMunicipality(form.userid,form.municipality);
    toast.success("Municipality assigned successfully.");
    onSuccess?.();
    onClose();
@@ -35,10 +35,10 @@ const getMunicipality = (municipality: string,ward:string) => {
   }
 
   return (
-    <section className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <section className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 " onClick={onClose}>
 
 
-      <section className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-8 relative">
+      <section className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-8 relative" onClick={(e) => e.stopPropagation()}>
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-600 hover:text-black text-2xl font-bold"

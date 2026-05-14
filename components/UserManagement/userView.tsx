@@ -30,12 +30,13 @@ export default function UserViewer({
 
 
   return (
-    <section className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <section className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={onClose}>
       
       <article
         className={`bg-brand-accent rounded-2xl  overflow-y-auto p-8 relative ${
           user.image ? "min-w-[40%] lg:max-w-3xl" : "md:max-w-lg"
         }`}
+        onClick={(e) => e.stopPropagation()}
       >
 
         <button

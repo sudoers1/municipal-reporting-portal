@@ -32,12 +32,14 @@ export default function FeedbackViewer({
   }
 
   return (
-    <section className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <section className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" 
+      onClick={onClose}>
       
       <article
         className={`bg-brand-accent rounded-2xl h-[95%] md:h-[85%] overflow-y-auto p-8 relative ${
           feedback.image ? "min-w-[60%] md:max-w-5xl" : "md:max-w-lg"
         }`}
+        onClick={(e) => e.stopPropagation()}
       >
 
         <button
