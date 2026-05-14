@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { insertUserMunicipality } from "@/lib/db/usersneon";
 import dynamic from "next/dynamic";
+
 const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
 
 
@@ -27,7 +28,7 @@ const getMunicipality = (municipality: string,ward:string) => {
       return;
     }
    await insertUserMunicipality(form.userid,form.municipality);
-   toast.success("Municipality assigned successfully.");
+  toast.success("Municipality assigned successfully.");
    onSuccess?.();
    onClose();
 

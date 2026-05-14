@@ -114,7 +114,7 @@ export default function UserViewer({
         </section>
 
         <section className="flex flex-col sm:flex-row gap-3 md:mt-3 w-full">
-          {((user.user_types_id ?? 0) === 1 && user.municipality==="Not assigned") && (
+          {((user.user_types_id ?? 0) === 1) && (
               <button onClick={() => setShowAssignForm(true)} className="w-full bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-md hover:bg-brand-secondary hover:text-black transition-colors duration-300">
                 Assign Municipality
               </button>
