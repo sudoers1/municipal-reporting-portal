@@ -1,19 +1,26 @@
-"use server"
+"use server";
 
 import { sql } from "@/lib/db/neon";
 
 // Insert complaint WITHOUT image
 export async function insertComplaint(
   userid: string,
+  ward_id: string,
+  municipality: string,
   issuetype: string,
   details: string,
   address: string,
-  coords: string,
-  municipality:string
+  coords: string
 ) {
   const result = await sql`
-    INSERT INTO complaints (userid, municipality, creationtime, issuetype, details, address, coords)
-    VALUES (${userid}, ${municipality}, ${new Date()}, ${issuetype}, ${details}, ${address}, ${coords})
+    INSERT INTO complaints (
+      userid, ward_id, municipality, creationtime,
+      issuetype, details, address, coords
+    )
+    VALUES (
+      ${userid}, ${ward_id}, ${municipality}, ${new Date()},
+      ${issuetype}, ${details}, ${address}, ${coords}
+    )
     RETURNING *
   `;
   return result;
@@ -22,19 +29,25 @@ export async function insertComplaint(
 // Insert complaint WITH image
 export async function insertComplaintwIMG(
   userid: string,
+  ward_id: string,
+  municipality: string,
   issuetype: string,
   details: string,
   image: string,
   address: string,
-  coords: string,
-  municipality:string
+  coords: string
 ) {
   const result = await sql`
-    INSERT INTO complaints (userid, municipality, creationtime, issuetype, details, image, address, coords)
-    VALUES (${userid}, ${municipality}, ${new Date()}, ${issuetype}, ${details}, ${image}, ${address}, ${coords})
+    INSERT INTO complaints (
+      userid, ward_id, municipality, creationtime,
+      issuetype, details, image, address, coords
+    )
+    VALUES (
+      ${userid}, ${ward_id}, ${municipality}, ${new Date()},
+      ${issuetype}, ${details}, ${image}, ${address}, ${coords}
+    )
     RETURNING *
   `;
-
   return result;
 }
 
@@ -62,7 +75,7 @@ export async function readoneComplaint(complaintid: string) {
   return result[0] || null;
 }
 
-// added the two below for worker dashboard
+// Worker dashboard functions
 export async function claimComplaint(complaintid: string, workerid: string) {
   await sql`
     UPDATE complaints
@@ -70,6 +83,7 @@ export async function claimComplaint(complaintid: string, workerid: string) {
     WHERE complaintid = ${complaintid}
   `;
 }
+
 export async function updateComplaintStatus(complaintid: string, status: string) {
   await sql`
     UPDATE complaints
@@ -77,4 +91,5 @@ export async function updateComplaintStatus(complaintid: string, status: string)
     WHERE complaintid = ${complaintid}
   `;
 }
-// end here
+
+//end here

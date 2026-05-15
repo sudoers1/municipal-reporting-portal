@@ -19,7 +19,7 @@ export default function ProfilePopup({ onClose }: { onClose: () => void }) {
   return (
     <section className="fixed inset-0 bg-black/0 " onClick={onClose}>
       
-    <aside className="absolute top-12 right-0 bg-white rounded-2xl shadow-lg p-6 z-50 w-72" onClick={(e) => e.stopPropagation()}>
+    <aside className="absolute top-12 right-0 bg-white rounded-2xl shadow-lg p-6 z-90 w-72" onClick={(e) => e.stopPropagation()}>
       
       <button
         onClick={onClose}

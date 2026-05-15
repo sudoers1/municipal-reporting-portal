@@ -9,19 +9,25 @@ const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
 
 
 export default function MunicipalityAssignModal({ onClose,onSuccess, uid="" }: { uid:string; onSuccess: () => void; onClose: () => void; }) {
-  const [form, setForm] = useState({
-    userid: uid,
-    municipality: "Not Assigned",
-    ward:"Not Assigned"
-  });
-const getMunicipality = (municipality: string,ward:string) => {
-  setForm(prev => ({ ...prev, municipality,ward }));
+const [form, setForm] = useState({
+  userid: uid,
+  municipality: "Not Assigned",
+  ward: "Not Assigned",
+});
+
+const getMunicipality = (coords: any) => {
+  console.log("MAP COORDS:", coords);
+
+  setForm((prev) => ({
+    ...prev,
+    municipality: coords.municipality || "Not Assigned",
+    ward: coords.ward_id || "Not Assigned",
+  }));
 };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
     if (form.municipality=="Not Assigned") {
       toast.error("Please choose a municipality");
@@ -69,7 +75,7 @@ const getMunicipality = (municipality: string,ward:string) => {
          </fieldset>
           <section className="border rounded-xl overflow-hidden">
             <section className="h-[300px] w-full">
-              <WardMap onMunicipalSelect={getMunicipality}/>
+              <WardMap complaintMode={true} onLocationSelect={(coords) => getMunicipality(coords)}/>
             </section>
           </section>
 

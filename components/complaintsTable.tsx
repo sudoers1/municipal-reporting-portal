@@ -118,15 +118,18 @@ export default function ComplaintsTable({
   }, [dateRange, table]);
 
   return (
-    <section className="flex flex-col gap-3">
-      <ComplaintsFilters
-        table={table}
-        issueTypeOptions={issueTypeOptions}
-        dateRange={dateRange}
-        setDateRange={setDateRange}
-      />
+    <section className="flex flex-col z-30 gap-3">
+      <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-4">
+        <ComplaintsFilters
+          table={table}
+          issueTypeOptions={issueTypeOptions}
+          dateRange={dateRange}
+          setDateRange={setDateRange}
+        />
+      </article>
 
-      <table className="w-[85vw] bg-brand-primary rounded-2xl overflow-hidden text-white">
+      <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg overflow-hidden"></article>
+      <table className="w-full table-fixed text-sm text-gray-900">
         <thead className="bg-brand-accent text-black">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -136,7 +139,7 @@ export default function ComplaintsTable({
                   <th
                     key={header.id}
                     colSpan={header.colSpan}
-                    className="p-3 text-left border-r last:border-r-0 cursor-pointer"
+                    className="p-3 text-left border-r last:border-r-0  font-semibold cursor-pointer select-none"
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     {header.isPlaceholder
@@ -156,13 +159,14 @@ export default function ComplaintsTable({
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className="border-t hover:bg-brand-secondary border-black"
-            >
+                className="border-t border-white/20 hover:bg-white/10 transition-colors"
+              >
               {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className="p-3 border-r last:border-r-0 border-black"
-                >
+                  <td
+                    key={cell.id}
+                    className="p-2 truncate max-w-[160px]"
+                    //title={String(cell.getValue())}
+                  >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}

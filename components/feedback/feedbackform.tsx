@@ -136,7 +136,7 @@ export default function FeedbackModal({
   }
 
   return (
-    <section className="fixed inset-0 flex items-center justify-center z-50" onClick={onClose}>
+    <section className="fixed inset-0 flex bg-white/80 backdrop-blur-md items-center justify-center z-50" onClick={onClose}>
       <section 
         className="bg-white/60 backdrop-blur-md rounded-2xl shadow-lg w-full max-w-lg p-8 relative" 
         onClick={(e) => e.stopPropagation()}
