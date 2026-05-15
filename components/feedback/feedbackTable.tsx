@@ -15,19 +15,15 @@ import {
 } from "@tanstack/react-table";
 import FeedbackViewer from "@/components/feedback/feedbackView";
 import FeedbackFilters from "@/components/feedback/feedbackFilters";
+import { Feedback } from "@/lib/structures/feedback";
 
-type Feedback = {
-  name: string;
-  feedbackId: number;
-  complaintId: number;
-  userId: string;
-  details: string;
-  image?: string | null;
-  creationtime: string;
-  rating:number;
-};
+type FeedbackRow = ReturnType<Feedback["toPlainObject"]>;
 
-const dateRangeFilter = (row: Row<Feedback>, columnId: string, value: any) => {
+const dateRangeFilter = (
+  row: Row<FeedbackRow>,
+  columnId: string,
+  value: { start?: string; end?: string }
+) => {
   const rowDate = new Date(row.getValue(columnId)).getTime();
   const start = value?.start ? new Date(value.start).getTime() : null;
   const end = value?.end ? new Date(value.end).getTime() : null;
@@ -36,10 +32,18 @@ const dateRangeFilter = (row: Row<Feedback>, columnId: string, value: any) => {
   return true;
 };
 
-const dateCell = (info: CellContext<Feedback, string>) =>
+const dateCell = (info: CellContext<FeedbackRow, string>) =>
   new Date(info.getValue()).toLocaleString();
 
-const actionsCell = (setSelected: (c: Feedback) => void) => (info: CellContext<Feedback, any>) => (
+const ratingCell = (info: CellContext<FeedbackRow, number>) => {
+  const rating = info.getValue();
+  const fullStar = "★";
+  const emptyStar = "☆";
+  const stars = fullStar.repeat(rating) + emptyStar.repeat(5 - rating);
+  return <p className="text-white">{stars}</p>;
+};
+
+const actionsCell = (setSelected: (c: FeedbackRow) => void) => (info: CellContext<FeedbackRow, any>) => (
   <button
     onClick={() => setSelected(info.row.original)}
     className="bg-brand-accent text-black px-3 py-1 rounded hover:bg-brand-accent/70"
@@ -49,34 +53,45 @@ const actionsCell = (setSelected: (c: Feedback) => void) => (info: CellContext<F
 );
 
 export default function FeedbackTable({ feedbacks }: { feedbacks: Record<string, any>[] }) {
-  const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null);
+  const [selectedFeedback, setSelectedFeedback] = useState<FeedbackRow | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [dateRange, setDateRange] = useState<{ start?: string; end?: string }>({});
 
-const { data } = useMemo(() => {
-  const mapped: Feedback[] = feedbacks.map((d) => ({
-    name: d.name,
-    feedbackId: d.feedbackId,
-    complaintId: d.complaintId,
-    userId: d.userId,
-    details: d.details,
-    image: d.image,
-    creationtime: d.creationtime,
-    rating:d.rating,
-  }));
+  const { data } = useMemo(() => {
+    const rows: FeedbackRow[] = feedbacks.map((d) =>
+      Feedback.fromRecord(d).toPlainObject()
+    );
 
-  return {
-    data: mapped,
-  };
-}, [feedbacks]);
+    return {
+      data: rows,
+    };
+  }, [feedbacks]);
 
   const columns = useMemo(
     () => [
-      { accessorKey: "name", header: "Respondant", filterFn: filterFns.includesString },
-      { accessorKey: "creationtime", header: "Date", filterFn: dateRangeFilter, cell: dateCell },
-      { accessorKey: "rating", header: "Rating", filterFn: filterFns.equals },
-      { id: "actions", header: "", cell: actionsCell(setSelectedFeedback) },
+      { 
+        accessorKey: "name" as const, 
+        header: "Respondent", 
+        filterFn: filterFns.includesString 
+      },
+      { 
+        accessorKey: "creationtime" as const, 
+        header: "Date", 
+        filterFn: dateRangeFilter, 
+        cell: dateCell 
+      },
+      { 
+        accessorKey: "rating" as const, 
+        header: "Rating", 
+        filterFn: filterFns.equals,
+        cell: ratingCell 
+      },
+      { 
+        id: "actions", 
+        header: "", 
+        cell: actionsCell(setSelectedFeedback) 
+      },
     ],
     []
   );
@@ -96,8 +111,6 @@ const { data } = useMemo(() => {
     table.getColumn("creationtime")?.setFilterValue(dateRange);
   }, [dateRange, table]);
 
- 
-
   return (
     <section className="flex flex-col gap-3">
       <FeedbackFilters
@@ -106,44 +119,42 @@ const { data } = useMemo(() => {
         setDateRange={setDateRange}
       />
       
-      {/*the table*/}
-          <table className="w-[85vw] bg-brand-primary rounded-2xl overflow-hidden text-white">
-            <thead className="bg-brand-accent text-black">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    const sort = header.column.getIsSorted();
-                    return (
-                      <th
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        className="p-3 text-left border-r last:border-r-0 cursor-pointer"
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
-                        {sort === "asc" ? " ↑" : sort === "desc" ? " ↓" : null}
-                      </th>
-                    );
-                  })}
-                </tr>
+      <table className="w-[85vw] bg-brand-primary rounded-2xl overflow-hidden text-white">
+        <thead className="bg-brand-accent text-black">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                const sort = header.column.getIsSorted();
+                return (
+                  <th
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    className="p-3 text-left border-r last:border-r-0 cursor-pointer"
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                    {sort === "asc" ? " ↑" : sort === "desc" ? " ↓" : null}
+                  </th>
+                );
+              })}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id} className="border-t hover:bg-brand-secondary border-black">
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="p-3 border-r last:border-r-0 border-black">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
               ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="border-t hover:bg-brand-secondary border-black">
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="p-3 border-r last:border-r-0 border-black">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-      
       {selectedFeedback && (
         <FeedbackViewer
           feedback={selectedFeedback}

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import Spinner from "@/components/spinner";
+import { Feedback } from "@/lib/structures/feedback";
 
 export default function FeedbackViewer({
   onClose,
@@ -14,6 +15,8 @@ export default function FeedbackViewer({
 }) {
   const [loading, setLoading] = useState(true);
   const [idloading, setIdLoading] = useState(true);
+
+  const feedbackInstance = Feedback.fromRecord(feedback);
 
   useEffect(() => {
     async function loadSession() {
@@ -51,42 +54,58 @@ export default function FeedbackViewer({
 
         <header className="text-center mb-6 text-black">
           <h2 className="text-2xl font-bold text-center text-black h-[15%] mb-6">
-            Details
+            Feedback Details for Complaint #{feedbackInstance.getComplaintId()}
+         
+
           </h2>
+
         </header>
 
         <section className="flex flex-col md:flex-row md:gap-4 text-black h-[80%]">
 
           <section className="flex flex-col min-w-[48%] gap-4 flex-1 h-full">
 
-            <section className="border-[3px] rounded-xl space-y-1 border-brand-primary p-3 flex-shrink-0">
+            <section className="border-[3px] rounded-xl space-y-3 border-brand-primary p-3 flex-shrink-0">
               <p>
-                <strong>Creator:</strong> {feedback.name}
+                <strong>Respondent:</strong> {feedbackInstance.getName()}
+              </p>
+
+              <p>
+                <strong>Rating:</strong> 
+                <span className="text-white text-xl ml-2">
+                  {feedbackInstance.getRatingStars()}
+                </span>
+                <span className="text-md text-black ml-2">
+                  ({feedbackInstance.getRating()}/5)
+                </span>
               </p>
 
               <p>
                 <strong>Time of Feedback:</strong>{" "}
-                <time dateTime={feedback.creationtime}>
-                  {new Date(feedback.creationtime).toLocaleString()}
+                <time dateTime={feedbackInstance.getCreationTime().toISOString()}>
+                  {feedbackInstance.getFormattedDate()}
                 </time>
               </p>
+
+
             </section>
 
             
             <section className="flex-1 border rounded-xl border-brand-primary border-[3px] overflow-y-auto p-3 pr-2 bg-brand-secondary">
-              <p>{feedback.details}</p>
+              <h3 className="font-bold mb-2">Feedback Details:</h3>
+              <p>{feedbackInstance.getDetails()}</p>
             </section>
 
           </section>
 
-          {feedback.image && (
-            <section className="min-w-[48%]  min-h-[100%] py-4 md:py-0">
+          {feedbackInstance.getImage() && (
+            <section className="min-w-[48%] min-h-[100%] py-4 md:py-0">
               <figure className="relative w-full h-full flex items-center justify-center bg-brand-primary rounded-xl overflow-hidden border-[3px] border-brand-secondary">
 
                 {loading && <Spinner />}
 
                 <Image
-                  src={feedback.image}
+                  src={feedbackInstance.getImage()!}
                   alt="feedback image"
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"

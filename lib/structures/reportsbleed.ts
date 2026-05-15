@@ -1,5 +1,5 @@
-import { Priority } from "./priority";
-import { Status } from "./status";
+import { Priority } from "../priority";
+import { Status } from "../status";
 //intended to replace reports class. separate for now to ensure nothing breaks
 export class ReportsBleed {
   constructor(

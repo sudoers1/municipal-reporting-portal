@@ -15,7 +15,7 @@ import {
 } from "@tanstack/react-table";
 import ComplaintViewer from "@/components/complaintView";
 import ComplaintsFilters from "@/components/complaintsFilters";
-import { ReportsBleed } from "@/lib/reportsbleed";
+import { ReportsBleed } from "@/lib/structures/reportsbleed";
 
 type ComplaintRow = ReturnType<ReportsBleed["toPlainObject"]>;
 
