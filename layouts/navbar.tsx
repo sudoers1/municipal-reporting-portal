@@ -38,7 +38,7 @@ export default function Navbar({ initialNotifications = [] }: { initialNotificat
           href={user ? "/dashboard" : "/"}
           className="text-xl text-white font-bold text-foreground hover:underline"
         >
-          Municipal Portal Project
+          The Porthole
         </Link>
         <section className="flex items-center gap-6 text-white">
           <Hamburger />
@@ -49,9 +49,6 @@ export default function Navbar({ initialNotifications = [] }: { initialNotificat
             <Link href="/reports" className="hover:underline">
               Reports
             </Link>
-            <button onClick={() => handleNotReady("About")} className="hover:underline">
-              About
-            </button>
             <button onClick={() => handleNotReady("Contact")} className="hover:underline">
               Contact
             </button>
