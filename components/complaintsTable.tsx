@@ -74,7 +74,7 @@ export default function ComplaintsTable({ complaints }: { complaints: Record<str
 
   const columns = useMemo(
     () => [
-      { accessorKey: "municipality", header: "Municipality", filterFn: filterFns.equals },
+      { accessorKey: "municipality", header: "Municipality", filterFn: filterFns.includesString },
       { accessorKey: "status", header: "Status", filterFn: filterFns.equals},
       { accessorKey: "issuetype", header: "Issue Type", filterFn: filterFns.equals },
       { accessorKey: "creationtime", header: "Date", filterFn: dateRangeFilter, cell: dateCell },

@@ -13,6 +13,18 @@ export default function FeedbackFilters({
 }: Props) {
   return (
     <header className="w-[85vw] p-2 flex gap-3 justify-center bg-brand-primary rounded-2xl text-white">
+            <input
+        type="text"
+        placeholder="Search Respondant..."
+        className="p-2 text-black rounded bg-brand-accent"
+        value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+        onChange={(e) =>
+          table.getColumn("name")?.setFilterValue(
+            e.target.value || undefined
+          )
+        }
+      />
+      
 
       <input
         type="date"
@@ -27,6 +39,23 @@ export default function FeedbackFilters({
         value={dateRange.end ?? ""}
         onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
       />
+
+        <select
+          className="p-2 text-black rounded bg-brand-accent text-center"
+          value={(table.getColumn("rating")?.getFilterValue() as number | undefined) ?? ""}
+          onChange={(e) =>
+            table.getColumn("rating")?.setFilterValue(
+              e.target.value ? Number(e.target.value) : undefined
+            )
+          }
+        >
+          <option value="">All</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
 
       <button
         onClick={() => {

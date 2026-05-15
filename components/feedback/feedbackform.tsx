@@ -30,6 +30,7 @@ export default function FeedbackModal({ onClose, uid="",cid="" }: { uid:string; 
     cid: cid,
     details: "",
     photo: null as File | null,
+    rating:0
     
   });
 
@@ -50,6 +51,11 @@ export default function FeedbackModal({ onClose, uid="",cid="" }: { uid:string; 
 
     if (!form.uid) {
       toast.error("Session not loaded yet, please try again.");
+      return;
+    }
+    
+    if (form.rating==0) {
+      toast.error("Please provide a rating");
       return;
     }
    
@@ -75,7 +81,8 @@ export default function FeedbackModal({ onClose, uid="",cid="" }: { uid:string; 
                         form.uid,
                         form.cid,
                         form.details,
-                        uploaded.url
+                        uploaded.url,
+                        form.rating
                     );
                 }
                 else
@@ -86,7 +93,7 @@ export default function FeedbackModal({ onClose, uid="",cid="" }: { uid:string; 
       
 
                 toast.success("Feedback submitted successfully.");
-                setForm({uid:uid, cid: cid, details: "", photo: null});
+                setForm({uid:uid, cid: cid, details: "", photo: null,rating:0});
                 onClose();
             } 
             catch (error) {
@@ -107,8 +114,8 @@ export default function FeedbackModal({ onClose, uid="",cid="" }: { uid:string; 
   }
 
   return (
-    <section className="fixed inset-0  flex items-center justify-center z-50">
-      <section className="bg-white/60 backdrop-blur-md rounded-2xl shadow-lg w-full max-w-lg p-8 relative">
+    <section className="fixed inset-0  flex items-center justify-center z-50" onClick={onClose}>
+      <section className="bg-white/60 backdrop-blur-md rounded-2xl shadow-lg w-full max-w-lg p-8 relative" onClick={(e) => e.stopPropagation()}>
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-600 hover:text-black text-2xl font-bold"
@@ -145,6 +152,30 @@ export default function FeedbackModal({ onClose, uid="",cid="" }: { uid:string; 
               className="w-full bg-white border rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none"
             />
           </fieldset>
+
+          <fieldset>
+          <label className="block font-semibold mb-2 text-black">
+            Satisfaction Rating
+          </label>
+
+          <section className="flex gap-2 justify-center">
+            {[1, 2, 3, 4, 5].map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setForm({ ...form, rating: value })}
+                className={`w-12 h-12 rounded-full border text-lg font-bold transition-colors text-black border-brand-accent
+                  ${
+                    form.rating >= value
+                      ? "bg-brand-accent"
+                      : "bg-white"
+                  }`}
+              >
+                {value}
+              </button>
+            ))}
+          </section>
+        </fieldset>
 
 
           <button

@@ -8,11 +8,12 @@ export async function insertComplaint(
   issuetype: string,
   details: string,
   address: string,
-  coords: string
+  coords: string,
+  municipality:string
 ) {
   const result = await sql`
     INSERT INTO complaints (userid, municipality, creationtime, issuetype, details, address, coords)
-    VALUES (${userid}, ${"testmunicipality"}, ${new Date()}, ${issuetype}, ${details}, ${address}, ${coords})
+    VALUES (${userid}, ${municipality}, ${new Date()}, ${issuetype}, ${details}, ${address}, ${coords})
     RETURNING *
   `;
   return result;
@@ -25,11 +26,12 @@ export async function insertComplaintwIMG(
   details: string,
   image: string,
   address: string,
-  coords: string
+  coords: string,
+  municipality:string
 ) {
   const result = await sql`
     INSERT INTO complaints (userid, municipality, creationtime, issuetype, details, image, address, coords)
-    VALUES (${userid}, ${"testmunicipality"}, ${new Date()}, ${issuetype}, ${details}, ${image}, ${address}, ${coords})
+    VALUES (${userid}, ${municipality}, ${new Date()}, ${issuetype}, ${details}, ${image}, ${address}, ${coords})
     RETURNING *
   `;
 

@@ -24,6 +24,7 @@ type Feedback = {
   details: string;
   image?: string | null;
   creationtime: string;
+  rating:number;
 };
 
 const dateRangeFilter = (row: Row<Feedback>, columnId: string, value: any) => {
@@ -62,6 +63,7 @@ const { data } = useMemo(() => {
     details: d.details,
     image: d.image,
     creationtime: d.creationtime,
+    rating:d.rating,
   }));
 
   return {
@@ -71,8 +73,9 @@ const { data } = useMemo(() => {
 
   const columns = useMemo(
     () => [
-      { accessorKey: "name", header: "Creator", filterFn: filterFns.equals },
+      { accessorKey: "name", header: "Respondant", filterFn: filterFns.includesString },
       { accessorKey: "creationtime", header: "Date", filterFn: dateRangeFilter, cell: dateCell },
+      { accessorKey: "rating", header: "Rating", filterFn: filterFns.equals },
       { id: "actions", header: "", cell: actionsCell(setSelectedFeedback) },
     ],
     []

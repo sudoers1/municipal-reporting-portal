@@ -46,9 +46,11 @@ async function getCurrentCoords(): Promise<{
 export default function ComplaintsModal({
   onClose,
   selectedLocation,
+  clickedMunicipality
 }: {
   onClose: () => void;
   selectedLocation?: { lat: number; lng: number; address?: string } | null;
+  clickedMunicipality?:{municipality:string;ward:string } | null;
 }) {
   const [form, setForm] = useState({
     category: "",
@@ -88,7 +90,7 @@ export default function ComplaintsModal({
       if (form.photo) {
         const uploaded = await uploadHandler(form.photo);
         const report = new Report(
-          "testmunicipality",
+          clickedMunicipality?.municipality+":"+clickedMunicipality?.ward,
           Status.Acknowledged,
           form.category,
           new Date(),
@@ -104,11 +106,12 @@ export default function ComplaintsModal({
           report.getDetails(),
           report.getImage(),
           form.address,
-          form.coords
+          form.coords,
+          report.getMunicipality()
         );
       } else {
         const report = new Report(
-          "testmunicipality",
+          clickedMunicipality?.municipality+":"+clickedMunicipality?.ward,
           Status.Acknowledged,
           form.category,
           new Date(),
@@ -122,7 +125,8 @@ export default function ComplaintsModal({
           report.getIssueType(),
           report.getDetails(),
           form.address,
-          form.coords
+          form.coords,
+          report.getMunicipality()
         );
       }
 
