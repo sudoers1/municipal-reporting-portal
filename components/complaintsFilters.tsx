@@ -2,7 +2,6 @@
 
 type Props = {
   table: any;
-  municipalityOptions: string[];
   issueTypeOptions: string[];
   dateRange: { start?: string; end?: string };
   setDateRange: (value: { start?: string; end?: string }) => void;
@@ -10,7 +9,6 @@ type Props = {
 
 export default function ComplaintsFilters({
   table,
-  municipalityOptions,
   issueTypeOptions,
   dateRange,
   setDateRange,
