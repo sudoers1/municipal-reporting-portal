@@ -23,6 +23,7 @@ async function uploadHandler(file: File) {
 export default function ComplaintsModal({
   onClose,
   selectedLocation,
+  clickedMunicipality
 }: {
   onClose: () => void;
   selectedLocation?: {
@@ -31,7 +32,8 @@ export default function ComplaintsModal({
     address?: string;
     ward_id?: string;
     municipality?: string;
-  } | null;
+  selectedLocation?: { lat: number; lng: number; address?: string } | null;
+  clickedMunicipality?:{municipality:string;ward:string } | null;
 }) {
   const [form, setForm] = useState({
     category: "",
@@ -73,6 +75,7 @@ export default function ComplaintsModal({
         const uploaded = await uploadHandler(form.photo);
         const report = new Report(
           form.municipality,
+          clickedMunicipality?.municipality+":"+clickedMunicipality?.ward,
           Status.Acknowledged,
           form.category,
           new Date(),
@@ -95,6 +98,12 @@ export default function ComplaintsModal({
       } else {
         const report = new Report(
           form.municipality,
+          form.coords,
+          report.getMunicipality()
+        );
+      } else {
+        const report = new Report(
+          clickedMunicipality?.municipality+":"+clickedMunicipality?.ward,
           Status.Acknowledged,
           form.category,
           new Date(),
@@ -112,6 +121,7 @@ export default function ComplaintsModal({
           report.getDetails(),
           form.address,
           form.coords // ✅ passed silently
+          report.getMunicipality()
         );
       }
 

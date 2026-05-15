@@ -46,6 +46,8 @@ interface Props {
   }) => void;
   onComplaintsLoad?: (complaints: Complaint[]) => void;
   onComplaintSelect?: (complaint: Complaint | null) => void;
+  onLocationSelect?: (coords: { lat: number; lng: number; address?: string }) => void;
+  onMunicipalSelect?: (Municipality:string,Ward:string) => void;
 }
 
 export default function WardMap({
@@ -54,6 +56,7 @@ export default function WardMap({
   onLocationSelect,
   onComplaintsLoad,
   onComplaintSelect,
+  onMunicipalSelect=()=>{},
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -70,6 +73,7 @@ export default function WardMap({
     const bbox = turf.bbox(ward);
     const bounds = L.latLngBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
     map.fitBounds(bounds, { padding: [0, 0] });
+    
     setSelectedWard(ward);
   }, []);
 
@@ -111,6 +115,7 @@ export default function WardMap({
         const res = await fetch(`${wardsUrl}?lat=${latitude}&lng=${longitude}`);
         if (!res.ok || cancelled) return;
         const ward = (await res.json()) as WardFeature;
+        
         zoomToWard(ward);
       } catch (err) {
         if (!cancelled) console.error("Error loading ward:", err);
@@ -153,6 +158,8 @@ export default function WardMap({
         const res = await fetch(`${wardsUrl}?lat=${lat}&lng=${lng}`);
         if (!res.ok) return;
         const ward = (await res.json()) as WardFeature;
+        console.log(ward.properties)
+        onMunicipalSelect(ward.properties?.Municipali,ward.properties?.WardLabel);
         zoomToWard(ward);
       } catch (err) {
         console.error("Error fetching ward:", err);

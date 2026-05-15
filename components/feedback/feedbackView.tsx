@@ -36,15 +36,14 @@ export default function FeedbackViewer({
   }
 
   return (
-    <section
-      className="fixed inset-0 bg-white/70 backdrop-blur-md flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-    >
+    <section className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" 
+      onClick={onClose}>
+      
       <article
-        className={`bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl relative p-8
-          ${feedback.image ? "min-w-[60%] md:max-w-4xl" : "md:max-w-lg"}
-        `}
+        className={`bg-brand-accent rounded-2xl h-[95%] md:h-[85%] overflow-y-auto p-8 relative ${
+          feedback.image ? "min-w-[60%] md:max-w-5xl" : "md:max-w-lg"
+        }`}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button

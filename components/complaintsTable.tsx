@@ -121,6 +121,11 @@ export default function ComplaintsTable({
         ),
         size: 80,
       },
+      { accessorKey: "municipality", header: "Municipality", filterFn: filterFns.includesString },
+      { accessorKey: "status", header: "Status", filterFn: filterFns.equals},
+      { accessorKey: "issuetype", header: "Issue Type", filterFn: filterFns.equals },
+      { accessorKey: "creationtime", header: "Date", filterFn: dateRangeFilter, cell: dateCell },
+      { id: "actions", header: "", cell: actionsCell(setSelectedComplaint) },
     ],
     [onSelectComplaint]
   );

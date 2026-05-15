@@ -17,23 +17,28 @@ export default function ComplaintViewer({
   const [showFeedback, setShowFeedback] = useState(false);
   const [uid, setUid] = useState<string>("");
 
-  useEffect(() => {
-    async function loadSession() {
-      const session = await authClient.getSession();
-      if (session?.data?.user?.id) {
-        setUid(session?.data?.user?.id);
-      }
-      setIdLoading(false);
-    }
-    loadSession();
-  }, []);
-
-  if (idloading) {
-    return (
-      <section
-        className="fixed inset-0 bg-white/40 backdrop-blur-md flex items-center justify-center z-50"
-        role="dialog"
-        aria-modal="true"
+  if(idloading){return (
+    <section
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+      role="dialog"
+      aria-modal="true"
+    >
+          <Spinner splash="Report"/>
+    </section>
+    );}
+    else{
+  return (
+    <section
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+    >
+     <article
+        onClick={(e) => e.stopPropagation()}
+        className={`bg-brand-accent rounded-2xl h-[95%] md:h-[85%] overflow-y-auto p-8 relative
+          ${complaint.image ? "min-w-[60%] md:max-w-5xl" : "md:max-w-lg"}
+        `}
       >
         <Spinner splash="Report" />
       </section>

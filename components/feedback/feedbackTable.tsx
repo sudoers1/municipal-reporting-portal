@@ -23,6 +23,7 @@ type Feedback = {
   details: string;
   image?: string | null;
   creationtime: string;
+  rating:number;
 };
 
 const dateRangeFilter = (row: Row<Feedback>, columnId: string, value: any) => {
@@ -48,49 +49,29 @@ export default function FeedbackTable({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [dateRange, setDateRange] = useState<{ start?: string; end?: string }>({});
 
-  const { data } = useMemo(() => {
-    const mapped: Feedback[] = feedbacks.map((d) => ({
-      name: d.name,
-      feedbackId: d.feedbackId,
-      complaintId: d.complaintId,
-      userId: d.userId,
-      details: d.details,
-      image: d.image,
-      creationtime: d.creationtime,
-    }));
-    return { data: mapped };
-  }, [feedbacks]);
+const { data } = useMemo(() => {
+  const mapped: Feedback[] = feedbacks.map((d) => ({
+    name: d.name,
+    feedbackId: d.feedbackId,
+    complaintId: d.complaintId,
+    userId: d.userId,
+    details: d.details,
+    image: d.image,
+    creationtime: d.creationtime,
+    rating:d.rating,
+  }));
+
+  return {
+    data: mapped,
+  };
+}, [feedbacks]);
 
   const columns = useMemo(
     () => [
-      {
-        accessorKey: "name",
-        header: "Creator",
-        filterFn: filterFns.equals,
-        cell: (info: CellContext<Feedback, string>) => (
-          <span className="truncate" title={info.getValue()}>
-            {info.getValue()}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "creationtime",
-        header: "Date",
-        filterFn: dateRangeFilter,
-        cell: dateCell,
-      },
-      {
-        id: "actions",
-        header: "",
-        cell: (info: CellContext<Feedback, any>) => (
-          <button
-            onClick={() => onSelectFeedback(info.row.original)}
-            className="px-3 py-1 rounded-lg bg-teal-500/80 text-white text-sm font-semibold hover:bg-teal-500 transition-colors shadow-sm"
-          >
-            View
-          </button>
-        ),
-      },
+      { accessorKey: "name", header: "Respondant", filterFn: filterFns.includesString },
+      { accessorKey: "creationtime", header: "Date", filterFn: dateRangeFilter, cell: dateCell },
+      { accessorKey: "rating", header: "Rating", filterFn: filterFns.equals },
+      { id: "actions", header: "", cell: actionsCell(setSelectedFeedback) },
     ],
     [onSelectFeedback]
   );

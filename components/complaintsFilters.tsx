@@ -17,20 +17,17 @@ export default function ComplaintsFilters({
 }: Props) {
   return (
     <header className="w-[85vw] p-2 flex gap-3 justify-center bg-brand-primary rounded-2xl text-white">
-      <select
+      <input
+        type="text"
+        placeholder="Search Municipality..."
         className="p-2 text-black rounded bg-brand-accent"
         value={(table.getColumn("municipality")?.getFilterValue() as string) ?? ""}
         onChange={(e) =>
-          table.getColumn("municipality")?.setFilterValue(e.target.value || undefined)
+          table.getColumn("municipality")?.setFilterValue(
+            e.target.value || undefined
+          )
         }
-      >
-        <option value="">All Municipalities</option>
-        {municipalityOptions.map((m) => (
-          <option key={m} value={m}>
-            {m}
-          </option>
-        ))}
-      </select>
+      />
 
       <select
         className="p-2 text-black rounded bg-brand-accent"
@@ -42,6 +39,8 @@ export default function ComplaintsFilters({
         }
       >
         <option value="">All</option>
+        <option value="Pending">Pending</option>
+        <option value="Duplicate">Duplicate</option>
         <option value="Acknowledged">Acknowledged</option>
         <option value="In progress">In Progress</option>
         <option value="Resolved">Resolved</option>

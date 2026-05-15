@@ -10,7 +10,8 @@ export async function insertComplaint(
   issuetype: string,
   details: string,
   address: string,
-  coords: string
+  coords: string,
+  municipality:string
 ) {
   const result = await sql`
     INSERT INTO complaints (
@@ -35,7 +36,8 @@ export async function insertComplaintwIMG(
   details: string,
   image: string,
   address: string,
-  coords: string
+  coords: string,
+  municipality:string
 ) {
   const result = await sql`
     INSERT INTO complaints (
