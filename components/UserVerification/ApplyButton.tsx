@@ -6,9 +6,10 @@ import { insertVerification } from "../../lib/db/verifications"; // Adjust path 
 interface ApplyButtonProps {
   userId: string;
   userName: string
+  userMunicipality: string;
 }
 
-export default function Apply({ userId, userName}: ApplyButtonProps) {
+export default function Apply({ userId, userName, userMunicipality}: ApplyButtonProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [isPending, startTransition] = useTransition();
   const [formData, setFormData] = useState({ name: "", municipality: "" });
@@ -31,8 +32,12 @@ export default function Apply({ userId, userName}: ApplyButtonProps) {
     e.preventDefault();
     setError(null);
 
-    if (!formData.name.trim() || !formData.municipality.trim()) {
-      setError("Please fill in all fields.");
+    // if (!formData.name.trim() || !formData.municipality.trim()) {
+    //   setError("Please fill in all fields.");
+    //   return;
+    // }
+    if (!userName.trim() || userMunicipality === "Not Specified") {
+      setError("Valid User Name and Municipality profile parameters are required to apply.");
       return;
     }
 
@@ -90,7 +95,7 @@ export default function Apply({ userId, userName}: ApplyButtonProps) {
 
                 <section>
                     <label className="block  font-medium mb-1 ">Municipality</label>
-                    <input
+                    {/* <input
                     type="text"
                     name="municipality"
                     value={formData.municipality}
@@ -98,7 +103,8 @@ export default function Apply({ userId, userName}: ApplyButtonProps) {
                     placeholder="City or District Name"
                     className="w-full p-2.5 rounded-lg border border-black/60 text-black focus:outline-none focus:border-brand-accent"
                     required
-                    />
+                    /> */}
+                    <p className="bg-brand-accent/50 w-full p-2.5 rounded-lg text-black focus:outline-none focus:border-brand-accent">{userMunicipality}</p>
                 </section>
 
                 {error && <p className="text-red-500 mt-1">{error}</p>}
