@@ -25,9 +25,9 @@ export default function AssignedTasksCard({
                     {task.issuetype}
                   </h3>
 
-                  <span className="text-xs bg-yellow-500/20 text-yellow-200 px-2 py-1 rounded-full">
+                  <p className="text-xs bg-yellow-500/20 text-yellow-200 px-2 py-1 rounded-full">
                     {task.assignment_status}
-                  </span>
+                  </p>
                 </header>
 
                 <p className="text-sm text-gray-200 line-clamp-2">
