@@ -29,15 +29,22 @@ function parseWebsite(raw: string | undefined) {
   return `https://${cleaned}`;
 }
 
+type MunicipalityItem = {
+  data: Record<string, any>;
+  url?: string;
+  error?: unknown;
+};
+
 // Use fuzzy matching so ward names can resolve against municipality names
-function findBestMatch(query: string, items: Array<{ data: { name: string } }>) {
+function findBestMatch(query: string, items: MunicipalityItem[]) {
   const normalizedQuery = normalizeText(query);
   if (!normalizedQuery) return undefined;
 
   let bestScore = 0;
-  let bestItem;
+  let bestItem: MunicipalityItem | undefined;
 
   for (const item of items) {
+    if (typeof item.data.name !== "string") continue;
     const normalizedName = normalizeText(item.data.name);
     if (!normalizedName) continue;
 
@@ -65,7 +72,7 @@ export async function GET(req: Request) {
 
   const filePath = path.join(process.cwd(), "public", "data", "municipalities.json");
   const raw = fs.readFileSync(filePath, "utf-8");
-  const municipalities = JSON.parse(raw) as Array<{ data: Record<string, any>; url: string; error: any }>;
+  const municipalities = JSON.parse(raw) as MunicipalityItem[];
 
   if (municipalityQuery) {
     const exactMatch = municipalities.find((item) => normalizeText(item.data.name) === normalizeText(municipalityQuery));

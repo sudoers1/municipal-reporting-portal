@@ -30,7 +30,7 @@ export default function ContactPage() {
   const [allMunicipalities, setAllMunicipalities] = useState<string[]>([]);
   const [selectedMunicipalityName, setSelectedMunicipalityName] = useState("");
   const [selectedMunicipality, setSelectedMunicipality] = useState<MunicipalityData | null>(null);
-  const [statusMessage, setStatusMessage] = useState("Loading municipality list...");
+  const [statusMessage, setStatusMessage] = useState("");
   const [geoState, setGeoState] = useState<"unknown" | "allowed" | "denied" | "unsupported">("unknown");
   const [wardMunicipality, setWardMunicipality] = useState("");
   const [loadingMunicipality, setLoadingMunicipality] = useState(false);
@@ -41,7 +41,6 @@ export default function ContactPage() {
         const res = await fetch("/api/contactinfo?list=1");
         const names = (await res.json()) as string[];
         setAllMunicipalities(names);
-        setStatusMessage("Allow location access to auto-detect your municipality or choose one from the list.");
       } catch (error) {
         setStatusMessage("Could not load municipalities. Please refresh the page.");
         console.error("Failed to load municipality list:", error);
@@ -110,7 +109,7 @@ export default function ContactPage() {
     async function loadContactInfo() {
       setLoadingMunicipality(true);
       setSelectedMunicipality(null);
-      setStatusMessage("Loading contact details...");
+      setStatusMessage("");
 
       try {
         const res = await fetch(
@@ -124,7 +123,7 @@ export default function ContactPage() {
 
         const municipality = (await res.json()) as MunicipalityData;
         setSelectedMunicipality(municipality);
-        setStatusMessage(geoState === "allowed" ? "Showing contact details for your detected municipality." : "Showing contact details for the selected municipality.");
+        setStatusMessage("");
       } catch (error) {
         setStatusMessage("Failed to load contact details. Try again later.");
         console.error("Municipality lookup failed:", error);
@@ -144,7 +143,7 @@ export default function ContactPage() {
 
         </header>
 
-        <section className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
+        <section className="grid gap-6">
           <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-6 space-y-5">
             <header className="space-y-3">
               <h2 className="text-xl font-semibold text-slate-900">Choose municipality</h2>
@@ -160,11 +159,14 @@ export default function ContactPage() {
                   aria-label="Select municipality"
                 >
                   <option value="" disabled>Select municipality</option>
-                  {allMunicipalities.map((name) => (
-                    <option key={name} value={name}>{name}</option>
+                  {allMunicipalities.map((name, index) => (
+                    <option key={`${name}-${index}`} value={name}>{name}</option>
                   ))}
                 </select>
               </label>
+              {statusMessage ? (
+                <p className="text-sm text-slate-600">{statusMessage}</p>
+              ) : null}
               {wardMunicipality && (
                 <p className="text-sm text-slate-600">
                   Autodetected Municipality: <strong className="font-semibold text-slate-900">{wardMunicipality}</strong>
