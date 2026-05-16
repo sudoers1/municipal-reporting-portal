@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/spinner";
@@ -29,6 +29,8 @@ export default function WorkerDashboard() {
   const [selectedDuplicateReview, setSelectedDuplicateReview] =
     useState<any>(null);
 
+  const duplicateReviewRef = useRef<HTMLDivElement | null>(null);
+
   const dashboardReports = [...assigned, ...unassigned, ...completed];
   const workerReports = [...assigned, ...completed];
 
@@ -37,6 +39,23 @@ export default function WorkerDashboard() {
       router.push("/");
     }
   }, [session, isPending, router]);
+
+  useEffect(() => {
+    if (session) {
+      fetchData();
+    }
+  }, [session]);
+
+  useEffect(() => {
+    if (selectedDuplicateReview) {
+      setTimeout(() => {
+        duplicateReviewRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, [selectedDuplicateReview]);
 
   async function fetchData() {
     try {
@@ -54,12 +73,12 @@ export default function WorkerDashboard() {
         !completedRes.ok ||
         !duplicatesRes.ok
       ) {
-          console.error("Dashboard fetch statuses:", {
-            assigned: assignedRes.status,
-            unassigned: unassignedRes.status,
-            completed: completedRes.status,
-            duplicates: duplicatesRes.status,
-          });
+        console.error("Dashboard fetch statuses:", {
+          assigned: assignedRes.status,
+          unassigned: unassignedRes.status,
+          completed: completedRes.status,
+          duplicates: duplicatesRes.status,
+        });
 
         throw new Error("Failed to fetch dashboard data");
       }
@@ -77,12 +96,6 @@ export default function WorkerDashboard() {
       console.error("Dashboard fetch error:", error);
     }
   }
-
-  useEffect(() => {
-    if (session) {
-      fetchData();
-    }
-  }, [session]);
 
   async function handleClaim(id: string) {
     try {
@@ -201,7 +214,6 @@ export default function WorkerDashboard() {
         <KPICards data={dashboardReports} />
 
         <section className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-
           <section className="md:col-span-2 xl:col-span-3">
             <WorkerStatusAnalytics
               assignments={workerReports}
@@ -226,12 +238,17 @@ export default function WorkerDashboard() {
           <CompletedTasksCard tasks={completed} />
 
           {selectedDuplicateReview && (
-            <DuplicateReviewDetails
-              review={selectedDuplicateReview}
-              onClose={() => setSelectedDuplicateReview(null)}
-              onConfirm={handleConfirmDuplicate}
-              onReject={handleRejectDuplicate}
-            />
+            <section
+              ref={duplicateReviewRef}
+              className="md:col-span-2 xl:col-span-3 scroll-mt-6"
+            >
+              <DuplicateReviewDetails
+                review={selectedDuplicateReview}
+                onClose={() => setSelectedDuplicateReview(null)}
+                onConfirm={handleConfirmDuplicate}
+                onReject={handleRejectDuplicate}
+              />
+            </section>
           )}
 
           {selectedReport && (
