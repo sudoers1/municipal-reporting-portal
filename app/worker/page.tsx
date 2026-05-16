@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/spinner";
-
+import { useRef } from "react";
+import ExportReportButton from "@/components/Worker/exportReportButton";
 import WorkerInfoCard from "@/components/Worker/workerinfo";
 import UnassignedTasksCard from "@/components/Worker/unassignedtask";
 import AssignedTasksCard from "@/components/Worker/assignedtask";
@@ -16,15 +17,20 @@ import DuplicateReviewDetails from "@/components/Worker/duplicatereviewdetails";
 import ResolvedChartCard from "@/components/Worker/ResolvedChartCard";
 import StatusChartCard from "@/components/Worker/StatusChartCard";
 
+
 export default function WorkerDashboard() {
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
 
+  const statusChartRef = useRef<HTMLElement>(null);
+  const resolvedChartRef = useRef<HTMLElement>(null);
+  const [municipality, setMunicipality] = useState<string | null>(null);
   const [assigned, setAssigned] = useState<any[]>([]);
   const [unassigned, setUnassigned] = useState<any[]>([]);
   const [completed, setCompleted] = useState<any[]>([]);
   const [duplicates, setDuplicates] = useState<any[]>([]);
-
+  const [statusData, setStatusData] = useState<{ status: string; count: number }[]>([]);
+  const [resolvedData, setResolvedData] = useState<{ week: string; resolved: number; avg_hours?: number | null }[]>([]);
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [selectedDuplicateReview, setSelectedDuplicateReview] =
     useState<any>(null);
@@ -37,19 +43,23 @@ export default function WorkerDashboard() {
 
   async function fetchData() {
     try {
-      const [assignedRes, unassignedRes, completedRes, duplicatesRes] =
+      const [assignedRes, unassignedRes, completedRes, duplicatesRes, statusRes, resolvedRes] =
         await Promise.all([
           fetch("/api/reports/assigned"),
           fetch("/api/reports/unassigned"),
           fetch("/api/reports/completed"),
           fetch("/api/duplicates/pending"),
+          fetch("/api/reports/analytics/status"),
+          fetch("/api/reports/analytics/resolved"),
         ]);
 
       if (
         !assignedRes.ok ||
         !unassignedRes.ok ||
         !completedRes.ok ||
-        !duplicatesRes.ok
+        !duplicatesRes.ok ||
+        !statusRes.ok ||
+        !resolvedRes.ok
       ) {
         throw new Error("Failed to fetch dashboard data");
       }
@@ -63,6 +73,10 @@ export default function WorkerDashboard() {
       setUnassigned(unassignedData.data ?? []);
       setCompleted(completedData.data ?? []);
       setDuplicates(duplicatesData.data ?? []);
+      const statusJson = await statusRes.json();
+      setStatusData(statusJson.data ?? []);
+      setMunicipality(statusJson.municipality ?? null);
+      setResolvedData((await resolvedRes.json()).data ?? []);
     } catch (error) {
       console.error("Dashboard fetch error:", error);
     }
@@ -226,8 +240,24 @@ export default function WorkerDashboard() {
               />
             </>
           )}
-          <StatusChartCard refreshKey={statsKey} />
-          <ResolvedChartCard refreshKey={statsKey} />
+          <article ref={statusChartRef}>
+            <StatusChartCard statusData={statusData} refreshKey={statsKey} />
+          </article>
+
+          <article ref={resolvedChartRef}>
+            <ResolvedChartCard resolvedData={resolvedData} refreshKey={statsKey} />
+          </article>
+          <ExportReportButton
+            worker={{
+              name: session?.user?.name ?? "",
+              email: session?.user?.email,
+              municipality: municipality ?? "poes",
+            }}
+            statusData={statusData}      // the state arrays you already have
+            resolvedData={resolvedData}
+            statusChartRef={statusChartRef}
+            resolvedChartRef={resolvedChartRef}
+          />
         </section>
       </section>
     </main>
