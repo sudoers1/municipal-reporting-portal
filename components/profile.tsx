@@ -17,16 +17,36 @@ export default function ProfilePopup({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <section className="absolute top-12 right-0 bg-white rounded-2xl shadow-lg p-6 z-50 w-72">
-
+    <section className="fixed inset-0 bg-black/0 " onClick={onClose}>
+      
+    <aside className="absolute top-12 right-0 bg-white/50 backdrop-blur-lg rounded-2xl shadow-lg p-6 z-90 w-72" onClick={(e) => e.stopPropagation()}>
+      
       <button
         onClick={onClose}
-        className="absolute top-3 right-4 text-gray-500 hover:text-black text-xl"
+        aria-label="Close profile popup"
+        className="absolute top-3 right-4 text-gray-700 hover:text-black text-xl"
       >
         ×
       </button>
 
       <section className="flex flex-col items-center gap-3">
+        
+        <figure>
+          <img
+            src={user?.image ?? "/default-avatar.png"}
+            alt={`${user?.name ?? "User"} avatar`}
+            className="w-16 h-16 rounded-full"
+          />
+        </figure>
+
+        <header className="text-center">
+          <h2 className="font-bold text-black text-lg">{user?.name}</h2>
+          <p className="text-gray-700 text-sm">{user?.email}</p>
+        </header>
+
+        <p className="px-3 py-1 bg-brand-primary text-white text-sm rounded-full">
+          {user?.role}
+        </p>
         <img src={user?.image ?? "/default-avatar.png"} className="w-16 h-16 rounded-full" />
         <h3 className="font-bold text-black text-lg">{user?.name}</h3>
         <p className="text-gray-500 text-sm">{user?.email}</p>
@@ -72,6 +92,7 @@ export default function ProfilePopup({ onClose }: { onClose: () => void }) {
         </button>
 
       </section>
-    </section>
+    </aside>
+  </section>
   );
 }

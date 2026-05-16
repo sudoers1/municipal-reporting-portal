@@ -1,53 +1,76 @@
-/** @jest-environment node */
-import { GET } from "../app/api/workers/task/route";
-import { auth } from "../lib/auth";
-import { requireRole } from "../lib/guards/route";
+import { GET } from "@/app/api/workers/route";
+import { sql } from "@/lib/db/neon";
 
-jest.mock("../lib/auth", () => ({
-  auth: {
-    api: {
-      getSession: jest.fn(),
-    },
+jest.mock("@/lib/db/neon", () => ({
+  sql: jest.fn(),
+}));
+
+jest.mock("next/server", () => ({
+  NextResponse: {
+    json: (body: any, init?: ResponseInit) => ({
+      status: init?.status ?? 200,
+      json: async () => body,
+    }),
   },
 }));
 
-jest.mock("../lib/guards/route", () => ({
-  requireRole: jest.fn(),
-}));
+const mockSql = sql as unknown as jest.Mock;
 
-const mockGetSession = auth.api.getSession as jest.Mock;
-const mockRequireRole = requireRole as jest.Mock;
-
-function makeRequest() {
-  return new Request("http://localhost/api/worker/task", { method: "GET" });
-}
-
-describe("GET /api/worker/task", () => {
-  beforeEach(() => jest.clearAllMocks());
-
-  test("returns 401 when no session", async () => {
-    mockGetSession.mockResolvedValue(null);
-
-    const res = await GET(makeRequest());
-    expect(res.status).toBe(401);
+describe("GET /api/workers", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
-  test("returns 403 when user is not a Worker", async () => {
-    mockGetSession.mockResolvedValue({ user: { id: "u1", role: "Resident" } });
-    mockRequireRole.mockImplementation(() => { throw new Error("Forbidden"); });
-
-    const res = await GET(makeRequest());
-    expect(res.status).toBe(403);
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
-  test("returns 200 when user is a Worker", async () => {
-    mockGetSession.mockResolvedValue({ user: { id: "u1", role: "Worker" } });
-    mockRequireRole.mockImplementation(() => {});
+  test("returns workers successfully", async () => {
+    const workers = [
+      {
+        id: 1,
+        name: "Alice Worker",
+      },
+      {
+        id: 2,
+        name: "Bob Worker",
+      },
+    ];
 
-    const res = await GET(makeRequest());
+    mockSql.mockResolvedValueOnce(workers);
+
+    const res = await GET();
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(body.message).toBe("Worker endpoint ready");
+    expect(body).toEqual(workers);
+    expect(mockSql).toHaveBeenCalledTimes(1);
+  });
+
+  test("returns empty array when no workers exist", async () => {
+    mockSql.mockResolvedValueOnce([]);
+
+    const res = await GET();
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body).toEqual([]);
+    expect(mockSql).toHaveBeenCalledTimes(1);
+  });
+
+  test("returns 500 when database query fails", async () => {
+    mockSql.mockRejectedValueOnce(new Error("DB error"));
+
+    const res = await GET();
+    const body = await res.json();
+
+    expect(res.status).toBe(500);
+    expect(body).toEqual({
+      error: "Failed to fetch workers",
+    });
+
+    expect(mockSql).toHaveBeenCalledTimes(1);
+    expect(console.error).toHaveBeenCalled();
   });
 });

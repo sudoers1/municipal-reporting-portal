@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import {sql} from "@/lib/db/neon";
-
+//
 export async function GET(req: Request) {
   const analyticsData = await sql`
   Select

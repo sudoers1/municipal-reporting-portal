@@ -5,9 +5,13 @@ import Image from "next/image";
 
 import { authClient } from "@/lib/auth-client";
 import FeedbackTable from "@/components/feedback/feedbackTable";
+import FeedbackViewer from "@/components/feedback/feedbackView";
+import { Feedback } from "@/lib/structures/feedback";
 import { readFeedback } from "@/lib/db/feedback";
 import { readoneComplaint } from "@/lib/db/complaints";
 import Spinner from "@/components/spinner";
+
+type FeedbackRow = ReturnType<Feedback["toPlainObject"]>;
 
 export default function ReportFull({
   params,
@@ -23,11 +27,10 @@ export default function ReportFull({
 
   const [complaint, setComplaint] = useState<Record<string, any> | null>(null);
   const [feedback, setFeedback] = useState<Record<string, any>[]>([]);
-
+  const [selectedFeedback, setSelectedFeedback] = useState<FeedbackRow | null>(null);
 
   useEffect(() => {
     if (isPending) return;
-
 
     async function loadData() {
       const [complaintData, feedbackData] = await Promise.all([
@@ -45,11 +48,8 @@ export default function ReportFull({
 
   if (isPending || loading) {
     return (
-      <main
-        className="w-screen min-h-screen bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/municipality.png')" }}
-      >
-        <section className="flex flex-col items-center gap-4">
+      <main className="w-screen min-h-screen bg-linear-to-br from-white via-teal-100 to-teal-300">
+        <section className="flex flex-col bg-black/15 items-center gap-4 min-h-screen justify-center">
           <Spinner splash="Report Feedback" />
         </section>
       </main>
@@ -61,22 +61,19 @@ export default function ReportFull({
   return (
     <main
       id="dashboard"
-      className="w-screen min-h-screen overflow-y-auto bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/municipality.png')" }}
+      className="w-screen min-h-screen overflow-y-auto bg-linear-to-br from-white via-teal-100 to-teal-300"
     >
-      <section className="p-4 md:p-8 lg:p-12 bg-black/50 min-h-screen">
-
-        <h1 className="text-3xl md:text-5xl font-bold text-white text-center mb-8 md:mb-12">
+      <section className="p-6 md:p-10 lg:p-14 backdrop-blur-sm min-h-screen rounded-xl">
+        <h1 className="text-3xl md:text-5xl font-bold text-black text-center mb-10 drop-shadow-lg">
           Report Feedback
         </h1>
 
-        <section className="w-[85vw] mx-auto flex flex-col md:flex-row gap-6 text-black">
-
+        <section className="w-[90%] mx-auto flex flex-col md:flex-row gap-8 text-black">
+          {/* Complaint details */}
           <section className="flex flex-col gap-6 flex-1">
-
-            <section className="border-[3px] rounded-xl border-brand-primary p-5 space-y-2 bg-brand-secondary">
+            <section className="border-[3px] rounded-xl border-brand-primary p-6 space-y-2 bg-white/30 backdrop-blur-md shadow-lg">
               <p><strong>Municipality:</strong> {complaint.municipality}</p>
-              <p><strong>Status:</strong> {complaint.status ? "Completed" : "Pending"}</p>
+              <p><strong>Status:</strong> {complaint.status === "Resolved" ? "Completed" : "Pending"}</p>
               <p><strong>Issue:</strong> {complaint.issuetype}</p>
               <p>
                 <strong>Time of report:</strong>{" "}
@@ -86,19 +83,17 @@ export default function ReportFull({
               </p>
             </section>
 
-            <section className="border-[3px] rounded-xl border-brand-primary p-5 bg-brand-secondary min-h-[200px]">
-              <h3 className="font-bold mb-2">Details</h3>
+            <section className="border-[3px] rounded-xl border-brand-primary p-6 bg-white/20 backdrop-blur-md shadow-inner min-h-[200px]">
+              <h3 className="font-bold mb-3 text-lg">Details</h3>
               <p className="whitespace-pre-wrap">{complaint.details}</p>
             </section>
-
           </section>
 
+          {/* Complaint image */}
           {complaint.image && (
             <section className="flex-1 flex">
-              <figure className="relative w-full min-h-[300px] lg:min-h-full bg-brand-primary rounded-xl overflow-hidden border-[3px] border-brand-secondary flex items-center justify-center">
-
+              <figure className="relative w-full min-h-[300px] lg:min-h-full bg-white/20 backdrop-blur-md rounded-xl overflow-hidden border-[3px] border-brand-secondary flex items-center justify-center shadow-lg">
                 {imgLoading && <Spinner />}
-
                 <Image
                   src={complaint.image}
                   alt="Complaint evidence"
@@ -112,16 +107,29 @@ export default function ReportFull({
               </figure>
             </section>
           )}
-
         </section>
 
+        {/* Feedback table */}
         {complaint.status === "Resolved" && (
-          <figure className="flex justify-center py-10">
-            <FeedbackTable feedbacks={feedback} />
-          </figure>
+          <section className="mt-12 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-6">
+            <h2 className="text-2xl font-bold text-center text-black mb-6">Feedback</h2>
+            <FeedbackTable
+              feedbacks={feedback}
+              onSelectFeedback={setSelectedFeedback}
+            />
+          </section>
         )}
-
+        
       </section>
+
+      {selectedFeedback && (
+        <FeedbackViewer
+          feedback={selectedFeedback}
+          onClose={() => setSelectedFeedback(null)}
+        />
+      )}
+
+      
     </main>
   );
 }

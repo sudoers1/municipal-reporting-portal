@@ -170,11 +170,13 @@ export default function ComplaintViewer({
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 "
       role="dialog"
       aria-modal="true"
+      onClick={onClose}
     >
      <article
         className={`bg-white  w-fit p-8 rounded-2xl  relative
           ${complaint.image ? "min-w-[60%] md:max-w-5xl" : "md:max-w-lg"}
         `}
+        onClick={(e) => e.stopPropagation()}
       >
        {/* h-[95%] md:h-[85%]  */}
         <header>

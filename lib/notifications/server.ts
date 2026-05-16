@@ -27,6 +27,6 @@ export async function markOneRead(notificationId: string, userId: string) {
 }
 
 export async function getUnreadCount(userId: string) {
-  const rows = await sql`SELECT COUNT(*) as count FROM notifications WHERE user_id ${userId} AND read = false`;
+  const rows = await sql`SELECT COUNT(*) as count FROM notifications WHERE user_id = ${userId} AND read = false`;
   return parseInt(rows[0].count);
 }

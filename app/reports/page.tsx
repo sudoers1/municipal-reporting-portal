@@ -1,59 +1,55 @@
-"use client"
+"use client";
 
 import { readComplaints } from "@/lib/db/complaints";
 import ComplaintsTable from "@/components/complaintsTable";
+import ComplaintViewer from "@/components/complaintView";
 import { useState, useEffect } from "react";
 import Spinner from "@/components/spinner";
 
-
 export default function Reports() {
-
   const [complaints, setComplaints] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedComplaint, setSelectedComplaint] = useState<Record<string, any> | null>(null);
 
   useEffect(() => {
     async function getComplaints() {
-      const data= await readComplaints();
+      const data = await readComplaints();
       setComplaints(data);
       setLoading(false);
     }
-
     getComplaints();
-    
   }, []);
 
-  if(loading){return (
-    <main
-      className="w-screen min-h-screen bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/municipality.png')" }}
-    >
-      <section className="p-8 bg-black/50 min-h-screen flex items-center justify-center">
-        <Spinner splash="Reports"/>
-      </section>
-    </main>
-  );}
-  else{
-  return (
-    <main
-      className="w-screen min-h-[120vh] overflow-y-auto bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/municipality.png')" }}
-    >
-      <section className="p-8 space-y-10 md:bg-black/50 min-h-[120vh] flex flex-col">
+  if (loading) {
+    return (
+      <main className="w-screen min-h-screen bg-linear-to-br from-teal-200 via-white to-teal-300">
+        <section className="p-8 min-h-screen flex items-center justify-center">
+          <Spinner splash="Reports" />
+        </section>
+      </main>
+    );
+  }
 
+  return (
+    <main className="w-screen min-h-screen overflow-y-auto bg-linear-to-br from-white via-teal-100 to-teal-300">
+      <section className="p-8 space-y-10 min-h-screen">
         <header>
-          <h1 className="text-3xl md:text-5xl font-bold text-white text-center">
-            View All Reports
+          <h1 className="text-3xl md:text-5xl font-bold text-gray-900 z-10 text-center drop-shadow-md">
+            Reports
           </h1>
         </header>
 
-
-
-        <figure className="flex md:justify-center">
-          <ComplaintsTable complaints={complaints} />
-        </figure>
-
-
+        <article className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5">
+          <ComplaintsTable complaints={complaints} onSelectComplaint={setSelectedComplaint} />
+        </article>
       </section>
+      {selectedComplaint && (
+              <ComplaintViewer
+                complaint={selectedComplaint}
+                onClose={() => setSelectedComplaint(null)}
+              />
+        )}
     </main>
-  );}
+  );
 }
+

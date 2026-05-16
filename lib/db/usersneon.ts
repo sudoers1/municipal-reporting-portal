@@ -1,6 +1,7 @@
 "use server"
 
 import { sql } from "@/lib/db/neon";
+import { createNotification } from "@/lib/notifications/server";
 
 
 
@@ -57,7 +58,12 @@ export async function insertUserMunicipality(userid: string,municipality: string
   const result = await sql`
     INSERT INTO user_municipality (userid, municipality)
     VALUES (${userid}, ${municipality})
+    ON CONFLICT (userid)
+    DO UPDATE SET
+      municipality = EXCLUDED.municipality
     RETURNING *
   `;
+   await createNotification(userid,"Municipality Assignment","You have been assigned to the following Municipality:"+municipality,"alert");
+    
   return result[0] || null;
 }

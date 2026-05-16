@@ -33,7 +33,7 @@ export default function Navbar({ initialNotifications = [] }: { initialNotificat
 
   return (
     <>
-      <nav className="w-full flex items-center justify-between px-6 py-2 bg-brand-primary shadow">
+      <nav className="w-full flex items-center justify-between px-6 py-2 z-60 bg-brand-primary shadow">
         <Link
           href={user ? "/dashboard" : "/"}
           className="text-xl text-white font-bold text-foreground hover:underline"
@@ -49,9 +49,6 @@ export default function Navbar({ initialNotifications = [] }: { initialNotificat
             <Link href="/reports" className="hover:underline">
               Reports
             </Link>
-            <button onClick={() => handleNotReady("About")} className="hover:underline">
-              About
-            </button>
             <button onClick={() => handleNotReady("Contact")} className="hover:underline">
               Contact
             </button>

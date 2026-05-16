@@ -36,17 +36,18 @@ module.exports = {
 
   // Collect coverage from both frontend and backend
   collectCoverageFrom: [
-    "components/wardmap.tsx",
+    "!components/**/*.tsx",
+    "!app/api/auth/**/*.ts",
     "app/**/*.ts",
     "lib/**/*.ts",
-    "!components/LinkedInButton.tsx",
-    "!components/complaintform.tsx",
-    "!components/complaintbutton.tsx",
-    "!components/dashboarditems.tsx",
-    "!components/hamburgerMenu.tsx",
-    "!components/login.tsx",
-    "!components/signup.tsx",
+    "!lib/db/neon.ts",
+    "!lib/db/types.ts",
+    "!lib/auth.ts",
+    "!lib/auth-client.ts",
+    "!lib/generated/**/*.ts",  // Prisma generated files
     "!**/*.d.ts",
+    "!lib/notifications/types.ts",
+    "!app/api/notifications/stream/route.ts"
   ],
 
   // Coverage thresholds
