@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/spinner";
-import { useRef } from "react";
 import ExportReportButton from "@/components/Worker/exportReportButton";
 import WorkerInfoCard from "@/components/Worker/workerinfo";
 import UnassignedTasksCard from "@/components/Worker/unassignedtask";
@@ -14,6 +13,8 @@ import UpdateStatusCard from "@/components/Worker/updatestatus";
 import ReportDetailsCard from "@/components/Worker/reportdetails";
 import PossibleDuplicatesCard from "@/components/Worker/possibleduplicates";
 import DuplicateReviewDetails from "@/components/Worker/duplicatereviewdetails";
+import KPICards from "@/components/Dashboard/KPIcard";
+import WorkerStatusAnalytics from "@/components/Worker/statuslegend";
 import ResolvedChartCard from "@/components/Worker/ResolvedChartCard";
 import StatusChartCard from "@/components/Worker/StatusChartCard";
 
@@ -35,11 +36,33 @@ export default function WorkerDashboard() {
   const [selectedDuplicateReview, setSelectedDuplicateReview] =
     useState<any>(null);
 
+  const duplicateReviewRef = useRef<HTMLDivElement | null>(null);
+
+  const dashboardReports = [...assigned, ...unassigned, ...completed];
+  const workerReports = [...assigned, ...completed];
+
   useEffect(() => {
     if (!isPending && !session) {
       router.push("/");
     }
   }, [session, isPending, router]);
+
+  useEffect(() => {
+    if (session) {
+      fetchData();
+    }
+  }, [session]);
+
+  useEffect(() => {
+    if (selectedDuplicateReview) {
+      setTimeout(() => {
+        duplicateReviewRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, [selectedDuplicateReview]);
 
   async function fetchData() {
     try {
@@ -61,6 +84,13 @@ export default function WorkerDashboard() {
         !statusRes.ok ||
         !resolvedRes.ok
       ) {
+        console.error("Dashboard fetch statuses:", {
+          assigned: assignedRes.status,
+          unassigned: unassignedRes.status,
+          completed: completedRes.status,
+          duplicates: duplicatesRes.status,
+        });
+
         throw new Error("Failed to fetch dashboard data");
       }
 
@@ -205,7 +235,17 @@ export default function WorkerDashboard() {
           </h1>
         </header>
 
+        <KPICards data={dashboardReports} />
+
         <section className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <section className="md:col-span-2 xl:col-span-3">
+            <WorkerStatusAnalytics
+              assignments={workerReports}
+              duplicates={duplicates}
+              availableTasks={unassigned}
+            />
+          </section>
+
           <WorkerInfoCard worker={session?.user} />
 
           <UnassignedTasksCard tasks={unassigned} onClaim={handleClaim} />
@@ -222,12 +262,17 @@ export default function WorkerDashboard() {
           <CompletedTasksCard tasks={completed} />
 
           {selectedDuplicateReview && (
-            <DuplicateReviewDetails
-              review={selectedDuplicateReview}
-              onClose={() => setSelectedDuplicateReview(null)}
-              onConfirm={handleConfirmDuplicate}
-              onReject={handleRejectDuplicate}
-            />
+            <section
+              ref={duplicateReviewRef}
+              className="md:col-span-2 xl:col-span-3 scroll-mt-6"
+            >
+              <DuplicateReviewDetails
+                review={selectedDuplicateReview}
+                onClose={() => setSelectedDuplicateReview(null)}
+                onConfirm={handleConfirmDuplicate}
+                onReject={handleRejectDuplicate}
+              />
+            </section>
           )}
 
           {selectedReport && (

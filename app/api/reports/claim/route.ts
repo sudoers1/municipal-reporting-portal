@@ -7,8 +7,6 @@ export const POST = withAuth(["Worker"], async (req: Request, session: any) => {
     const workerId = session.user.id;
     const { complaintid } = await req.json();
 
-    console.log("Received claim: ", req.body);
-
     if (!complaintid) {
       return NextResponse.json(
         { message: "Missing complaintid" },
@@ -18,14 +16,19 @@ export const POST = withAuth(["Worker"], async (req: Request, session: any) => {
 
     await sql`
       INSERT INTO assignments (complaintid, workerid, status)
-      VALUES (${complaintid}, ${workerId}, 'In progress')
+      VALUES (${complaintid}, ${workerId}, 'Acknowledged')
+    `;
+
+    await sql`
+      UPDATE complaints
+      SET status = 'Acknowledged'
+      WHERE complaintid = ${complaintid}
     `;
 
     return NextResponse.json({
       message: "Report claimed successfully",
       complaintid,
     });
-
   } catch (err: any) {
     if (err.code === "23505") {
       return NextResponse.json(
@@ -34,7 +37,8 @@ export const POST = withAuth(["Worker"], async (req: Request, session: any) => {
       );
     }
 
-    console.error(err);
+    console.error("Claim report error:", err);
+
     return NextResponse.json(
       { message: "Failed to claim report" },
       { status: 500 }
