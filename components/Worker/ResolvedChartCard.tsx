@@ -17,6 +17,11 @@ type ResolvedRow = {
   avg_hours: number | null;
 };
 
+type Props = {
+  resolvedData: { week: string; resolved: number; avg_hours?: number | null }[];
+  refreshKey: number;
+};
+
 const cardStyle: React.CSSProperties = {
   background: "rgba(0,0,0,0.55)",
   border: "1px solid rgba(255,255,255,0.12)",
@@ -33,8 +38,8 @@ function formatWeek(dateStr: string) {
 
 const LineTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
-  const resolved  = payload.find((p: any) => p.dataKey === "resolved");
-  const avgHours  = payload.find((p: any) => p.dataKey === "avg_hours");
+  const resolved = payload.find((p: any) => p.dataKey === "resolved");
+  const avgHours = payload.find((p: any) => p.dataKey === "avg_hours");
   return (
     <output
       style={{
@@ -64,33 +69,13 @@ const LineTooltip = ({ active, payload, label }: any) => {
   );
 };
 
-export default function ResolvedChartCard({refreshKey}: {refreshKey: number}) {
-  const [data, setData]       = useState<ResolvedRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(false);
+export default function ResolvedChartCard({ resolvedData, refreshKey }: Props) {
 
-  useEffect(() => {
-    fetch("/api/reports/analytics/resolved")
-      .then((r) => r.json())
-      .then((j) => {
-        const rows: ResolvedRow[] = (j.data ?? []).map((r: ResolvedRow) => ({
-          ...r,
-          week: formatWeek(r.week),
-        }));
-        setData(rows);
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, [refreshKey]);
-
-  const totalResolved = data.reduce((s, r) => s + r.resolved, 0);
+  const totalResolved = resolvedData.reduce((s, r) => s + r.resolved, 0);
   const overallAvgHours =
-    data.length > 0
-      ? Math.round(
-          data.reduce((s, r) => s + (r.avg_hours ?? 0), 0) / data.length
-        )
-      : null;
-
+  resolvedData.length > 0
+    ? Math.round(resolvedData.reduce((s, r) => s + (r.avg_hours ?? 0), 0) / resolvedData.length)
+    : null;
   return (
     <article style={cardStyle}>
       <header
@@ -105,57 +90,29 @@ export default function ResolvedChartCard({refreshKey}: {refreshKey: number}) {
         <h2 style={{ color: "#fff", fontWeight: 600, fontSize: "1.125rem", margin: 0 }}>
           Resolved over time
         </h2>
-
-        {!loading && !error && data.length > 0 && (
-          <menu
-            style={{
-              display: "flex",
-              gap: "1.25rem",
-              margin: 0,
-              padding: 0,
-              listStyle: "none",
-            }}
-          >
-            <li style={{ textAlign: "right" }}>
-              <strong style={{ fontSize: "1.5rem", color: "#4ade80", display: "block", lineHeight: 1 }}>
-                {totalResolved}
-              </strong>
-              <small style={{ color: "rgba(255,255,255,0.4)" }}>resolved</small>
-            </li>
-            {overallAvgHours !== null && (
-              <li style={{ textAlign: "right" }}>
-                <strong style={{ fontSize: "1.5rem", color: "#60a5fa", display: "block", lineHeight: 1 }}>
-                  {overallAvgHours}h
-                </strong>
-                <small style={{ color: "rgba(255,255,255,0.4)" }}>avg time</small>
-              </li>
-            )}
-          </menu>
+        {resolvedData.length > 0 && (
+          <aside aria-label="All-time resolved count" style={{ textAlign: "right" }}>
+            <strong style={{ fontSize: "1.5rem", color: "#fff", display: "block", lineHeight: 1 }}>
+              {totalResolved}
+            </strong>
+            <small style={{ color: "rgba(255,255,255,0.4)" }}>all time</small>
+          </aside>
         )}
       </header>
 
-      {loading && (
-        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.875rem", margin: 0 }}>Loading…</p>
-      )}
-      {error && (
-        <p style={{ color: "#f87171", fontSize: "0.875rem", margin: 0 }}>Failed to load resolved data.</p>
-      )}
-      {!loading && !error && data.length === 0 && (
+      {resolvedData.length === 0 ? (
         <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.875rem", margin: 0 }}>
           No resolved complaints yet.
         </p>
-      )}
-
-      {!loading && !error && data.length > 0 && (
+      ) : (
         <figure aria-label="Line chart of weekly resolved complaints" style={{ margin: 0 }}>
           <figcaption className="sr-only">
             Weekly resolved complaints over time. Total resolved: {totalResolved}.
             {overallAvgHours !== null && ` Average resolution time: ${overallAvgHours} hours.`}
           </figcaption>
-
           <section style={{ position: "relative", width: "100%", height: 220 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+              <LineChart data={resolvedData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   stroke="rgba(255,255,255,0.07)"
@@ -196,7 +153,6 @@ export default function ResolvedChartCard({refreshKey}: {refreshKey: number}) {
               </LineChart>
             </ResponsiveContainer>
           </section>
-
           <footer
             style={{
               display: "flex",
@@ -223,4 +179,5 @@ export default function ResolvedChartCard({refreshKey}: {refreshKey: number}) {
       )}
     </article>
   );
+
 }

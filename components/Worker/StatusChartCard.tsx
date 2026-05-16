@@ -5,6 +5,11 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 type StatusRow = { status: string; count: number };
 
+type Props = {
+  statusData: { status: string; count: number }[];
+  refreshKey: number;
+};
+
 const STATUS_COLORS: Record<string, string> = {
   Acknowledged: "#60a5fa",
   "In progress": "#fbbf24",
@@ -41,38 +46,21 @@ const PieTooltip = ({ active, payload }: any) => {
   );
 };
 
-export default function StatusChartCard({refreshKey}: {refreshKey: number}) {
-  const [data, setData]       = useState<StatusRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(false);
+export default function StatusChartCard({statusData, refreshKey}: Props) {
 
-  useEffect(() => {
-    fetch("/api/reports/analytics/status")
-      .then((r) => r.json())
-      .then((j) => setData(j.data ?? []))
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, [refreshKey]);
+  const total = statusData.reduce((s, r) => s + r.count, 0);
 
-  const total = data.reduce((s, r) => s + r.count, 0);
-
-  return (
+    return (
     <article style={cardStyle}>
       <h2 style={{ color: "#fff", fontWeight: 600, fontSize: "1.125rem", margin: "0 0 1rem" }}>
         Complaints by status
       </h2>
 
-      {loading && (
-        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.875rem", margin: 0 }}>Loading…</p>
-      )}
-      {error && (
-        <p style={{ color: "#f87171", fontSize: "0.875rem", margin: 0 }}>Failed to load status data.</p>
-      )}
-      {!loading && !error && data.length === 0 && (
-        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.875rem", margin: 0 }}>No assignment data yet.</p>
-      )}
-
-      {!loading && !error && data.length > 0 && (
+      {statusData.length === 0 ? (
+        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.875rem", margin: 0 }}>
+          No assignment data yet.
+        </p>
+      ) : (
         <section aria-label="Status breakdown">
           <figure
             aria-label="Donut chart of complaint statuses"
@@ -81,7 +69,7 @@ export default function StatusChartCard({refreshKey}: {refreshKey: number}) {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={data}
+                  data={statusData}
                   dataKey="count"
                   nameKey="status"
                   cx="50%"
@@ -91,7 +79,7 @@ export default function StatusChartCard({refreshKey}: {refreshKey: number}) {
                   paddingAngle={3}
                   strokeWidth={0}
                 >
-                  {data.map((row) => (
+                  {statusData.map((row) => (
                     <Cell key={row.status} fill={STATUS_COLORS[row.status] ?? FALLBACK} />
                   ))}
                 </Pie>
@@ -116,7 +104,7 @@ export default function StatusChartCard({refreshKey}: {refreshKey: number}) {
           </figure>
 
           <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-            {data.map((row) => {
+            {statusData.map((row) => {
               const color = STATUS_COLORS[row.status] ?? FALLBACK;
               const pct   = total > 0 ? Math.round((row.count / total) * 100) : 0;
               return (
