@@ -71,7 +71,7 @@ export default function DashboardPage() {
           </aside>
         </section>
 
-        {/* Complaint button tile */}
+        {session?.user.role=="Resident"&&(
         <section className="flex justify-center">
           <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-1 w-fit">
             <ComplaintButton
@@ -79,7 +79,7 @@ export default function DashboardPage() {
               showComplaints={showComplaints}
             />
           </article>
-        </section>
+        </section>)}
 
         {/* Modal */}
         {showComplaints && (

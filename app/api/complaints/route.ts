@@ -111,7 +111,7 @@ export const POST = withAuth(["Resident", "Worker"], async (req: Request, sessio
         ${userId},
         ${ward_id || null},
         ${municipality},
-        'Acknowledged',
+        'Pending',
         ${image || null},
         ${issuetype},
         ${details},
