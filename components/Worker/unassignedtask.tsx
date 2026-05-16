@@ -30,10 +30,10 @@ export default function UnassignedTasksCard({
                 {task.details}
               </p>
 
-              <div className="mt-3 flex items-center justify-between">
-                <span className="text-xs text-gray-400">
+              <section className="mt-3 flex items-center justify-between">
+                <p className="text-xs text-gray-400">
                   {new Date(task.creationtime).toLocaleDateString()}
-                </span>
+                </p>
 
                 <button
                   onClick={() => onClaim(task.complaintid)}
@@ -41,7 +41,7 @@ export default function UnassignedTasksCard({
                 >
                   Claim
                 </button>
-              </div>
+              </section>
             </article>
           </li>
         ))}

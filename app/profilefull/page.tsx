@@ -6,11 +6,13 @@ import { authClient } from "@/lib/auth-client";
 import ComplaintsTable from "@/components/complaintsTable";
 import { readMyComplaints } from "@/lib/db/complaints";
 import Spinner from "@/components/spinner";
+import Apply from "@/components/UserVerification/ApplyButton";
 
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
   const { data: session, isPending  } = authClient.useSession();
+  const userId = session?.user?.id;
 
   const [complaints, setComplaints] = useState<Record<string, any>[]>([]);
 
@@ -80,9 +82,12 @@ export default function Home() {
             <p className="text-gray-200 text-base md:text-lg">
               First Used Site on: {session?.user?.createdAt.toDateString()}
             </p>
-            <strong className="inline-block px-4 py-1.5 bg-brand-accent text-white text-sm font-semibold rounded-full shadow-md">
-              {session?.user?.role || "Resident"}
-            </strong>
+            <section className="flex gap-4">
+              <strong className="inline-block px-4 py-1.5 bg-brand-accent text-white text-sm font-semibold rounded-full shadow-md">
+                {session?.user?.role || "Resident"}
+              </strong>
+              <Apply userId={userId ?? ""} />
+            </section>
             
             
           </section>

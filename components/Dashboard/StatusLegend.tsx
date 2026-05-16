@@ -35,10 +35,10 @@ export default function StatusAnalytics({ assignments = [] }: { assignments: any
                 {/* Progress Visualizer */}
                 <section className="space-y-3">
                     <section className="flex justify-between text-sm font-medium">
-                        <span className="text-slate-500">Resolution Progress</span>
-                        <span className="text-slate-900">
+                        <p className="text-slate-500">Resolution Progress</p>
+                        <p className="text-slate-900">
                             {Math.round(((statusCounts["Resolved"] || 0) / total) * 100)}%
-                        </span>
+                        </p>
                     </section>
                     <section className="w-full bg-slate-100 rounded-full h-3 overflow-hidden flex">
                         <section 
@@ -57,7 +57,7 @@ export default function StatusAnalytics({ assignments = [] }: { assignments: any
                     <section className="p-4 rounded-lg bg-slate-50 border border-slate-100">
                         <section className="flex items-center gap-2 text-slate-500 mb-1">
                             <CheckCircle2 size={16} />
-                            <span className="text-xs font-semibold uppercase tracking-tight">Resolved</span>
+                            <p className="text-xs font-semibold uppercase tracking-tight">Resolved</p>
                         </section>
                         <p className="text-2xl font-bold text-slate-800">{statusCounts["Resolved"] || 0}</p>
                     </section>
@@ -65,7 +65,7 @@ export default function StatusAnalytics({ assignments = [] }: { assignments: any
                     <section className="p-4 rounded-lg bg-slate-50 border border-slate-100">
                         <section className="flex items-center gap-2 text-slate-500 mb-1">
                             <Timer size={16} />
-                            <span className="text-xs font-semibold uppercase tracking-tight">Active</span>
+                            <p className="text-xs font-semibold uppercase tracking-tight">Active</p>
                         </section>
                         <p className="text-2xl font-bold text-slate-800">{statusCounts["In progress"] || 0}</p>
                     </section>

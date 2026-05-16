@@ -55,9 +55,9 @@ export default function VerificationsTable({ verifications }: { verifications: R
                   className="rounded-full object-cover"
                 />
               ) : (
-                <div className="w-9 h-9 rounded-full bg-brand-accent flex items-center justify-center text-black font-bold">
+                <section className="w-9 h-9 rounded-full bg-brand-accent flex items-center justify-center text-black font-bold">
                   {entry.name?.[0]?.toUpperCase() ?? "?"}
-                </div>
+                </section>
               )}
             </td>
             <td className="p-3 border-r border-black">{entry.name ?? "Unknown"}</td>

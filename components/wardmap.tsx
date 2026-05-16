@@ -190,8 +190,8 @@ export default function WardMap({
   }, [selectedWard, complaintMode]);
 
   return (
-    <div className="relative w-full h-[500px] rounded-xl overflow-hidden shadow-lg">
-      <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
-    </div>
+    <section className="relative w-full h-[500px] rounded-xl overflow-hidden shadow-lg">
+      <section ref={containerRef} style={{ width: "100%", height: "100%" }} />
+    </section>
   );
 }

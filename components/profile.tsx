@@ -30,7 +30,7 @@ export default function ProfilePopup({ onClose }: { onClose: () => void }) {
         <img src={user?.image ?? "/default-avatar.png"} className="w-16 h-16 rounded-full" />
         <h3 className="font-bold text-black text-lg">{user?.name}</h3>
         <p className="text-gray-500 text-sm">{user?.email}</p>
-        <span className="px-3 py-1 bg-brand-primary text-white text-sm rounded-full">{user?.role}</span>
+        <p className="px-3 py-1 bg-brand-primary text-white text-sm rounded-full">{user?.role}</p>
 
 
         {/* Worker Dashboard link */}
