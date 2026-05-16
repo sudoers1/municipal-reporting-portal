@@ -30,6 +30,7 @@ export default function WorkerDashboard() {
     useState<any>(null);
 
   const dashboardReports = [...assigned, ...unassigned, ...completed];
+  const workerReports = [...assigned, ...completed];
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -53,6 +54,13 @@ export default function WorkerDashboard() {
         !completedRes.ok ||
         !duplicatesRes.ok
       ) {
+          console.error("Dashboard fetch statuses:", {
+            assigned: assignedRes.status,
+            unassigned: unassignedRes.status,
+            completed: completedRes.status,
+            duplicates: duplicatesRes.status,
+          });
+
         throw new Error("Failed to fetch dashboard data");
       }
 
@@ -195,10 +203,11 @@ export default function WorkerDashboard() {
         <section className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
 
           <section className="md:col-span-2 xl:col-span-3">
-            <WorkerStatusAnalytics 
-            assignments={dashboardReports}
-            duplicates={duplicates}
-             />
+            <WorkerStatusAnalytics
+              assignments={workerReports}
+              duplicates={duplicates}
+              availableTasks={unassigned}
+            />
           </section>
 
           <WorkerInfoCard worker={session?.user} />
