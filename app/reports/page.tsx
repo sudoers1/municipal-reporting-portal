@@ -34,7 +34,7 @@ export default function Reports() {
     <main className="w-screen min-h-screen overflow-y-auto bg-linear-to-br from-white via-teal-100 to-teal-300">
       <section className="p-8 space-y-10 min-h-screen">
         <header>
-          <h1 className="text-3xl md:text-5xl font-bold text-gray-900 text-center drop-shadow-md">
+          <h1 className="text-3xl md:text-5xl font-bold text-gray-900 z-10 text-center drop-shadow-md">
             Reports
           </h1>
         </header>
@@ -43,13 +43,12 @@ export default function Reports() {
           <ComplaintsTable complaints={complaints} onSelectComplaint={setSelectedComplaint} />
         </article>
       </section>
-
       {selectedComplaint && (
-        <ComplaintViewer
-          complaint={selectedComplaint}
-          onClose={() => setSelectedComplaint(null)}
-        />
-      )}
+              <ComplaintViewer
+                complaint={selectedComplaint}
+                onClose={() => setSelectedComplaint(null)}
+              />
+        )}
     </main>
   );
 }

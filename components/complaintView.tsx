@@ -17,28 +17,23 @@ export default function ComplaintViewer({
   const [showFeedback, setShowFeedback] = useState(false);
   const [uid, setUid] = useState<string>("");
 
-  if(idloading){return (
-    <section
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-    >
-          <Spinner splash="Report"/>
-    </section>
-    );}
-    else{
-  return (
-    <section
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-      onClick={onClose}
-    >
-     <article
-        onClick={(e) => e.stopPropagation()}
-        className={`bg-brand-accent rounded-2xl h-[95%] md:h-[85%] overflow-y-auto p-8 relative
-          ${complaint.image ? "min-w-[60%] md:max-w-5xl" : "md:max-w-lg"}
-        `}
+  useEffect(() => {
+    async function loadSession() {
+      const session = await authClient.getSession();
+      if (session?.data?.user?.id) {
+        setUid(session?.data?.user?.id);
+      }
+      setIdLoading(false);
+    }
+    loadSession();
+  }, []);
+  
+  if (idloading) {
+    return (
+      <section
+        className="fixed inset-0 bg-white/40 backdrop-blur-md flex items-center justify-center z-50"
+        role="dialog"
+        aria-modal="true"
       >
         <Spinner splash="Report" />
       </section>
@@ -49,11 +44,12 @@ export default function ComplaintViewer({
         className="fixed inset-0 bg-white/40 backdrop-blur-md flex items-center justify-center z-50"
         role="dialog"
         aria-modal="true"
+        onClick={onClose}
       >
         <article
           className={`bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl overflow-hidden relative p-8
-            ${complaint.image ? "min-w-[60%] md:max-w-4xl" : "md:max-w-lg"}
-          `}
+            ${complaint.image ? "min-w-[60%] md:max-w-4xl" : "md:max-w-lg" }
+          `}  onClick={(e) => e.stopPropagation()}
         >
           <header>
             <button
@@ -89,7 +85,7 @@ export default function ComplaintViewer({
 
             {complaint.image && (
               <section className="min-w-[48%] flex items-center justify-center">
-                <figure className="relative w-full h-full flex items-center justify-center bg-white/30 rounded-xl overflow-hidden border-[2px] border-brand-secondary">
+                <figure className="relative w-full h-full flex items-center justify-center bg-white rounded-xl overflow-hidden border-[2px] border-brand-secondary">
                   {loading && <Spinner />}
                   <Image
                     src={complaint.image}

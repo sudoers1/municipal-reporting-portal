@@ -7,11 +7,12 @@ describe("Status enum", () => {
     expect(Status.Acknowledged).toBe("Acknowledged");
     expect(Status.InProgress).toBe("In progress");
     expect(Status.Resolved).toBe("Resolved");
-    expect(Status.Pending).toBe("Pending")
+    expect(Status.Pending).toBe("Pending");
+    expect(Status.Duplicate).toBe("Duplicate");
   });
 
-  test("has exactly three statuses", () => {
-    expect(Object.keys(Status)).toHaveLength(4);
+  test("has exactly five statuses", () => {
+    expect(Object.keys(Status)).toHaveLength(5);
   });
 });
 

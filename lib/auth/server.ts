@@ -22,10 +22,11 @@ export function requireRole(session: any, roles: string[]){
     }
 }
 
-export function withAuth(roles: string[], handler: Function){
-    return async (req: Request)=> {
+export function withAuth(roles: string[], handler: Function) {
+  return async (req: Request, context?: any) => {
     const session = await requireSession(req);
     requireRole(session, roles);
-    
-    return handler(req, session);
- }}
+
+    return handler(req, session, context);
+  };
+}

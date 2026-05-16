@@ -14,19 +14,15 @@ import {
   Row,
 } from "@tanstack/react-table";
 import FeedbackFilters from "@/components/feedback/feedbackFilters";
+import { Feedback } from "@/lib/structures/feedback";
 
-type Feedback = {
-  name: string;
-  feedbackId: number;
-  complaintId: number;
-  userId: string;
-  details: string;
-  image?: string | null;
-  creationtime: string;
-  rating:number;
-};
+type FeedbackRow = ReturnType<Feedback["toPlainObject"]>;
 
-const dateRangeFilter = (row: Row<Feedback>, columnId: string, value: any) => {
+const dateRangeFilter = (
+  row: Row<FeedbackRow>,
+  columnId: string,
+  value: { start?: string; end?: string }
+) => {
   const rowDate = new Date(row.getValue(columnId)).getTime();
   const start = value?.start ? new Date(value.start).getTime() : null;
   const end = value?.end ? new Date(value.end).getTime() : null;
@@ -35,45 +31,78 @@ const dateRangeFilter = (row: Row<Feedback>, columnId: string, value: any) => {
   return true;
 };
 
-const dateCell = (info: CellContext<Feedback, string>) =>
+const dateCell = (info: CellContext<FeedbackRow, string>) =>
   new Date(info.getValue()).toLocaleString();
+
+const ratingCell = (info: CellContext<FeedbackRow, number>) => {
+  const rating = info.getValue();
+  const fullStar = "★";
+  const emptyStar = "☆";
+  const stars = fullStar.repeat(rating) + emptyStar.repeat(5 - rating);
+  return <p className="text-black">{stars}</p>;
+};
+
+const actionsCell =
+  (onSelectFeedback: (c: FeedbackRow) => void) =>
+  (info: CellContext<FeedbackRow, any>) => (
+    <button
+      onClick={() =>
+        onSelectFeedback(info.row.original)
+      }
+      className="bg-brand-accent text-black px-3 py-1 rounded hover:bg-brand-accent/70"
+    >
+      View
+    </button>
+  );
+
 
 export default function FeedbackTable({
   feedbacks,
   onSelectFeedback,
 }: {
   feedbacks: Record<string, any>[];
-  onSelectFeedback: (f: Feedback) => void;
+  onSelectFeedback: (f: FeedbackRow) => void;
 }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [dateRange, setDateRange] = useState<{ start?: string; end?: string }>({});
 
-const { data } = useMemo(() => {
-  const mapped: Feedback[] = feedbacks.map((d) => ({
-    name: d.name,
-    feedbackId: d.feedbackId,
-    complaintId: d.complaintId,
-    userId: d.userId,
-    details: d.details,
-    image: d.image,
-    creationtime: d.creationtime,
-    rating:d.rating,
-  }));
+  const { data } = useMemo(() => {
+    const rows: FeedbackRow[] = feedbacks.map((d) =>
+      Feedback.fromRecord(d).toPlainObject()
+    );
 
-  return {
-    data: mapped,
-  };
-}, [feedbacks]);
+    return {
+      data: rows,
+    };
+  }, [feedbacks]);
 
   const columns = useMemo(
     () => [
-      { accessorKey: "name", header: "Respondant", filterFn: filterFns.includesString },
-      { accessorKey: "creationtime", header: "Date", filterFn: dateRangeFilter, cell: dateCell },
-      { accessorKey: "rating", header: "Rating", filterFn: filterFns.equals },
-      { id: "actions", header: "", cell: actionsCell(setSelectedFeedback) },
+      { 
+        accessorKey: "name" as const, 
+        header: "Respondent", 
+        filterFn: filterFns.includesString 
+      },
+      { 
+        accessorKey: "creationtime" as const, 
+        header: "Date", 
+        filterFn: dateRangeFilter, 
+        cell: dateCell 
+      },
+      { 
+        accessorKey: "rating" as const, 
+        header: "Rating", 
+        filterFn: filterFns.equals,
+        cell: ratingCell 
+      },
+      { 
+        id: "actions", 
+        header: "", 
+        cell: actionsCell(onSelectFeedback) 
+      },
     ],
-    [onSelectFeedback]
+    []
   );
 
   const table = useReactTable({
@@ -93,7 +122,6 @@ const { data } = useMemo(() => {
 
   return (
     <section className="flex flex-col gap-6">
-      {/* Filters */}
       <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-4">
         <FeedbackFilters
           table={table}
@@ -101,9 +129,8 @@ const { data } = useMemo(() => {
           setDateRange={setDateRange}
         />
       </article>
-
-      {/* Table */}
-      <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg overflow-hidden">
+      
+      {/*the table*/}
         <table className="w-full table-fixed text-sm text-gray-900">
           <thead className="bg-teal-500/80 text-white">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -146,7 +173,6 @@ const { data } = useMemo(() => {
             ))}
           </tbody>
         </table>
-      </article>
     </section>
   );
 }

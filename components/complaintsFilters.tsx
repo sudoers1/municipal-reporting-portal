@@ -2,7 +2,6 @@
 
 type Props = {
   table: any;
-  municipalityOptions: string[];
   issueTypeOptions: string[];
   dateRange: { start?: string; end?: string };
   setDateRange: (value: { start?: string; end?: string }) => void;
@@ -10,13 +9,12 @@ type Props = {
 
 export default function ComplaintsFilters({
   table,
-  municipalityOptions,
   issueTypeOptions,
   dateRange,
   setDateRange,
 }: Props) {
   return (
-    <header className="w-[85vw] p-2 flex gap-3 justify-center bg-brand-primary rounded-2xl text-white">
+    <header className="w-[85vw] p-2 flex gap-3 justify-center text-white">
       <input
         type="text"
         placeholder="Search Municipality..."
