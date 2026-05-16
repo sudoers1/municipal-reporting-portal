@@ -89,10 +89,16 @@ export default function Home() {
             My Reports
           </h2>
           <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-4">
-            <ComplaintsTable complaints={complaints} />
+            <ComplaintsTable complaints={complaints} onSelectComplaint={setSelectedComplaint} />
           </article>
         </section>
       </section>
+      {selectedComplaint && (
+                    <ComplaintViewer
+                      complaint={selectedComplaint}
+                      onClose={() => setSelectedComplaint(null)}
+                    />
+              )}
     </main>
   );
 }

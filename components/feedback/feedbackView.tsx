@@ -39,7 +39,7 @@ export default function FeedbackViewer({
   }
 
   return (
-    <section className="fixed inset-0 bg-white/70 backdrop-blur-md flex items-center justify-center z-50">
+    <section className="fixed inset-0 bg-white/70 backdrop-blur-md flex items-center justify-center z-50" onClick={onClose}>
       
       <article
         className={`bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl relative p-8

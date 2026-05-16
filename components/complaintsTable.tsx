@@ -13,7 +13,6 @@ import {
   CellContext,
   Row,
 } from "@tanstack/react-table";
-import ComplaintViewer from "@/components/complaintView";
 import ComplaintsFilters from "@/components/complaintsFilters";
 import { ReportsBleed } from "@/lib/structures/reportsbleed";
 
@@ -49,11 +48,11 @@ const actionsCell =
 
 export default function ComplaintsTable({
   complaints,
+  onSelectComplaint,
 }: {
   complaints: Record<string, any>[];
+  onSelectComplaint: (c: ComplaintRow) => void;
 }) {
-  const [selectedComplaint, setSelectedComplaint] =
-    useState<ComplaintRow | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [dateRange, setDateRange] = useState<{ start?: string; end?: string }>(
@@ -96,7 +95,7 @@ export default function ComplaintsTable({
       {
         id: "actions",
         header: "",
-        cell: actionsCell(setSelectedComplaint),
+        cell: actionsCell(onSelectComplaint),
       },
     ],
     []
@@ -175,12 +174,6 @@ export default function ComplaintsTable({
         </tbody>
       </table>
 
-      {selectedComplaint && (
-        <ComplaintViewer
-          complaint={selectedComplaint}
-          onClose={() => setSelectedComplaint(null)}
-        />
-      )}
     </section>
   );
 }

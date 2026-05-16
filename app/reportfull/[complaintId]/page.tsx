@@ -5,6 +5,7 @@ import Image from "next/image";
 
 import { authClient } from "@/lib/auth-client";
 import FeedbackTable from "@/components/feedback/feedbackTable";
+import FeedbackViewer from "@/components/feedback/feedbackView";
 import { Feedback } from "@/lib/structures/feedback";
 import { readFeedback } from "@/lib/db/feedback";
 import { readoneComplaint } from "@/lib/db/complaints";
@@ -112,9 +113,14 @@ export default function ReportFull({
         {complaint.status === "Resolved" && (
           <section className="mt-12 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-6">
             <h2 className="text-2xl font-bold text-center text-black mb-6">Feedback</h2>
-            <FeedbackTable feedbacks={feedback} setSelectedFeedback={setSelectedFeedback}/>
+            <FeedbackTable
+              feedbacks={feedback}
+              onSelectFeedback={setSelectedFeedback}
+            />
           </section>
         )}
+        
+      </section>
 
       {selectedFeedback && (
         <FeedbackViewer
@@ -122,9 +128,6 @@ export default function ReportFull({
           onClose={() => setSelectedFeedback(null)}
         />
       )}
-
-       
-      </section>
 
       
     </main>

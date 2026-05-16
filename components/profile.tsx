@@ -19,12 +19,12 @@ export default function ProfilePopup({ onClose }: { onClose: () => void }) {
   return (
     <section className="fixed inset-0 bg-black/0 " onClick={onClose}>
       
-    <aside className="absolute top-12 right-0 bg-white rounded-2xl shadow-lg p-6 z-90 w-72" onClick={(e) => e.stopPropagation()}>
+    <aside className="absolute top-12 right-0 bg-white/50 backdrop-blur-lg rounded-2xl shadow-lg p-6 z-90 w-72" onClick={(e) => e.stopPropagation()}>
       
       <button
         onClick={onClose}
         aria-label="Close profile popup"
-        className="absolute top-3 right-4 text-gray-500 hover:text-black text-xl"
+        className="absolute top-3 right-4 text-gray-700 hover:text-black text-xl"
       >
         ×
       </button>
@@ -41,7 +41,7 @@ export default function ProfilePopup({ onClose }: { onClose: () => void }) {
 
         <header className="text-center">
           <h2 className="font-bold text-black text-lg">{user?.name}</h2>
-          <p className="text-gray-500 text-sm">{user?.email}</p>
+          <p className="text-gray-700 text-sm">{user?.email}</p>
         </header>
 
         <p className="px-3 py-1 bg-brand-primary text-white text-sm rounded-full">

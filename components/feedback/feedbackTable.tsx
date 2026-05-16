@@ -42,17 +42,27 @@ const ratingCell = (info: CellContext<FeedbackRow, number>) => {
   return <p className="text-black">{stars}</p>;
 };
 
-const actionsCell = (setSelectedFeedback: (c: FeedbackRow) => void) => (info: CellContext<FeedbackRow, any>) => (
-  <button
-    onClick={() => setSelectedFeedback(info.row.original)}
-    className="bg-brand-accent text-black px-3 py-1 rounded hover:bg-brand-accent/70"
-  >
-    View
-  </button>
-);
+const actionsCell =
+  (onSelectFeedback: (c: FeedbackRow) => void) =>
+  (info: CellContext<FeedbackRow, any>) => (
+    <button
+      onClick={() =>
+        onSelectFeedback(info.row.original)
+      }
+      className="bg-brand-accent text-black px-3 py-1 rounded hover:bg-brand-accent/70"
+    >
+      View
+    </button>
+  );
 
-export default function FeedbackTable({ feedbacks,setSelectedFeedback }: { feedbacks: Record<string, any>[]; setSelectedFeedback:(feedback:FeedbackRow)=>{};}) {
 
+export default function FeedbackTable({
+  feedbacks,
+  onSelectFeedback,
+}: {
+  feedbacks: Record<string, any>[];
+  onSelectFeedback: (f: FeedbackRow) => void;
+}) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [dateRange, setDateRange] = useState<{ start?: string; end?: string }>({});
@@ -89,7 +99,7 @@ export default function FeedbackTable({ feedbacks,setSelectedFeedback }: { feedb
       { 
         id: "actions", 
         header: "", 
-        cell: actionsCell(setSelectedFeedback) 
+        cell: actionsCell(onSelectFeedback) 
       },
     ],
     []

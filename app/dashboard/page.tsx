@@ -27,7 +27,7 @@ export default function DashboardPage() {
 
   if (isPending) {
     return (
-      <main className="w-screen min-h-screen bg-gray-200 flex items-center justify-center">
+      <main className="w-screen min-h-screen bg-gray-200 flex items-center justify-center bg-gradient-to-br from-white via-teal-100 to-teal-300">
         <Spinner splash="your dashboard" />
       </main>
     );

@@ -136,9 +136,9 @@ export default function FeedbackModal({
   }
 
   return (
-    <section className="fixed inset-0 flex bg-white/80 backdrop-blur-md items-center justify-center z-50" onClick={onClose}>
+    <section className="fixed inset-0 flex items-center  bg-linear-to-br from-white/40 via-teal-100/40 to-teal-300/40 backdrop-blur-md justify-center z-50" onClick={onClose}>
       <section 
-        className="bg-white/60 backdrop-blur-md rounded-2xl shadow-lg w-full max-w-lg p-8 relative" 
+        className="bg-white/30 backdrop-blur-lg  rounded-2xl shadow-2xl w-full max-w-lg p-8 relative" 
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -162,7 +162,7 @@ export default function FeedbackModal({
             <textarea
               value={form.details}
               onChange={(e) => setForm({ ...form, details: e.target.value })}
-              className="w-full bg-white border rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none"
+              className="w-full bg-white border-[2px] border-brand-accent rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none"
               rows={4}
               required
               placeholder="Describe your experience..."
@@ -178,7 +178,7 @@ export default function FeedbackModal({
               accept="image/*"
               capture="environment"
               onChange={(e) => setForm({ ...form, photo: e.target.files?.[0] || null })}
-              className="w-full bg-white border rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none"
+              className="w-full bg-white border-[2px] border-brand-accent rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none"
               required
             />
             <p className="text-xs text-gray-500 mt-1">

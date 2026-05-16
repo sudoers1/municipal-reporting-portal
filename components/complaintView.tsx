@@ -85,7 +85,7 @@ export default function ComplaintViewer({
 
             {complaint.image && (
               <section className="min-w-[48%] flex items-center justify-center">
-                <figure className="relative w-full h-full flex items-center justify-center bg-white/30 rounded-xl overflow-hidden border-[2px] border-brand-secondary">
+                <figure className="relative w-full h-full flex items-center justify-center bg-white rounded-xl overflow-hidden border-[2px] border-brand-secondary">
                   {loading && <Spinner />}
                   <Image
                     src={complaint.image}
