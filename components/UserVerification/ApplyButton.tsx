@@ -2,14 +2,15 @@
 
 import { useRef, useState, useTransition } from "react";
 import { insertVerification } from "../../lib/db/verifications"; // Adjust path to verifications.ts
+// import SelectWard from "./SelectWard";
+import MunicipalityAssignModal from "../UserManagement/municipalityassignmodal";
 
 interface ApplyButtonProps {
   userId: string;
   userName: string
-  userMunicipality: string;
 }
 
-export default function Apply({ userId, userName, userMunicipality}: ApplyButtonProps) {
+export default function Apply({ userId, userName}: ApplyButtonProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [isPending, startTransition] = useTransition();
   const [formData, setFormData] = useState({ name: "", municipality: "" });
@@ -32,12 +33,8 @@ export default function Apply({ userId, userName, userMunicipality}: ApplyButton
     e.preventDefault();
     setError(null);
 
-    // if (!formData.name.trim() || !formData.municipality.trim()) {
-    //   setError("Please fill in all fields.");
-    //   return;
-    // }
-    if (!userName.trim() || userMunicipality === "Not Specified") {
-      setError("Valid User Name and Municipality profile parameters are required to apply.");
+    if (!formData.name.trim() || !formData.municipality.trim()) {
+      setError("Please fill in all fields.");
       return;
     }
 
@@ -81,30 +78,11 @@ export default function Apply({ userId, userName, userMunicipality}: ApplyButton
             <form onSubmit={handleSubmit} className="text-black flex flex-col gap-4">
                 <section>
                     <label className="block  font-medium mb-1 ">Full Name</label>
-                    {/* <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="John Doe"
-                    className="w-full p-2.5 rounded-lg border border-black/60 text-black focus:outline-none focus:border-brand-accent"
-                    required
-                    /> */}
                     <p className="bg-brand-accent/50 w-full p-2.5 rounded-lg text-black focus:outline-none focus:border-brand-accent">{userName}</p>
                 </section>
 
                 <section>
                     <label className="block  font-medium mb-1 ">Municipality</label>
-                    {/* <input
-                    type="text"
-                    name="municipality"
-                    value={formData.municipality}
-                    onChange={handleChange}
-                    placeholder="City or District Name"
-                    className="w-full p-2.5 rounded-lg border border-black/60 text-black focus:outline-none focus:border-brand-accent"
-                    required
-                    /> */}
-                    <p className="bg-brand-accent/50 w-full p-2.5 rounded-lg text-black focus:outline-none focus:border-brand-accent">{userMunicipality}</p>
                 </section>
 
                 {error && <p className="text-red-500 mt-1">{error}</p>}

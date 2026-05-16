@@ -8,15 +8,14 @@ import ComplaintViewer from "@/components/complaintView";
 import { readMyComplaints } from "@/lib/db/complaints";
 import Spinner from "@/components/spinner";
 import Apply from "@/components/UserVerification/ApplyButton";
+import ApplyForVerification from "@/components/UserVerification/SelectWard";
 
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
   const { data: session, isPending } = authClient.useSession();
-  const { data: session, isPending  } = authClient.useSession();
   const userId = session?.user?.id;
   const userName = session?.user?.name;
-  const userWard = (session?.user as { municipality?: string })?.municipality;
 
   const [complaints, setComplaints] = useState<Record<string, any>[]>([]);
   const [selectedComplaint, setSelectedComplaint] = useState<Record<string, any> | null>(null);
@@ -51,102 +50,67 @@ export default function Home() {
       id="profile"
       className="w-screen min-h-screen overflow-y-auto bg-linear-to-br from-white via-teal-100 to-teal-300"
     >
-      <section className="p-6 md:p-10 lg:p-14 min-h-screen space-y-12">
-        {/* Header */}
-        <header>
-          <h1 className="text-3xl md:text-5xl font-bold text-gray-900 text-center drop-shadow-md">
-            My Profile
-          </h1>
-        </header>
+    <section className="p-6 md:p-10 lg:p-14 min-h-screen space-y-12">
+      {/* Header */}
+      <header>
+        <h1 className="text-3xl md:text-5xl font-bold text-gray-900 text-center drop-shadow-md">
+          My Profile
+        </h1>
+      </header>
 
-        {/* Profile Card */}
-        <article className="max-w-4xl mx-auto bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl p-6 md:p-8 shadow-2xl">
-          <section className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-10">
-            {/* Avatar */}
-            <figure className="flex-shrink-0">
-              <img
-                src={session?.user?.image ?? "/default-avatar.png"}
-                alt={`${session?.user?.name}'s avatar`}
-                className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-teal-400 shadow-lg"
-              />
-            </figure>
+      {/* Profile Card */}
+      <article className="max-w-4xl mx-auto bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl p-6 md:p-8 shadow-2xl">
+        <section className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-10">
+          {/* Avatar */}
+          <figure className="flex-shrink-0">
+            <img
+              src={session?.user?.image ?? "/default-avatar.png"}
+              alt={`${session?.user?.name}'s avatar`}
+              className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-teal-400 shadow-lg"
+            />
+          </figure>
 
-            {/* User Info */}
-            <section className="flex-1 text-center md:text-left space-y-3">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                {session?.user?.name}
-              </h2>
-              <p className="text-gray-700 text-base md:text-lg">
-                Email: {session?.user?.email}
-              </p>
-              <p className="text-gray-700 text-base md:text-lg">
-                First Used Site on:{" "}
-                {session?.user?.createdAt?.toDateString?.() ?? "Unknown"}
-              </p>
+          {/* User Info */}
+          <section className="flex-1 text-center md:text-left space-y-3">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+              {session?.user?.name}
+            </h2>
+            <p className="text-gray-700 text-base md:text-lg">
+              Email: {session?.user?.email}
+            </p>
+            <p className="text-gray-700 text-base md:text-lg">
+              First Used Site on:{" "}
+              {session?.user?.createdAt?.toDateString?.() ?? "Unknown"}
+            </p>
+            <section className="flex gap-4">
               <span className="inline-block px-4 py-1.5 bg-teal-500/80 text-white text-sm font-semibold rounded-full shadow-md">
                 {session?.user?.role || "Resident"}
               </span>
+              <ApplyForVerification userId={userId ?? ""} userName={userName ?? ""} />
             </section>
-  <main
-    id="dashboard"
-    className="w-screen min-h-screen overflow-y-auto bg-cover bg-center bg-no-repeat"
-    style={{ backgroundImage: "url('/municipality.png')" }}
-  >
-    <section className="p-4 md:p-8 lg:p-12 bg-black/50 min-h-screen">
-      
-      <h1 className="text-3xl md:text-5xl font-bold text-white text-center mb-8 md:mb-12">
-        My Profile
-      </h1>
-      
-      <section className="max-w-4xl mx-auto bg-brand-primary rounded-2xl p-6 md:p-8 shadow-2xl ">
-        {/*add stuff here when we have more user info. for example, if i wasnt lazy i would get provider from accounts table*/ }
-        <section className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
-          
-         <figure className="flex-shrink-0">
-            <img 
-              src={session?.user?.image ?? "/default-avatar.png"} 
-              alt={`${session?.user?.name}'s avatar`}
-              className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-brand-secondary"
-            />
-          </figure>
-          
-          <section className="flex-1 text-center md:text-left space-y-3">
-            <h2 className="text-2xl md:text-3xl font-bold text-white">
-              Name: {session?.user?.name}
-            </h2>
-            <p className="text-gray-200 text-base md:text-lg">
-              Email: {session?.user?.email}
-            </p>
-            <p className="text-gray-200 text-base md:text-lg">
-              First Used Site on: {session?.user?.createdAt.toDateString()}
-            </p>
-            <section className="flex gap-4">
-              <strong className="inline-block px-4 py-1.5 bg-brand-accent text-white text-sm font-semibold rounded-full shadow-md">
-                {session?.user?.role || "Resident"}
-              </strong>
-              <Apply userId={userId ?? ""} userName={userName ?? ""} userMunicipality={userWard ?? "Not Specified"} />
-            </section>
-            
-            
           </section>
-        </article>
+          </section>
+      </article>
 
-        {/* Reports Section */}
-        <section>
+      <section>
           <h2 className="mb-6 text-3xl md:text-5xl font-bold text-gray-900 text-center drop-shadow-md">
             My Reports
           </h2>
           <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-4">
             <ComplaintsTable complaints={complaints} onSelectComplaint={setSelectedComplaint} />
           </article>
+          {selectedComplaint && (
+              <ComplaintViewer
+                complaint={selectedComplaint}
+                onClose={() => setSelectedComplaint(null)}
+              />
+          )}
         </section>
+
       </section>
-      {selectedComplaint && (
-                    <ComplaintViewer
-                      complaint={selectedComplaint}
-                      onClose={() => setSelectedComplaint(null)}
-                    />
-              )}
+  
+    
     </main>
+    
   );
 }
