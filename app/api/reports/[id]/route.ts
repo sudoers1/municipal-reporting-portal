@@ -85,7 +85,15 @@ export const PATCH = withAuth(["Worker"], async (req: Request, session: any) => 
       UPDATE assignments
       SET 
         status = ${status},
-        updated_at = NOW()
+        updated_at = NOW(),
+        started_at = CASE
+          WHEN ${status} = 'In progress' AND started_at IS NULL THEN NOW()
+          ELSE started_at
+        END,
+        resolved_at = CASE
+          WHEN ${status} = 'Resolved' THEN NOW()
+          ELSE NULL
+        END
       WHERE complaintid = ${complaintid}
         AND workerid = ${workerId}
       RETURNING *
@@ -97,6 +105,12 @@ export const PATCH = withAuth(["Worker"], async (req: Request, session: any) => 
         { status: 404 }
       );
     }
+
+    await sql`
+      UPDATE complaints
+      SET status = ${status}
+      WHERE complaintid = ${complaintid}
+    `;
 
     return NextResponse.json({
       message: "Status updated successfully",

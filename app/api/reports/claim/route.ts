@@ -17,8 +17,8 @@ export const POST = withAuth(["Worker"], async (req: Request, session: any) => {
     }
 
     await sql`
-      INSERT INTO assignments (complaintid, workerid, status)
-      VALUES (${complaintid}, ${workerId}, 'In progress')
+      INSERT INTO assignments (complaintid, workerid, status, started_at)
+      VALUES (${complaintid}, ${workerId}, 'In progress', NOW())
     `;
 
     return NextResponse.json({

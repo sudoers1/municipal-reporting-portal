@@ -13,6 +13,8 @@ import UpdateStatusCard from "@/components/Worker/updatestatus";
 import ReportDetailsCard from "@/components/Worker/reportdetails";
 import PossibleDuplicatesCard from "@/components/Worker/possibleduplicates";
 import DuplicateReviewDetails from "@/components/Worker/duplicatereviewdetails";
+import KPICards from "@/components/Dashboard/KPIcard";
+import WorkerStatusAnalytics from "@/components/Worker/statuslegend";
 
 export default function WorkerDashboard() {
   const { data: session, isPending } = authClient.useSession();
@@ -26,6 +28,8 @@ export default function WorkerDashboard() {
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [selectedDuplicateReview, setSelectedDuplicateReview] =
     useState<any>(null);
+
+  const dashboardReports = [...assigned, ...unassigned, ...completed];
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -186,7 +190,17 @@ export default function WorkerDashboard() {
           </h1>
         </header>
 
+        <KPICards data={dashboardReports} />
+
         <section className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+          <section className="md:col-span-2 xl:col-span-3">
+            <WorkerStatusAnalytics 
+            assignments={dashboardReports}
+            duplicates={duplicates}
+             />
+          </section>
+
           <WorkerInfoCard worker={session?.user} />
 
           <UnassignedTasksCard tasks={unassigned} onClaim={handleClaim} />
