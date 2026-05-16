@@ -15,6 +15,8 @@ import PossibleDuplicatesCard from "@/components/Worker/possibleduplicates";
 import DuplicateReviewDetails from "@/components/Worker/duplicatereviewdetails";
 import KPICards from "@/components/Dashboard/KPIcard";
 import WorkerStatusAnalytics from "@/components/Worker/statuslegend";
+import ResolvedChartCard from "@/components/Worker/ResolvedChartCard";
+import StatusChartCard from "@/components/Worker/StatusChartCard";
 
 export default function WorkerDashboard() {
   const { data: session, isPending } = authClient.useSession();
@@ -97,6 +99,13 @@ export default function WorkerDashboard() {
     }
   }
 
+  useEffect(() => {
+    if (session) {
+      fetchData();
+    }
+  }, [session]);
+
+  const [statsKey, setStatsKey] = useState(0);
   async function handleClaim(id: string) {
     try {
       const response = await fetch("/api/reports/claim", {
@@ -114,6 +123,7 @@ export default function WorkerDashboard() {
       }
 
       await fetchData();
+      setStatsKey((k) => k + 1);
     } catch (error) {
       console.error("Claim report error:", error);
     }
@@ -137,6 +147,7 @@ export default function WorkerDashboard() {
       }
 
       await fetchData();
+      setStatsKey((k) => k + 1);
     } catch (error) {
       console.error("Update status error:", error);
     }
@@ -261,6 +272,8 @@ export default function WorkerDashboard() {
               />
             </>
           )}
+          <StatusChartCard refreshKey={statsKey} />
+          <ResolvedChartCard refreshKey={statsKey} />
         </section>
       </section>
     </main>

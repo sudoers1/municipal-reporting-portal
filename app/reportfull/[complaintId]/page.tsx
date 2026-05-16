@@ -6,9 +6,12 @@ import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
 import FeedbackTable from "@/components/feedback/feedbackTable";
 import FeedbackViewer from "@/components/feedback/feedbackView";
+import { Feedback } from "@/lib/structures/feedback";
 import { readFeedback } from "@/lib/db/feedback";
 import { readoneComplaint } from "@/lib/db/complaints";
 import Spinner from "@/components/spinner";
+
+type FeedbackRow = ReturnType<Feedback["toPlainObject"]>;
 
 export default function ReportFull({
   params,
@@ -24,7 +27,7 @@ export default function ReportFull({
 
   const [complaint, setComplaint] = useState<Record<string, any> | null>(null);
   const [feedback, setFeedback] = useState<Record<string, any>[]>([]);
-  const [selectedFeedback, setSelectedFeedback] = useState<Record<string, any> | null>(null);
+  const [selectedFeedback, setSelectedFeedback] = useState<FeedbackRow | null>(null);
 
   useEffect(() => {
     if (isPending) return;
@@ -45,8 +48,8 @@ export default function ReportFull({
 
   if (isPending || loading) {
     return (
-      <main className="w-screen min-h-screen bg-gradient-to-br from-teal-200 via-white to-teal-300">
-        <section className="flex flex-col items-center gap-4 min-h-screen justify-center">
+      <main className="w-screen min-h-screen bg-linear-to-br from-white via-teal-100 to-teal-300">
+        <section className="flex flex-col bg-black/15 items-center gap-4 min-h-screen justify-center">
           <Spinner splash="Report Feedback" />
         </section>
       </main>
@@ -58,7 +61,7 @@ export default function ReportFull({
   return (
     <main
       id="dashboard"
-      className="w-screen min-h-screen overflow-y-auto bg-gradient-to-br from-teal-200 via-white to-teal-300"
+      className="w-screen min-h-screen overflow-y-auto bg-linear-to-br from-white via-teal-100 to-teal-300"
     >
       <section className="p-6 md:p-10 lg:p-14 backdrop-blur-sm min-h-screen rounded-xl">
         <h1 className="text-3xl md:text-5xl font-bold text-black text-center mb-10 drop-shadow-lg">
@@ -110,18 +113,23 @@ export default function ReportFull({
         {complaint.status === "Resolved" && (
           <section className="mt-12 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-6">
             <h2 className="text-2xl font-bold text-center text-black mb-6">Feedback</h2>
-            <FeedbackTable feedbacks={feedback} onSelectFeedback={setSelectedFeedback} />
+            <FeedbackTable
+              feedbacks={feedback}
+              onSelectFeedback={setSelectedFeedback}
+            />
           </section>
         )}
-
-        {/* Feedback Viewer Modal */}
-        {selectedFeedback && (
-          <FeedbackViewer
-            feedback={selectedFeedback}
-            onClose={() => setSelectedFeedback(null)}
-          />
-        )}
+        
       </section>
+
+      {selectedFeedback && (
+        <FeedbackViewer
+          feedback={selectedFeedback}
+          onClose={() => setSelectedFeedback(null)}
+        />
+      )}
+
+      
     </main>
   );
 }

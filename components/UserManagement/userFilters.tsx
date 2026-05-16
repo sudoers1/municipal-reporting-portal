@@ -34,6 +34,29 @@ export default function UserFilters({
           )
         }
       />
+      <input
+        type="text"
+        placeholder="Search Email..."
+        className="p-2 text-black rounded bg-brand-accent"
+        value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+        onChange={(e) =>
+          table.getColumn("email")?.setFilterValue(
+            e.target.value || undefined
+          )
+        }
+      />
+
+      <input
+        type="text"
+        placeholder="Search Municipality..."
+        className="p-2 text-black rounded bg-brand-accent"
+        value={(table.getColumn("municipality")?.getFilterValue() as string) ?? ""}
+        onChange={(e) =>
+          table.getColumn("municipality")?.setFilterValue(
+            e.target.value || undefined
+          )
+        }
+      />
 
       <select
         className="p-2 text-black rounded bg-brand-accent"
@@ -51,22 +74,7 @@ export default function UserFilters({
         ))}
       </select>
 
-      <select
-        className="p-2 text-black rounded bg-brand-accent"
-        value={(table.getColumn("municipality")?.getFilterValue() as string) ?? ""}
-        onChange={(e) =>
-          table.getColumn("municipality")?.setFilterValue(
-            e.target.value || undefined
-          )
-        }
-      >
-        <option value="">All Municipalities</option>
-        {municipalityOptions.map((m) => (
-          <option key={m} value={m}>
-            {m}
-          </option>
-        ))}
-      </select>
+
 
       <input
         type="date"

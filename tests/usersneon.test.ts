@@ -87,7 +87,7 @@ describe("usersneon db functions", () => {
         "Pretoria"
       );
 
-      expect(sql).toHaveBeenCalledTimes(1);
+      expect(sql).toHaveBeenCalledTimes(2);
 
       expect(result).toEqual(insertedRow[0]);
     });

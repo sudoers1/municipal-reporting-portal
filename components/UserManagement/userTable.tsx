@@ -103,7 +103,7 @@ export default function UserTable({ onSuccess, users }: { onSuccess: () => void;
       {
         accessorKey: "municipality",
         header: "Municipality",
-        filterFn: filterFns.equals,
+        filterFn: filterFns.includesString,
       },
       {
         accessorKey: "user_types_id",

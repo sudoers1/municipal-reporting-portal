@@ -15,6 +15,7 @@ const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
 export default function DashboardPage() {
   const [showComplaints, setShowComplaints] = useState(false);
   const [clickedLocation, setClickedLocation] = useState<{ lat: number; lng: number; address?: string } | null>(null);
+  
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
 
@@ -27,7 +28,7 @@ export default function DashboardPage() {
 
   if (isPending) {
     return (
-      <main className="w-screen min-h-screen bg-gray-200 flex items-center justify-center">
+      <main className="w-screen min-h-screen bg-gray-200 flex items-center justify-center bg-gradient-to-br from-white via-teal-100 to-teal-300">
         <Spinner splash="your dashboard" />
       </main>
     );

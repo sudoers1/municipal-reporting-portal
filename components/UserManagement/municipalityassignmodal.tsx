@@ -3,26 +3,38 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { insertUserMunicipality } from "@/lib/db/usersneon";
+import dynamic from "next/dynamic";
 
+const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
 
 
 export default function MunicipalityAssignModal({ onClose,onSuccess, uid="" }: { uid:string; onSuccess: () => void; onClose: () => void; }) {
-  const [form, setForm] = useState({
-    userid: uid,
-    municipality: ""
-  });
+const [form, setForm] = useState({
+  userid: uid,
+  municipality: "Not Assigned",
+  ward: "Not Assigned",
+});
+
+const getMunicipality = (coords: any) => {
+  console.log("MAP COORDS:", coords);
+
+  setForm((prev) => ({
+    ...prev,
+    municipality: coords.municipality || "Not Assigned",
+    ward: coords.ward_id || "Not Assigned",
+  }));
+};
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
-    if (!form.municipality) {
-      toast.error("Please enter a municipality");
+    if (form.municipality=="Not Assigned") {
+      toast.error("Please choose a municipality");
       return;
     }
    await insertUserMunicipality(form.userid,form.municipality);
-   toast.success("Municipality assigned successfully.");
+  toast.success("Municipality assigned successfully.");
    onSuccess?.();
    onClose();
 
@@ -30,8 +42,10 @@ export default function MunicipalityAssignModal({ onClose,onSuccess, uid="" }: {
   }
 
   return (
-    <section className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <section className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-8 relative">
+    <section className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 " onClick={onClose}>
+
+
+      <section className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-8 relative" onClick={(e) => e.stopPropagation()}>
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-600 hover:text-black text-2xl font-bold"
@@ -50,20 +64,20 @@ export default function MunicipalityAssignModal({ onClose,onSuccess, uid="" }: {
             
 
         <fieldset>
-            <label className="block font-semibold mb-2 text-black">
-                Municipality
-            </label>
-
-            <input
-                type="text"
-                value={form.municipality}
-                onChange={(e) =>
-                setForm({ ...form, municipality: e.target.value })
-                }
-                className="w-full border rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none"
-                required
-            />
+          <section className="w-full border rounded-xl text-center px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none">
+              <p >
+                <strong>Municipality:</strong>{form.municipality}
+              </p>
+              <p >
+                <strong>Ward:</strong>{form.ward}
+              </p>
+          </section>
          </fieldset>
+          <section className="border rounded-xl overflow-hidden">
+            <section className="h-[300px] w-full">
+              <WardMap complaintMode={true} onLocationSelect={(coords) => getMunicipality(coords)}/>
+            </section>
+          </section>
 
           <button
             type="submit"
@@ -73,6 +87,8 @@ export default function MunicipalityAssignModal({ onClose,onSuccess, uid="" }: {
           </button>
         </form>
       </section>
+
+      
     </section>
   );
 }

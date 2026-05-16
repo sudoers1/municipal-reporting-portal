@@ -130,7 +130,7 @@ export default function ComplaintsModal({
         const uploaded = await uploadHandler(form.photo);
         imageUrl = uploaded.secure_url || uploaded.url || null;
       }
-
+      console.log(form);
       await createComplaint({
         userid: form.created_by,
         ward_id: form.ward_id,

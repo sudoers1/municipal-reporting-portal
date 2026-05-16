@@ -33,12 +33,12 @@ export default function Navbar({ initialNotifications = [] }: { initialNotificat
 
   return (
     <>
-      <nav className="w-full flex items-center justify-between px-6 py-2 bg-brand-primary shadow">
+      <nav className="w-full flex items-center justify-between px-6 py-2 z-60 bg-brand-primary shadow">
         <Link
           href={user ? "/dashboard" : "/"}
           className="text-xl text-white font-bold text-foreground hover:underline"
         >
-          The Porthole
+          Municipal Portal Project
         </Link>
         <section className="flex items-center gap-6 text-white">
           <Hamburger />
