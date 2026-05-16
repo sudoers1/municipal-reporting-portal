@@ -85,8 +85,7 @@ export const PATCH = withAuth(["Worker"], async (req: Request, session: any) => 
       SELECT
         a.status AS previous_status,
         c.userid AS resident_id,
-        c.issuetype,
-        c.municipality
+        c.issuetype
       FROM assignments a
       JOIN complaints c
         ON c.complaintid = a.complaintid
@@ -129,6 +128,23 @@ export const PATCH = withAuth(["Worker"], async (req: Request, session: any) => 
       SET status = ${status}
       WHERE complaintid = ${complaintid}
     `;
+
+    if (status === "In progress" && previousStatus !== "In progress") {
+      await sql`
+        INSERT INTO notifications (
+          user_id,
+          type,
+          title,
+          body
+        )
+        VALUES (
+          ${residentId},
+          'complaint_in_progress',
+          'Complaint in progress',
+          ${`Your ${issueType} complaint is now being worked on.`}
+        )
+      `;
+    }
 
     if (status === "Resolved" && previousStatus !== "Resolved") {
       await sql`
