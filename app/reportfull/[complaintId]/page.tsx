@@ -48,8 +48,8 @@ export default function ReportFull({
 
   if (isPending || loading) {
     return (
-      <main className="w-screen min-h-screen bg-gradient-to-br from-teal-200 via-white to-teal-300">
-        <section className="flex flex-col items-center gap-4 min-h-screen justify-center">
+      <main className="w-screen min-h-screen bg-linear-to-br from-white via-teal-100 to-teal-300">
+        <section className="flex flex-col bg-black/15 items-center gap-4 min-h-screen justify-center">
           <Spinner splash="Report Feedback" />
         </section>
       </main>
@@ -61,7 +61,7 @@ export default function ReportFull({
   return (
     <main
       id="dashboard"
-      className="w-screen min-h-screen overflow-y-auto bg-gradient-to-br from-teal-200 via-white to-teal-300"
+      className="w-screen min-h-screen overflow-y-auto bg-linear-to-br from-white via-teal-100 to-teal-300"
     >
       <section className="p-6 md:p-10 lg:p-14 backdrop-blur-sm min-h-screen rounded-xl">
         <h1 className="text-3xl md:text-5xl font-bold text-black text-center mb-10 drop-shadow-lg">

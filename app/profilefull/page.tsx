@@ -31,8 +31,8 @@ export default function Home() {
 
   if (isPending || loading) {
     return (
-      <main className="w-screen min-h-screen bg-gradient-to-br from-teal-200 via-white to-teal-300">
-        <section className="flex flex-col items-center justify-center min-h-screen gap-4">
+      <main className="w-screen min-h-screen bg-linear-to-br from-white via-teal-100 to-teal-300">
+        <section className="flex flex-col bg-black/15 items-center justify-center min-h-screen gap-4">
           <Spinner splash="Profile" />
         </section>
       </main>
@@ -42,7 +42,7 @@ export default function Home() {
   return (
     <main
       id="profile"
-      className="w-screen min-h-screen overflow-y-auto bg-gradient-to-br from-white via-teal-100 to-teal-300"
+      className="w-screen min-h-screen overflow-y-auto bg-linear-to-br from-white via-teal-100 to-teal-300"
     >
       <section className="p-6 md:p-10 lg:p-14 min-h-screen space-y-12">
         {/* Header */}
