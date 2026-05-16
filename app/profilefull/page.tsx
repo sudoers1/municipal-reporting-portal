@@ -13,6 +13,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const { data: session, isPending  } = authClient.useSession();
   const userId = session?.user?.id;
+  const userName = session?.user?.name;
 
   const [complaints, setComplaints] = useState<Record<string, any>[]>([]);
 
@@ -86,7 +87,7 @@ export default function Home() {
               <strong className="inline-block px-4 py-1.5 bg-brand-accent text-white text-sm font-semibold rounded-full shadow-md">
                 {session?.user?.role || "Resident"}
               </strong>
-              <Apply userId={userId ?? ""} />
+              <Apply userId={userId ?? ""} userName={userName ?? ""} />
             </section>
             
             

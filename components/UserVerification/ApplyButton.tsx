@@ -5,9 +5,10 @@ import { insertVerification } from "../../lib/db/verifications"; // Adjust path 
 
 interface ApplyButtonProps {
   userId: string;
+  userName: string
 }
 
-export default function Apply({ userId }: ApplyButtonProps) {
+export default function Apply({ userId, userName}: ApplyButtonProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [isPending, startTransition] = useTransition();
   const [formData, setFormData] = useState({ name: "", municipality: "" });
@@ -75,7 +76,7 @@ export default function Apply({ userId }: ApplyButtonProps) {
             <form onSubmit={handleSubmit} className="text-black flex flex-col gap-4">
                 <section>
                     <label className="block  font-medium mb-1 ">Full Name</label>
-                    <input
+                    {/* <input
                     type="text"
                     name="name"
                     value={formData.name}
@@ -83,7 +84,8 @@ export default function Apply({ userId }: ApplyButtonProps) {
                     placeholder="John Doe"
                     className="w-full p-2.5 rounded-lg border border-black/60 text-black focus:outline-none focus:border-brand-accent"
                     required
-                    />
+                    /> */}
+                    <p className="bg-brand-accent/50 w-full p-2.5 rounded-lg text-black focus:outline-none focus:border-brand-accent">{userName}</p>
                 </section>
 
                 <section>
