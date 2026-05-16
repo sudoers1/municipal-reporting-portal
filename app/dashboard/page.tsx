@@ -15,6 +15,7 @@ const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
 export default function DashboardPage() {
   const [showComplaints, setShowComplaints] = useState(false);
   const [clickedLocation, setClickedLocation] = useState<{ lat: number; lng: number; address?: string } | null>(null);
+  
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
 
