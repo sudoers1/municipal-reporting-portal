@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/spinner";
-
+import ExportReportButton from "@/components/Worker/exportReportButton";
 import WorkerInfoCard from "@/components/Worker/workerinfo";
 import UnassignedTasksCard from "@/components/Worker/unassignedtask";
 import AssignedTasksCard from "@/components/Worker/assignedtask";
@@ -13,21 +13,33 @@ import UpdateStatusCard from "@/components/Worker/updatestatus";
 import ReportDetailsCard from "@/components/Worker/reportdetails";
 import PossibleDuplicatesCard from "@/components/Worker/possibleduplicates";
 import DuplicateReviewDetails from "@/components/Worker/duplicatereviewdetails";
+import KPICards from "@/components/Dashboard/KPIcard";
+import WorkerStatusAnalytics from "@/components/Worker/statuslegend";
 import ResolvedChartCard from "@/components/Worker/ResolvedChartCard";
 import StatusChartCard from "@/components/Worker/StatusChartCard";
+
 
 export default function WorkerDashboard() {
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
 
+  const statusChartRef = useRef<HTMLElement>(null);
+  const resolvedChartRef = useRef<HTMLElement>(null);
+  const [municipality, setMunicipality] = useState<string | null>(null);
   const [assigned, setAssigned] = useState<any[]>([]);
   const [unassigned, setUnassigned] = useState<any[]>([]);
   const [completed, setCompleted] = useState<any[]>([]);
   const [duplicates, setDuplicates] = useState<any[]>([]);
-
+  const [statusData, setStatusData] = useState<{ status: string; count: number }[]>([]);
+  const [resolvedData, setResolvedData] = useState<{ week: string; resolved: number; avg_hours?: number | null }[]>([]);
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [selectedDuplicateReview, setSelectedDuplicateReview] =
     useState<any>(null);
+
+  const duplicateReviewRef = useRef<HTMLDivElement | null>(null);
+
+  const dashboardReports = [...assigned, ...unassigned, ...completed];
+  const workerReports = [...assigned, ...completed];
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -35,22 +47,50 @@ export default function WorkerDashboard() {
     }
   }, [session, isPending, router]);
 
+  useEffect(() => {
+    if (session) {
+      fetchData();
+    }
+  }, [session]);
+
+  useEffect(() => {
+    if (selectedDuplicateReview) {
+      setTimeout(() => {
+        duplicateReviewRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, [selectedDuplicateReview]);
+
   async function fetchData() {
     try {
-      const [assignedRes, unassignedRes, completedRes, duplicatesRes] =
+      const [assignedRes, unassignedRes, completedRes, duplicatesRes, statusRes, resolvedRes] =
         await Promise.all([
           fetch("/api/reports/assigned"),
           fetch("/api/reports/unassigned"),
           fetch("/api/reports/completed"),
           fetch("/api/duplicates/pending"),
+          fetch("/api/reports/analytics/status"),
+          fetch("/api/reports/analytics/resolved"),
         ]);
 
       if (
         !assignedRes.ok ||
         !unassignedRes.ok ||
         !completedRes.ok ||
-        !duplicatesRes.ok
+        !duplicatesRes.ok ||
+        !statusRes.ok ||
+        !resolvedRes.ok
       ) {
+        console.error("Dashboard fetch statuses:", {
+          assigned: assignedRes.status,
+          unassigned: unassignedRes.status,
+          completed: completedRes.status,
+          duplicates: duplicatesRes.status,
+        });
+
         throw new Error("Failed to fetch dashboard data");
       }
 
@@ -63,6 +103,10 @@ export default function WorkerDashboard() {
       setUnassigned(unassignedData.data ?? []);
       setCompleted(completedData.data ?? []);
       setDuplicates(duplicatesData.data ?? []);
+      const statusJson = await statusRes.json();
+      setStatusData(statusJson.data ?? []);
+      setMunicipality(statusJson.municipality ?? null);
+      setResolvedData((await resolvedRes.json()).data ?? []);
     } catch (error) {
       console.error("Dashboard fetch error:", error);
     }
@@ -191,7 +235,17 @@ export default function WorkerDashboard() {
           </h1>
         </header>
 
+        <KPICards data={dashboardReports} />
+
         <section className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <section className="md:col-span-2 xl:col-span-3">
+            <WorkerStatusAnalytics
+              assignments={workerReports}
+              duplicates={duplicates}
+              availableTasks={unassigned}
+            />
+          </section>
+
           <WorkerInfoCard worker={session?.user} />
 
           <UnassignedTasksCard tasks={unassigned} onClaim={handleClaim} />
@@ -208,12 +262,17 @@ export default function WorkerDashboard() {
           <CompletedTasksCard tasks={completed} />
 
           {selectedDuplicateReview && (
-            <DuplicateReviewDetails
-              review={selectedDuplicateReview}
-              onClose={() => setSelectedDuplicateReview(null)}
-              onConfirm={handleConfirmDuplicate}
-              onReject={handleRejectDuplicate}
-            />
+            <section
+              ref={duplicateReviewRef}
+              className="md:col-span-2 xl:col-span-3 scroll-mt-6"
+            >
+              <DuplicateReviewDetails
+                review={selectedDuplicateReview}
+                onClose={() => setSelectedDuplicateReview(null)}
+                onConfirm={handleConfirmDuplicate}
+                onReject={handleRejectDuplicate}
+              />
+            </section>
           )}
 
           {selectedReport && (
@@ -226,8 +285,24 @@ export default function WorkerDashboard() {
               />
             </>
           )}
-          <StatusChartCard refreshKey={statsKey} />
-          <ResolvedChartCard refreshKey={statsKey} />
+          <article ref={statusChartRef}>
+            <StatusChartCard statusData={statusData} refreshKey={statsKey} />
+          </article>
+
+          <article ref={resolvedChartRef}>
+            <ResolvedChartCard resolvedData={resolvedData} refreshKey={statsKey} />
+          </article>
+          <ExportReportButton
+            worker={{
+              name: session?.user?.name ?? "",
+              email: session?.user?.email,
+              municipality: municipality ?? "poes",
+            }}
+            statusData={statusData}      // the state arrays you already have
+            resolvedData={resolvedData}
+            statusChartRef={statusChartRef}
+            resolvedChartRef={resolvedChartRef}
+          />
         </section>
       </section>
     </main>

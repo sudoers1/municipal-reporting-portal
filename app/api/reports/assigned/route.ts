@@ -12,8 +12,12 @@ export const GET = withAuth(["Worker"], async (req: Request, session: any) => {
         a.id AS assignment_id,
         a.workerid,
         a.status AS assignment_status,
+        a.status AS status,
         a.assigned_at,
+        a.started_at,
         a.updated_at,
+        a.resolved_at,
+
         c.complaintid,
         c.issuetype,
         c.details,
@@ -22,7 +26,8 @@ export const GET = withAuth(["Worker"], async (req: Request, session: any) => {
         c.municipality,
         c.status AS complaint_status
       FROM assignments a
-      JOIN complaints c ON c.complaintid = a.complaintid
+      JOIN complaints c 
+        ON c.complaintid = a.complaintid
       WHERE a.workerid = ${workerId}
         AND a.status != 'Resolved'
       ORDER BY a.assigned_at DESC
@@ -33,6 +38,8 @@ export const GET = withAuth(["Worker"], async (req: Request, session: any) => {
       data: assignedReports,
     });
   } catch (error) {
+    console.error("Failed to fetch assigned reports:", error);
+
     return NextResponse.json(
       { message: "Failed to fetch assigned reports" },
       { status: 500 }
