@@ -14,7 +14,7 @@ export default function ComplaintsList({
   onSelectComplaint,
 }: ComplaintsListProps) {
   return (
-    <article className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-[220px] flex flex-col">
+    <article className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-55 flex flex-col">
       <h3 className="text-xl font-bold text-center text-gray-900 mb-4">
         Complaints in this ward
       </h3>
@@ -46,18 +46,25 @@ export default function ComplaintsList({
           </button>
         </section>
       ) : complaints.length > 0 ? (
-        <ul className="space-y-3 flex-1">
-          {complaints.map((c) => (
-            <li
-              key={c.complaintid}
-              className="border-b border-gray-300 pb-2 text-center cursor-pointer hover:bg-white/20 hover:backdrop-blur-sm transition"
-              onClick={() => onSelectComplaint(c)}
-            >
-              <p className="font-semibold text-black">{c.issuetype}</p>
-              <p className="text-sm text-gray-700">{c.details}</p>
-              <p className="text-sm text-gray-700">Status: {c.status}</p>
-            </li>
-          ))}
+        <ul className="space-y-3 flex-1 overflow-y-auto pr-1 scrollbar-hide">
+          {complaints.map((c) => {
+            const isSelected = selectedComplaint === c;
+            return (
+              <li
+                key={c.complaintid}
+                className={`rounded-2xl border p-4 text-center cursor-pointer transition duration-200 ease-out ${
+                  isSelected
+                    ? "bg-slate-100 border-slate-300 shadow-inner ring-1 ring-teal-200"
+                    : "border-transparent hover:-translate-y-0.5 hover:bg-white hover:border-slate-300 hover:shadow-xl"
+                }`}
+                onClick={() => onSelectComplaint(c)}
+              >
+                <p className="font-semibold text-black">{c.issuetype}</p>
+                <p className="text-sm text-gray-700">{c.details}</p>
+                <p className="text-sm text-gray-700">Status: {c.status}</p>
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <p className="text-gray-600 text-center">

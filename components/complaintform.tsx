@@ -261,8 +261,8 @@ export default function ComplaintsModal({
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
               }
-              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-gray-900 bg-white/70 focus:ring-2 focus:ring-teal-400 focus:outline-none"
-              rows={3}
+              className="w-full border border-gray-300 rounded-xl px-4 py-2 text-gray-900 bg-white/70 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+              rows={2}
               required
             />
           </section>
@@ -306,6 +306,9 @@ export default function ComplaintsModal({
           >
             Submit Complaint
           </button>
+          <p className="mt-1 text-xs items-center text-slate-500">
+            *Pending complaints will only display once they are acknowledged.
+          </p>
         </form>
       </article>
     </section>
