@@ -93,10 +93,14 @@ export default function Home() {
             
           </section>
           
-              <button className="p-3 bg-brand-secondary text-white text-sm font-semibold rounded-md shadow-md"
-               onClick={()=>{setShowApplyForm(true)}}>
+           {(!session?.user?.role || session?.user?.role === "Resident") && (
+              <button 
+                className="p-3 bg-brand-secondary text-white text-sm font-semibold rounded-md shadow-md"
+                onClick={() => setShowApplyForm(true)}
+              >
                 Become a Worker
-               </button>
+              </button>
+            )}
 
 
           </section>
