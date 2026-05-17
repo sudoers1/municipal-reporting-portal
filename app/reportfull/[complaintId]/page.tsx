@@ -92,7 +92,7 @@ export default function ReportFull({
           {/* Complaint image */}
           {complaint.image && (
             <section className="flex-1 flex">
-              <figure className="relative w-full min-h-[300px] lg:min-h-full bg-white/20 backdrop-blur-md rounded-xl overflow-hidden border-[3px] border-brand-secondary flex items-center justify-center shadow-lg">
+              <figure className="relative w-full min-h-[300px] lg:min-h-full bg-white/80 backdrop-blur-md rounded-xl overflow-hidden border-[3px] border-brand-secondary flex items-center justify-center shadow-lg">
                 {imgLoading && <Spinner />}
                 <Image
                   src={complaint.image}

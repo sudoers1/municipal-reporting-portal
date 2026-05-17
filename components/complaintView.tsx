@@ -85,7 +85,7 @@ export default function ComplaintViewer({
 
             {complaint.image && (
               <section className="min-w-[48%] flex items-center justify-center">
-                <figure className="relative w-full h-full flex items-center justify-center bg-white rounded-xl overflow-hidden border-[2px] border-brand-secondary">
+                <figure className="relative w-full h-full flex items-center justify-center bg-white/80 rounded-xl overflow-hidden border-[2px] border-brand-secondary">
                   {loading && <Spinner />}
                   <Image
                     src={complaint.image}
@@ -103,7 +103,7 @@ export default function ComplaintViewer({
           </section>
 
           <section className="flex flex-col sm:flex-row gap-3 py-4 w-full mt-6">
-            {uid !== "" && complaint.status === "Resolved" && (
+            {uid == complaint.userid && complaint.status === "Resolved" && (
               <button
                 onClick={() => setShowFeedback(true)}
                 className="flex-1 bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-md hover:bg-brand-secondary hover:text-black transition-colors duration-300"
