@@ -9,6 +9,7 @@ import { authClient } from "@/lib/auth-client";
 import type { Complaint } from "@/components/wardmap";
 import ResidentKPICards from "@/components/residentkpicards";
 import ComplaintsList from "@/components/complaintslist";
+import TutorialButton from "@/components/tutorialButton";
 
 const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
 
@@ -38,7 +39,7 @@ export default function DashboardPage() {
 
   if (isPending) {
     return (
-      <main className="w-screen min-h-screen bg-gray-200 flex items-center justify-center bg-gradient-to-br from-white via-teal-100 to-teal-300">
+      <main className="w-screen min-h-screen bg-gray-200 flex items-center justify-center bg-linear-to-br from-white via-teal-100 to-teal-300">
         <Spinner splash="your dashboard" />
       </main>
     );
@@ -47,7 +48,7 @@ export default function DashboardPage() {
   return (
     <main
       id="dashboard"
-      className="w-screen min-h-screen overflow-y-auto bg-gradient-to-br from-white via-teal-100 to-teal-300"
+      className="w-screen min-h-screen overflow-y-auto bg-linear-to-br from-white via-teal-100 to-teal-300"
     >
       <section className="p-6 space-y-8 min-h-screen">
         <header>
@@ -66,7 +67,7 @@ export default function DashboardPage() {
 
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left tile: complaints list */}
-          <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-[200px] max-h-[500px] overflow-y-auto scrollbar-hide">
+          <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-50 max-h-125 overflow-y-auto scrollbar-hide">
   <ComplaintsList
     complaints={filteredComplaints}
     selectedComplaint={selectedComplaint}
@@ -75,7 +76,7 @@ export default function DashboardPage() {
 </aside>
 
           {/* Right tile: map */}
-          <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl z-40 shadow-lg p-5 min-h-[200px] max-h-[500px]">
+          <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl z-40 shadow-lg p-5 min-h-50 max-h-125">
             <WardMap
               complaintMode={showComplaints}
               selectedComplaint={selectedComplaint}
@@ -87,7 +88,7 @@ export default function DashboardPage() {
           </aside>
         </section>
 
-        {/* Complaint button tile */}
+        {session?.user.role=="Resident"&&(
         <section className="flex justify-center">
           <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-1 w-fit">
             <ComplaintButton
@@ -95,7 +96,7 @@ export default function DashboardPage() {
               showComplaints={showComplaints}
             />
           </article>
-        </section>
+        </section>)}
 
         {/* Modal */}
         {showComplaints && (

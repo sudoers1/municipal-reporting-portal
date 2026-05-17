@@ -30,31 +30,33 @@ export default function UserViewer({
 
 
   return (
-    <section className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={onClose}>
-      
-      <article
-        className={`bg-brand-accent rounded-2xl  overflow-y-auto p-8 relative ${
-          user.image ? "min-w-[40%] lg:max-w-3xl" : "md:max-w-lg"
-        }`}
-        onClick={(e) => e.stopPropagation()}
+      <section
+        className="fixed inset-0 bg-white/40 backdrop-blur-md flex items-center justify-center z-60"
+        role="dialog"
+        aria-modal="true"
+        onClick={onClose}
       >
-
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-600 hover:text-black text-2xl font-bold"
+        <article
+          className={`bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl overflow-y-auto p-8 relative
+            max-h-[90vh] md:max-h-[85vh] w-[95vw] md:w-auto
+            ${user.image ? "min-w-[90vw] md:min-w-[40%] lg:max-w-3xl" : "md:max-w-lg"}
+          `}
+          onClick={(e) => e.stopPropagation()}
         >
-          ×
-        </button>
-
-        <header className="text-center mb-6 text-black">
-          <h2 className="text-2xl font-bold">User Details</h2>
+          <header>
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 text-gray-700 hover:text-black text-2xl font-bold"
+              aria-label="Close dialog"
+            >
+              ×
+            </button>
+          <h2 className="text-2xl font-bold text-center text-black mb-6">User Details</h2>
         </header>
 
-        <section className="flex flex-col lg:flex-row md:gap-4 text-black h-[80%]">
-
-          <section className="flex flex-col min-w-[48%] gap-4 flex-1 h-full">
-
-            <section className="border-[3px] rounded-xl space-y-2 border-brand-primary p-3 flex-shrink-0 bg-white/80">
+        <section className="flex flex-col md:flex-row md:gap-6 text-black">
+          <section className="flex flex-col min-w-[48%] gap-4 flex-1">
+            <section className="border-[2px] rounded-xl border-brand-secondary p-3 bg-white/40 shadow-sm">
               <p>
                 <strong>Name:</strong> {user.name}
               </p>
@@ -62,10 +64,12 @@ export default function UserViewer({
               <p>
                 <strong>Email:</strong> {user.email}
               </p>
-
-              <p>
-                <strong>Role:</strong> {getRoleName(user.user_types_id)}
+              
+              <section><strong>Role:</strong>
+              <p className=" px-4 inline-block w-fit py-1.5 bg-teal-500/80 text-white text-sm font-semibold rounded-full shadow-md">
+                 {getRoleName(user.user_types_id)}
               </p>
+              </section>
 
               <p>
                 <strong>Municipality:</strong> {user.municipality}
@@ -91,11 +95,9 @@ export default function UserViewer({
           </section>
 
           {user.image && (
-             <section className="min-w-[48%] py-4 md:py-0 flex items-start mb-4 sm:mb-0">
-              <figure className="w-full bg-brand-primary rounded-xl overflow-hidden border-[3px] border-brand-secondary flex justify-center">
-
+            <section className="min-w-[48%] py-4 md:py-0 flex items-start mb-4 sm:mb-0 justify-center">
+              <figure className="relative w-full h-full flex items-center justify-center bg-white/80 rounded-xl overflow-hidden border-[2px] border-brand-secondary">
                 {loading && <Spinner />}
-
                 <Image
                   src={user.image}
                   alt="user image"
@@ -113,8 +115,8 @@ export default function UserViewer({
           
         </section>
 
-        <section className="flex flex-col sm:flex-row gap-3 md:mt-3 w-full">
-          {((user.user_types_id ?? 0) === 1) && (
+        <section className="flex flex-col sm:flex-row gap-3  w-full md:mt-3">
+            {((user.user_types_id ?? 0) === 1) && (
               <button onClick={() => setShowAssignForm(true)} className="w-full bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-md hover:bg-brand-secondary hover:text-black transition-colors duration-300">
                 Assign Municipality
               </button>

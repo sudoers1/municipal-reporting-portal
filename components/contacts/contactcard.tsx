@@ -57,11 +57,10 @@ export default function ContactCard({ municipality }: { municipality: Municipali
           <section className="space-y-4">
             <p className="text-sm text-slate-500">Postal address</p>
             <p className="text-base text-slate-900">{getLinkValue(municipality.postal)}</p>
-                        <p className="text-sm text-slate-500">General contact</p>
+            <p className="text-sm text-slate-500">General contact</p>
             <p className="text-base text-slate-900">{getLinkValue(municipality.phone)}</p>
           </section>
           <section className="space-y-4">
-
             <p className="text-sm text-slate-500">Website</p>
             {website ? (
               <a href={website} target="_blank" rel="noreferrer" className="text-teal-600 hover:underline">
@@ -70,7 +69,7 @@ export default function ContactCard({ municipality }: { municipality: Municipali
             ) : (
               <p className="text-base text-slate-900">Not available</p>
             )}
-            <p className="text-sm text-slate-500">Social</p>
+            <p className="text-sm mt-4  text-slate-500">Social</p>
             {facebook ? (
               <a href={facebook} target="_blank" rel="noreferrer" className="text-teal-600 hover:underline">
                 Facebook page
