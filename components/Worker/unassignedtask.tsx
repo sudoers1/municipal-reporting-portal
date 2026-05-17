@@ -7,7 +7,7 @@ export default function UnassignedTasksCard({
 }: {
   tasks: any[];
   onClaim: (complaintid: number) => void;
-  currentUserId: string;
+  currentUserId?: string;
 }) {
   return (
     <Card title="Unassigned Reports">
@@ -17,7 +17,10 @@ export default function UnassignedTasksCard({
         )}
 
         {tasks.map((task: any) => {
-          const isOwnComplaint = String(task.userid) === String(currentUserId);
+          const isOwnComplaint =
+            task.userid !== undefined &&
+            currentUserId !== undefined &&
+            String(task.userid) === String(currentUserId);
 
           return (
             <li key={task.complaintid}>
@@ -48,6 +51,7 @@ export default function UnassignedTasksCard({
                   </p>
 
                   <button
+                    type="button"
                     onClick={() => onClaim(task.complaintid)}
                     disabled={isOwnComplaint}
                     title={

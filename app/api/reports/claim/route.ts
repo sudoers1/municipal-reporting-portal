@@ -4,7 +4,15 @@ import { NextResponse } from "next/server";
 
 export const POST = withAuth(["Worker"], async (req: Request, session: any) => {
   try {
-    const workerId = session.user.id;
+    const workerId = session?.user?.id;
+
+    if (!workerId) {
+      return NextResponse.json(
+        { message: "Missing authenticated user" },
+        { status: 401 }
+      );
+    }
+
     const { complaintid } = await req.json();
 
     if (!complaintid) {
@@ -48,10 +56,14 @@ export const POST = withAuth(["Worker"], async (req: Request, session: any) => {
       WHERE complaintid = ${complaintid}
     `;
 
-    return NextResponse.json({
-      message: "Report claimed successfully",
-      complaintid,
-    });
+    return NextResponse.json(
+      {
+        message: "Report claimed successfully",
+        complaintid,
+        workerid: workerId,
+      },
+      { status: 200 }
+    );
   } catch (err: any) {
     if (err.code === "23505") {
       return NextResponse.json(

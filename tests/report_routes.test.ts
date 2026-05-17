@@ -386,7 +386,14 @@ describe("/api/reports/claim", () => {
     });
 
     it("claims report successfully", async () => {
-      mockSql.mockResolvedValueOnce([]);
+      mockSql
+        .mockResolvedValueOnce([
+          {
+            userid: 99,
+          },
+        ])
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
 
       const req = makeRequest("http://localhost/api/reports/claim", "POST", {
         complaintid: 1,
@@ -399,6 +406,7 @@ describe("/api/reports/claim", () => {
       expect(data.body).toEqual({
         message: "Report claimed successfully",
         complaintid: 1,
+        workerid: 10,
       });
     });
 
