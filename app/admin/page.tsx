@@ -1,6 +1,6 @@
 "use client"
 
-import Spinner from "@/components/spinner";
+import Spinner from "@/components/generalcomps/spinner";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { useState,useEffect } from "react";
@@ -37,11 +37,13 @@ export default function AdminPage() {
   else{
   return (
     <main className="w-screen min-h-screen  overflow-y-auto bg-linear-to-br from-white via-teal-100 to-teal-300">
-      <section>
-        <h1 className="text-3xl md:text-5xl p-4 font-bold text-gray-900 text-center drop-shadow-md">
-          Administrative Control Center
-        </h1>
-        <p className="text-xl font-bold p-4 text-gray-900 text-center drop-shadow-md">Manage your municipality's operations by tracking service metrics, resolving citizen complaints, and coordinating your workforce from a single centralized hub.</p>
+      <section className=" text-gray-800 bg-linear-to-br from-white to-teal-100 mx-4 mt-5 py-6 rounded-3xl shadow-2xl">
+          <h1 className="text-2xl md:text-5xl font-bold text-center drop-shadow-lg">
+            Administrative Control Center
+          </h1>
+          <p className="text-md md:text-xl text-center max-w-3xl mx-auto mt-4">
+            Manage your municipality's operations by tracking service metrics, resolving citizen complaints, and coordinating your workforce from a single centralized hub.
+          </p>
       </section>
       <section className="flex flex-col justify-center items-center">
         <Tiles/>

@@ -1,9 +1,9 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { insertVerification } from "../../lib/db/verifications"; // Adjust path to verifications.ts
+import { insertVerification } from "../../../lib/db/verifications"; // Adjust path to verifications.ts
 // import SelectWard from "./SelectWard";
-import MunicipalityAssignModal from "../UserManagement/municipalityassignmodal";
+import MunicipalityAssignModal from "../../UserManagement/municipalityassignmodal";
 
 interface ApplyButtonProps {
   userId: string;

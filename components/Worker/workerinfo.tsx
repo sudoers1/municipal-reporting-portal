@@ -1,4 +1,4 @@
-import Card from "../card";
+import Card from "../generalcomps/card";
 
 export default function WorkerInfoCard({ worker }: any) {
   if (!worker) return null;

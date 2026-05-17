@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import Spinner from "@/components/spinner";
+import Spinner from "@/components/generalcomps/spinner";
 import ExportReportButton from "@/components/Worker/exportReportButton";
 import WorkerInfoCard from "@/components/Worker/workerinfo";
 import UnassignedTasksCard from "@/components/Worker/unassignedtask";
@@ -296,9 +296,9 @@ export default function WorkerDashboard() {
             worker={{
               name: session?.user?.name ?? "",
               email: session?.user?.email,
-              municipality: municipality ?? "poes",
+              municipality: municipality ?? "Unknown Municipality",
             }}
-            statusData={statusData}      // the state arrays you already have
+            statusData={statusData}      
             resolvedData={resolvedData}
             statusChartRef={statusChartRef}
             resolvedChartRef={resolvedChartRef}

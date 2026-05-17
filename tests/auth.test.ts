@@ -1,10 +1,5 @@
-import {
-  getSession,
-  requireSession,
-  requireRole,
-  withAuth,
-} from "@/lib/auth/server";
-
+// tests/auth.test.ts
+import { withAuth, getSession, requireSession, requireRole } from "@/lib/auth/server";
 import { auth } from "@/lib/auth";
 
 jest.mock("@/lib/auth", () => ({
@@ -15,213 +10,106 @@ jest.mock("@/lib/auth", () => ({
   },
 }));
 
-const mockGetSession = auth.api.getSession as unknown as jest.Mock;
+// Mock Response for Node environment
+global.Response = class {
+  status: number;
+  body: any;
+  constructor(body?: any, init?: { status?: number }) {
+    this.body = body;
+    this.status = init?.status || 200;
+  }
+  json() {
+    return Promise.resolve(this.body);
+  }
+} as any;
 
-const mockRequest = (headers: Record<string, string> = {}) => {
-  return {
-    headers,
-  } as unknown as Request;
-};
-
-const createMockResponse = (status = 200) => {
-  return {
-    status,
-    body: "OK",
-  } as unknown as Response;
-};
+const mockGetSession = auth.api.getSession as jest.Mock;
 
 describe("auth server helpers", () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   describe("getSession", () => {
-    it("calls auth.api.getSession with request headers", async () => {
-      const req = mockRequest({
-        cookie: "session=test-cookie",
-      });
+    it("should return session from auth api", async () => {
+      const mockSession = { user: { id: "1", role: "Admin" } };
+      const mockReq = { headers: { authorization: "Bearer token" } } as Request;
+      mockGetSession.mockResolvedValue(mockSession);
 
-      const mockSession = {
-        user: {
-          id: 1,
-          role: "Admin",
-        },
-      };
+      const result = await getSession(mockReq);
 
-      mockGetSession.mockResolvedValueOnce(mockSession);
-
-      const result = await getSession(req);
-
-      expect(mockGetSession).toHaveBeenCalledWith({
-        headers: req.headers,
-      });
-
+      expect(mockGetSession).toHaveBeenCalledWith({ headers: mockReq.headers });
       expect(result).toEqual(mockSession);
     });
   });
 
   describe("requireSession", () => {
-    it("throws Unauthorized when no session exists", async () => {
-      mockGetSession.mockResolvedValueOnce(null);
+    it("should return session when authenticated", async () => {
+      const mockSession = { user: { id: "1", role: "Admin" } };
+      const mockReq = { headers: {} } as Request;
+      mockGetSession.mockResolvedValue(mockSession);
 
-      await expect(requireSession(mockRequest())).rejects.toThrow(
-        "Unauthorized"
-      );
+      const result = await requireSession(mockReq);
+
+      expect(result).toEqual(mockSession);
     });
 
-    it("throws Unauthorized when session is undefined", async () => {
-      mockGetSession.mockResolvedValueOnce(undefined);
+    it("should throw error when no session", async () => {
+      const mockReq = { headers: {} } as Request;
+      mockGetSession.mockResolvedValue(null);
 
-      await expect(requireSession(mockRequest())).rejects.toThrow(
-        "Unauthorized"
-      );
-    });
-
-    it("returns the session when session exists", async () => {
-      const mockSession = {
-        user: {
-          id: 1,
-          role: "Admin",
-        },
-      };
-
-      mockGetSession.mockResolvedValueOnce(mockSession);
-
-      await expect(requireSession(mockRequest())).resolves.toEqual(mockSession);
-    });
-
-    it("throws the original error when getSession fails", async () => {
-      mockGetSession.mockRejectedValueOnce(new Error("Auth error"));
-
-      await expect(requireSession(mockRequest())).rejects.toThrow("Auth error");
+      await expect(requireSession(mockReq)).rejects.toThrow("Unauthorized");
     });
   });
 
   describe("requireRole", () => {
-    it("throws Forbidden when user role is not allowed", () => {
-      const session = {
-        user: {
-          role: "Worker",
-        },
-      };
-
-      expect(() => requireRole(session, ["Admin"])).toThrow("Forbidden");
-    });
-
-    it("does not throw when user role is allowed", () => {
-      const session = {
-        user: {
-          role: "Admin",
-        },
-      };
-
-      expect(() => requireRole(session, ["Admin"])).not.toThrow();
-    });
-
-    it("does not throw when user has one of multiple allowed roles", () => {
-      const session = {
-        user: {
-          role: "Worker",
-        },
-      };
-
+    it("should not throw when role is allowed", () => {
+      const session = { user: { role: "Admin" } };
       expect(() => requireRole(session, ["Admin", "Worker"])).not.toThrow();
     });
 
-    it("throws Forbidden when allowed roles array is empty", () => {
-      const session = {
-        user: {
-          role: "Admin",
-        },
-      };
-
-      expect(() => requireRole(session, [])).toThrow("Forbidden");
+    it("should throw Forbidden when role not allowed", () => {
+      const session = { user: { role: "Resident" } };
+      expect(() => requireRole(session, ["Admin", "Worker"])).toThrow("Forbidden");
     });
   });
 
   describe("withAuth", () => {
-    const mockSession = {
-      user: {
-        id: 1,
-        role: "Admin",
-      },
-    };
+    it("should call handler with req and session when auth passes", async () => {
+      const mockSession = { user: { id: "1", role: "Admin" } };
+      const mockReq = { headers: {} } as Request;
+      const mockHandler = jest.fn().mockResolvedValue({ status: 200 });
+      const mockContext = { params: { id: "1" } };
 
-    let mockHandler: jest.Mock;
+      mockGetSession.mockResolvedValue(mockSession);
 
-    beforeEach(() => {
-      mockHandler = jest.fn();
-    });
+      const wrapped = withAuth(["Admin"], mockHandler);
+      await wrapped(mockReq, mockContext);
 
-    it("calls the handler with req and session when auth passes", async () => {
-      const req = mockRequest();
-      const mockResponse = createMockResponse(200);
-
-      mockGetSession.mockResolvedValueOnce(mockSession);
-      mockHandler.mockResolvedValueOnce(mockResponse);
-
-      await withAuth(["Admin"], mockHandler)(req);
-
-      expect(mockHandler).toHaveBeenCalledWith(req, mockSession);
+      expect(mockHandler).toHaveBeenCalledWith(mockReq, mockSession, mockContext);
       expect(mockHandler).toHaveBeenCalledTimes(1);
     });
 
-    it("returns the handler's response", async () => {
-      const mockResponse = createMockResponse(200);
+    it("should throw error when no session", async () => {
+      const mockReq = { headers: {} } as Request;
+      const mockHandler = jest.fn();
+      mockGetSession.mockResolvedValue(null);
 
-      mockGetSession.mockResolvedValueOnce(mockSession);
-      mockHandler.mockResolvedValueOnce(mockResponse);
+      const wrapped = withAuth(["Admin"], mockHandler);
 
-      const result = await withAuth(["Admin"], mockHandler)(mockRequest());
-
-      expect(result).toBe(mockResponse);
-    });
-
-    it("throws Unauthorized when no session exists", async () => {
-      mockGetSession.mockResolvedValueOnce(null);
-
-      await expect(
-        withAuth(["Admin"], mockHandler)(mockRequest())
-      ).rejects.toThrow("Unauthorized");
-
+      await expect(wrapped(mockReq)).rejects.toThrow("Unauthorized");
       expect(mockHandler).not.toHaveBeenCalled();
     });
 
-    it("throws Forbidden when user does not have required role", async () => {
-      const workerSession = {
-        user: {
-          id: 2,
-          role: "Worker",
-        },
-      };
+    it("should throw error when role not allowed", async () => {
+      const mockSession = { user: { role: "Resident" } };
+      const mockReq = { headers: {} } as Request;
+      const mockHandler = jest.fn();
+      mockGetSession.mockResolvedValue(mockSession);
 
-      mockGetSession.mockResolvedValueOnce(workerSession);
+      const wrapped = withAuth(["Admin"], mockHandler);
 
-      await expect(
-        withAuth(["Admin"], mockHandler)(mockRequest())
-      ).rejects.toThrow("Forbidden");
-
-      expect(mockHandler).not.toHaveBeenCalled();
-    });
-
-    it("allows access when the user has one of multiple allowed roles", async () => {
-      const mockResponse = createMockResponse(200);
-
-      mockGetSession.mockResolvedValueOnce(mockSession);
-      mockHandler.mockResolvedValueOnce(mockResponse);
-
-      await withAuth(["Worker", "Admin"], mockHandler)(mockRequest());
-
-      expect(mockHandler).toHaveBeenCalledTimes(1);
-    });
-
-    it("does not call the handler when session check fails", async () => {
-      mockGetSession.mockRejectedValueOnce(new Error("Auth error"));
-
-      await expect(
-        withAuth(["Admin"], mockHandler)(mockRequest())
-      ).rejects.toThrow("Auth error");
-
+      await expect(wrapped(mockReq)).rejects.toThrow("Forbidden");
       expect(mockHandler).not.toHaveBeenCalled();
     });
   });

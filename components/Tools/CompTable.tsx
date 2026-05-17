@@ -2,7 +2,7 @@
 
 import { readComplaints } from "../../lib/db/complaints";
 import { useState, useEffect } from "react";
-import ComplaintsTable from "../complaintsTable";
+import ComplaintsTable from "../complaint/complaintsTable";
 import AdminComplaintsTable from "../AdminComplaints/AdminComplaintsTable";
 
 export default function CTable() {

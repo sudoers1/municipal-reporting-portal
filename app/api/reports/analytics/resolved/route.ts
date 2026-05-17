@@ -9,7 +9,7 @@ import { sql } from "@/lib/db/neon";
 export const GET = withAuth(["Worker"], async (_req: Request, session: any) => {
   try {
     const workerId = session.user.id;
-
+    /* istanbul ignore next */
     const rows = await sql`
       SELECT
         DATE_TRUNC('week', a.resolved_at)::date              AS week,

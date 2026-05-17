@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { insertUserMunicipality } from "@/lib/db/usersneon";
 import dynamic from "next/dynamic";
 
-const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
+const WardMap = dynamic(() => import("@/components/wardmap/wardmap"), { ssr: false });
 
 
 export default function MunicipalityAssignModal({ onClose,onSuccess, uid="" }: { uid:string; onSuccess: () => void; onClose: () => void; }) {

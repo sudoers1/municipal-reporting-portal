@@ -3,11 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import ComplaintsTable from "@/components/complaintsTable";
-import ComplaintViewer from "@/components/complaintView";
+import ComplaintsTable from "@/components/complaint/complaintsTable";
+import ComplaintViewer from "@/components/complaint/complaintView";
 import { readMyComplaints } from "@/lib/db/complaints";
-import Spinner from "@/components/spinner";
-import Apply from "@/components/UserVerification/ApplyButton";
+import Spinner from "@/components/generalcomps/spinner";
 import ApplyForVerification from "@/components/UserVerification/SelectWard";
 
 
@@ -16,6 +15,7 @@ export default function Home() {
   const { data: session, isPending } = authClient.useSession();
   const userId = session?.user?.id;
   const userName = session?.user?.name;
+  const [showApplyForm, setShowApplyForm] = useState(false);
 
   const [complaints, setComplaints] = useState<Record<string, any>[]>([]);
   const [selectedComplaint, setSelectedComplaint] = useState<Record<string, any> | null>(null);
@@ -82,13 +82,27 @@ export default function Home() {
               First Used Site on:{" "}
               {session?.user?.createdAt?.toDateString?.() ?? "Unknown"}
             </p>
-            <section className="flex gap-4">
-              <span className="inline-block px-4 py-1.5 bg-teal-500/80 text-white text-sm font-semibold rounded-full shadow-md">
+
+
+            <section className="flex gap-4 item-center">
+              <p className=" px-4 py-1.5 bg-teal-500/80 text-white text-sm font-semibold rounded-full shadow-md">
                 {session?.user?.role || "Resident"}
-              </span>
-              <ApplyForVerification userId={userId ?? ""} userName={userName ?? ""} />
+              </p>
+              
             </section>
+            
           </section>
+          
+           {(!session?.user?.role || session?.user?.role === "Resident") && (
+              <button 
+                className="p-3 bg-brand-secondary text-white text-sm font-semibold rounded-md shadow-md"
+                onClick={() => setShowApplyForm(true)}
+              >
+                Become a Worker
+              </button>
+            )}
+
+
           </section>
       </article>
 
@@ -108,6 +122,13 @@ export default function Home() {
         </section>
 
       </section>
+      {showApplyForm&&(
+                <section className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      
+                  <ApplyForVerification onClose={()=>{setShowApplyForm(false)}} uid={userId ?? ""} userName={userName ?? ""} />
+
+                </section>
+                )}
   
     
     </main>

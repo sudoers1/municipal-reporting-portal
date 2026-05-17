@@ -23,116 +23,15 @@ const STATUS_COLORS: Record<string, [number, number, number]> = {
 };
 const FALLBACK_COLOR: [number, number, number] = [156, 163, 175];
 
-// Draws a donut slice on the jsPDF canvas
-function drawDonut(
-  doc: jsPDF,
-  cx: number,
-  cy: number,
-  outerR: number,
-  innerR: number,
-  data: { status: string; count: number }[]
-) {
-  const total = data.reduce((s, r) => s + r.count, 0);
-  if (total === 0) return;
 
-  let startAngle = -Math.PI / 2;
-
-  data.forEach((row) => {
-    const slice = (row.count / total) * 2 * Math.PI;
-    const endAngle = startAngle + slice;
-    const [r, g, b] = STATUS_COLORS[row.status] ?? FALLBACK_COLOR;
-
-    // Build path: outer arc → inner arc (reverse)
-    const steps = Math.max(32, Math.round((slice / (2 * Math.PI)) * 64));
-    const points: [number, number][] = [];
-
-    for (let i = 0; i <= steps; i++) {
-      const a = startAngle + (slice * i) / steps;
-      points.push([cx + outerR * Math.cos(a), cy + outerR * Math.sin(a)]);
-    }
-    for (let i = steps; i >= 0; i--) {
-      const a = startAngle + (slice * i) / steps;
-      points.push([cx + innerR * Math.cos(a), cy + innerR * Math.sin(a)]);
-    }
-
-    doc.setFillColor(r, g, b);
-    doc.setDrawColor(255, 255, 255);
-    doc.setLineWidth(0.5);
-
-    // Move to first point then line to rest
-    (doc as any).lines(
-      points.slice(1).map(([x, y], i) => {
-        const prev = points[i];
-        return [x - prev[0], y - prev[1]];
-      }),
-      points[0][0],
-      points[0][1],
-      [1, 1],
-      "FD",
-      true
-    );
-
-    startAngle = endAngle;
-  });
-}
-
-// Draws a simple line chart
-function drawLineChart(
-  doc: jsPDF,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  data: { week: string; resolved: number }[]
-) {
-  if (data.length === 0) return;
-
-  const maxVal = Math.max(...data.map((d) => d.resolved), 1);
-  const padL = 28, padB = 20, padT = 8, padR = 8;
-  const chartW = w - padL - padR;
-  const chartH = h - padB - padT;
-
-  // Axes
-  doc.setDrawColor(220, 220, 220);
-  doc.setLineWidth(0.3);
-  doc.line(x + padL, y + padT, x + padL, y + padT + chartH);
-  doc.line(x + padL, y + padT + chartH, x + padL + chartW, y + padT + chartH);
-
-  // Y gridlines + labels
-  doc.setFontSize(6);
-  doc.setTextColor(160, 160, 160);
-  const ySteps = 4;
-  for (let i = 0; i <= ySteps; i++) {
-    const val = Math.round((maxVal * i) / ySteps);
-    const yPos = y + padT + chartH - (chartH * i) / ySteps;
-    doc.setDrawColor(235, 235, 235);
-    if (i > 0) doc.line(x + padL, yPos, x + padL + chartW, yPos);
-    doc.text(String(val), x + padL - 3, yPos + 1.5, { align: "right" });
-  }
-
-  // X labels
-  const step = Math.max(1, Math.floor(data.length / 6));
-  data.forEach((d, i) => {
-    if (i % step !== 0 && i !== data.length - 1) return;
-    const xPos = x + padL + (chartW * i) / Math.max(data.length - 1, 1);
-    doc.text(d.week, xPos, y + padT + chartH + 8, { align: "center" });
-  });
-
-  // Line + dots
-  const points = data.map((d, i) => ({
-    px: x + padL + (chartW * i) / Math.max(data.length - 1, 1),
-    py: y + padT + chartH - (chartH * d.resolved) / maxVal,
-  }));
-
-  doc.setDrawColor(74, 222, 128);
-  doc.setLineWidth(1);
-  for (let i = 1; i < points.length; i++) {
-    doc.line(points[i - 1].px, points[i - 1].py, points[i].px, points[i].py);
-  }
-
-  doc.setFillColor(74, 222, 128);
-  points.forEach(({ px, py }) => {
-    doc.circle(px, py, 1.2, "F");
+async function loadImageAsBase64(url: string): Promise<string> {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
   });
 }
 
@@ -155,11 +54,15 @@ export async function generateAnalyticsReport(
   const timeStr = generatedAt.toLocaleTimeString("en-ZA", {
     hour: "2-digit", minute: "2-digit",
   });
+  const logoBase64 = await loadImageAsBase64("/favicon.png");
+  const logoH = 14;
+  const logoW = 14;
+
 
   // ── Header bar ──────────────────────────────────────────────────────────
-  doc.setFillColor(15, 23, 42);
+  doc.setFillColor(0, 128, 128);
   doc.rect(0, 0, pageW, 28, "F");
-
+  doc.addImage(logoBase64, "PNG", pageW - margin - logoW, 5, logoW, logoH);
   doc.setFontSize(16);
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
@@ -169,7 +72,6 @@ export async function generateAnalyticsReport(
   doc.setFont("helvetica", "normal");
   doc.setTextColor(148, 163, 184);
   doc.text(`Generated ${dateStr} at ${timeStr}`, margin, 20);
-  doc.text("Municipality Reporting Portal", pageW - margin, 20, { align: "right" });
 
   cursor = 38;
 
@@ -189,14 +91,14 @@ export async function generateAnalyticsReport(
   doc.setFontSize(11);
   doc.setTextColor(15, 23, 42);
   doc.setFont("helvetica", "bold");
-  doc.text(data.worker.name || "—", margin + 6, cursor + 16);
-  doc.text(data.worker.municipality || "—", margin + contentW / 2, cursor + 16);
+  doc.text(data.worker.name || "—", margin + 6, cursor + 14);
+  doc.text(data.worker.municipality || "—", margin + contentW / 2, cursor + 14);
 
   if (data.worker.email) {
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 116, 139);
-    doc.text(data.worker.email, margin + 6, cursor + 21);
+    doc.text(data.worker.email, margin + 6, cursor + 18);
   }
 
   cursor += 30;
@@ -288,56 +190,11 @@ export async function generateAnalyticsReport(
     }
   }
 
-  // ── Status table ─────────────────────────────────────────────────────────
-  sectionHeading("Status breakdown");
 
   const colWidths = [60, 30, 30, 30];
   const headers   = ["Status", "Count", "% of total", ""];
   const rowH      = 8;
-
-  // Header row
-  doc.setFillColor(15, 23, 42);
-  doc.rect(margin, cursor, contentW, rowH, "F");
-  doc.setFontSize(7.5);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(255, 255, 255);
   let colX = margin + 3;
-  headers.forEach((h, i) => {
-    doc.text(h, colX, cursor + 5.5);
-    colX += colWidths[i];
-  });
-  cursor += rowH;
-
-  // Data rows
-  data.statusData.forEach((row, idx) => {
-    const pct = total > 0 ? Math.round((row.count / total) * 100) : 0;
-    const bg  = idx % 2 === 0 ? [255, 255, 255] : [248, 250, 252];
-    doc.setFillColor(...(bg as [number, number, number]));
-    doc.rect(margin, cursor, contentW, rowH, "F");
-    doc.setDrawColor(226, 232, 240);
-    doc.setLineWidth(0.2);
-    doc.line(margin, cursor + rowH, margin + contentW, cursor + rowH);
-
-    // Status colour dot
-    const [r, g, b] = STATUS_COLORS[row.status] ?? FALLBACK_COLOR;
-    doc.setFillColor(r, g, b);
-    doc.circle(margin + 5, cursor + rowH / 2, 2, "F");
-
-    doc.setFontSize(8);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(15, 23, 42);
-    doc.text(row.status, margin + 10, cursor + 5.5);
-
-    doc.setFont("helvetica", "bold");
-    doc.text(String(row.count), margin + colWidths[0] + 3, cursor + 5.5);
-
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 116, 139);
-    doc.text(`${pct}%`, margin + colWidths[0] + colWidths[1] + 3, cursor + 5.5);
-
-    cursor += rowH;
-  });
-
   cursor += 10;
 
   // ── Resolved over time ───────────────────────────────────────────────────
@@ -410,7 +267,7 @@ export async function generateAnalyticsReport(
     doc.setFontSize(7);
     doc.setTextColor(148, 163, 184);
     doc.setFont("helvetica", "normal");
-    doc.text("Municipality Management System — Confidential", margin, pageH - 3.5);
+    doc.text("https://github.com/sudoers1 — © sudoers1. All rights reserved.", margin, pageH - 3.5);
     doc.text(`Page ${i} of ${totalPages}`, pageW - margin, pageH - 3.5, { align: "right" });
   }
 

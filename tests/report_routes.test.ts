@@ -5,6 +5,7 @@ let mockSession = {
   },
 };
 
+
 const mockSql = jest.fn();
 
 jest.mock("@/lib/db/neon", () => ({
@@ -188,32 +189,45 @@ describe("/api/reports/[id]", () => {
         message: "Assignment not found or not authorized",
       });
     });
+// In tests/report_routes.test.ts, update the PATCH test:
 
-    it("updates report status successfully", async () => {
-      const updatedAssignment = {
-        id: 1,
-        complaintid: 1,
-        workerid: 10,
-        status: "Resolved",
-      };
+it("updates report status successfully", async () => {
+  const updatedAssignment = {
+    id: 1,
+    complaintid: 1,
+    workerid: 10,
+    status: "Resolved",
+  };
 
-      mockSql.mockResolvedValueOnce([updatedAssignment]);
+  // Mock the SQL responses IN ORDER:
+  // 1. SELECT existing assignment (from the 'existing' query)
+  mockSql
+    .mockResolvedValueOnce([{ 
+      previous_status: "In progress", 
+      resident_id: 1, 
+      issuetype: "Water" 
+    }])
+    // 2. UPDATE assignments (RETURNING *)
+    .mockResolvedValueOnce([updatedAssignment])
+    // 3. UPDATE complaints
+    .mockResolvedValueOnce([])
+    // 4. INSERT notification (for Resolved status)
+    .mockResolvedValueOnce([]);
 
-      const req = makeRequest("http://localhost/api/reports/1", "PATCH", {
-        complaintid: 1,
-        status: "Resolved",
-      });
+  const req = makeRequest("http://localhost/api/reports/1", "PATCH", {
+    complaintid: "1",  // Make sure it's a string to match the API
+    status: "Resolved",
+  });
 
-      const res = await ReportByIdRoute.PATCH(req);
-      const data = await readJson(res);
+  const res = await ReportByIdRoute.PATCH(req);
+  const data = await readJson(res);
 
-      expect(data.status).toBe(200);
-      expect(data.body).toEqual({
-        message: "Status updated successfully",
-        data: updatedAssignment,
-      });
-    });
-
+  expect(data.status).toBe(200);
+  expect(data.body).toEqual({
+    message: "Status updated successfully",
+    data: updatedAssignment,
+  });
+});
     it("returns 500 when status update fails", async () => {
       mockSql.mockRejectedValueOnce(new Error("DB error"));
 
@@ -578,7 +592,6 @@ describe("/api/reports/my", () => {
     });
   });
 });
-
 describe("/api/reports/unassigned", () => {
   describe("GET", () => {
     it("returns unassigned reports", async () => {
@@ -587,6 +600,12 @@ describe("/api/reports/unassigned", () => {
           complaintid: 1,
           issuetype: "Sanitation",
           details: "Bins not collected",
+          creationtime: "2026-05-11T10:00:00.000Z",
+          userid: 10,
+          municipality: "Emfuleni",
+          status: "Pending",
+          priority: 1,
+          address: "123 Main St",
         },
       ];
 
@@ -598,8 +617,9 @@ describe("/api/reports/unassigned", () => {
       const data = await readJson(res);
 
       expect(data.status).toBe(200);
+      // Updated to match the actual API response
       expect(data.body).toEqual({
-        message: "Reports fetched successfully",
+        message: "Unassigned reports fetched successfully", // This matches your route
         data: complaints,
       });
     });
@@ -614,7 +634,7 @@ describe("/api/reports/unassigned", () => {
 
       expect(data.status).toBe(500);
       expect(data.body).toEqual({
-        message: "Failed to fetch reports",
+        message: "Failed to fetch unassigned reports", // This matches your route
       });
     });
   });
