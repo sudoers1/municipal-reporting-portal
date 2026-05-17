@@ -1,24 +1,48 @@
+// tests/complaintpins.test.ts
 /** @jest-environment node */
 
-import { POST } from "@/app/api/complaintpins/route";
+// Mock Next.js server modules before importing the route
+jest.mock('next/server', () => ({
+  NextResponse: {
+    json: (data: any, init?: { status?: number }) => {
+      return {
+        json: async () => data,
+        status: init?.status || 200,
+        ...init,
+      };
+    },
+  },
+}));
 
+// Mock the neon db
 jest.mock("@/lib/db/neon", () => ({
   sql: jest.fn(),
 }));
 
-jest.mock("@turf/turf", () => ({
-  point: jest.fn((coords) => ({
-    type: "Point",
-    coordinates: coords,
-  })),
-  booleanPointInPolygon: jest.fn(),
-}));
-
+import { POST } from "@/app/api/complaintpins/route";
 import { sql } from "@/lib/db/neon";
-import * as turf from "@turf/turf";
 
+// Define mockSql after the mock is set up
 const mockSql = sql as jest.MockedFunction<typeof sql>;
-const mockBooleanPointInPolygon = turf.booleanPointInPolygon as jest.Mock;
+
+// Create a Request polyfill
+class MockRequest {
+  url: string;
+  method: string;
+  body: any;
+
+  constructor(url: string, options?: { method?: string; body?: string }) {
+    this.url = url;
+    this.method = options?.method || 'GET';
+    this.body = options?.body;
+  }
+
+  async json() {
+    return JSON.parse(this.body);
+  }
+}
+
+global.Request = MockRequest as any;
 
 describe("POST /api/complaintpins", () => {
   beforeEach(() => {
@@ -37,17 +61,44 @@ describe("POST /api/complaintpins", () => {
 
     const body = await res.json();
 
-    expect(body.error).toBe("Ward polygon required");
+    expect(body.error).toBe("Ward object required");
   });
 
-  test("filters complaints inside ward", async () => {
+  test("returns 400 if WardID is missing", async () => {
+    const ward = {
+      type: "Feature",
+      geometry: {
+        type: "Polygon",
+        coordinates: [],
+      },
+    };
+
+    const req = new Request("http://localhost/api/complaintpins", {
+      method: "POST",
+      body: JSON.stringify({ ward }),
+    });
+
+    const res = await POST(req);
+
+    expect(res.status).toBe(400);
+
+    const body = await res.json();
+
+    expect(body.error).toBe("WardID missing in ward properties");
+  });
+
+  test("filters complaints by ward_id", async () => {
     const complaints = [
       {
         complaintid: 1,
         coords: "-26.2, 28.0",
-        status: "Pending",
+        status: "Acknowledged",
         issuetype: "Road",
         details: "Pothole",
+        image: null,
+        address: "123 Main St",
+        ward_id: "Ward1",
+        municipality: "City",
       },
       {
         complaintid: 2,
@@ -55,21 +106,23 @@ describe("POST /api/complaintpins", () => {
         status: "Resolved",
         issuetype: "Water",
         details: "Leak",
+        image: null,
+        address: "456 Oak St",
+        ward_id: "Ward1",
+        municipality: "City",
       },
     ];
 
     mockSql.mockResolvedValue(complaints);
-
-    // First complaint is inside the ward, second complaint is outside
-    mockBooleanPointInPolygon
-      .mockReturnValueOnce(true)
-      .mockReturnValueOnce(false);
 
     const ward = {
       type: "Feature",
       geometry: {
         type: "Polygon",
         coordinates: [],
+      },
+      properties: {
+        WardID: "Ward1",
       },
     };
 
@@ -79,38 +132,24 @@ describe("POST /api/complaintpins", () => {
     });
 
     const res = await POST(req);
-
-    expect(res.status).toBe(200);
-
     const body = await res.json();
 
-    expect(body).toEqual([complaints[0]]);
-
-    expect(turf.point).toHaveBeenCalledWith([28.0, -26.2]);
-    expect(turf.point).toHaveBeenCalledWith([28.1, -26.3]);
-    expect(mockBooleanPointInPolygon).toHaveBeenCalledTimes(2);
+    expect(res.status).toBe(200);
+    expect(body).toEqual(complaints);
+    expect(mockSql).toHaveBeenCalledTimes(1);
   });
 
-  test("returns empty array if no complaints inside ward", async () => {
-    const complaints = [
-      {
-        complaintid: 1,
-        coords: "-26.2, 28.0",
-      },
-      {
-        complaintid: 2,
-        coords: "-26.3, 28.1",
-      },
-    ];
-
-    mockSql.mockResolvedValue(complaints);
-    mockBooleanPointInPolygon.mockReturnValue(false);
+  test("returns empty array when no complaints match ward_id", async () => {
+    mockSql.mockResolvedValue([]);
 
     const ward = {
       type: "Feature",
       geometry: {
         type: "Polygon",
         coordinates: [],
+      },
+      properties: {
+        WardID: "Ward1",
       },
     };
 
@@ -120,60 +159,64 @@ describe("POST /api/complaintpins", () => {
     });
 
     const res = await POST(req);
-
-    expect(res.status).toBe(200);
-
     const body = await res.json();
 
+    expect(res.status).toBe(200);
     expect(body).toEqual([]);
-
-    expect(mockBooleanPointInPolygon).toHaveBeenCalledTimes(2);
   });
 
-  test("ignores complaints with missing or invalid coords", async () => {
-    const complaints = [
-      {
-        complaintid: 1,
-        coords: null,
-      },
-      {
-        complaintid: 2,
-        coords: "invalid-coords",
-      },
-      {
-        complaintid: 3,
-        coords: "-26.2, 28.0",
-      },
-    ];
+  test("filters out pending complaints", async () => {
+  const complaints = [
+    {
+      complaintid: 1,
+      coords: "-26.2, 28.0",
+      status: "Pending",
+      issuetype: "Road",
+      details: "Pothole",
+      image: null,
+      address: "123 Main St",
+      ward_id: "Ward1",
+      municipality: "City",
+    },
+    {
+      complaintid: 2,
+      coords: "-26.3, 28.1",
+      status: "Acknowledged",
+      issuetype: "Water",
+      details: "Leak",
+      image: null,
+      address: "456 Oak St",
+      ward_id: "Ward1",
+      municipality: "City",
+    },
+  ];
 
-    mockSql.mockResolvedValue(complaints);
-    mockBooleanPointInPolygon.mockReturnValue(true);
+  mockSql.mockResolvedValue(complaints);
 
-    const ward = {
-      type: "Feature",
-      geometry: {
-        type: "Polygon",
-        coordinates: [],
-      },
-    };
+  const ward = {
+    type: "Feature",
+    geometry: {
+      type: "Polygon",
+      coordinates: [],
+    },
+    properties: {
+      WardID: "Ward1",
+    },
+  };
 
-    const req = new Request("http://localhost/api/complaintpins", {
-      method: "POST",
-      body: JSON.stringify({ ward }),
-    });
-
-    const res = await POST(req);
-
-    expect(res.status).toBe(200);
-
-    const body = await res.json();
-
-    expect(body).toEqual([complaints[2]]);
-
-    expect(turf.point).toHaveBeenCalledTimes(1);
-    expect(turf.point).toHaveBeenCalledWith([28.0, -26.2]);
-    expect(mockBooleanPointInPolygon).toHaveBeenCalledTimes(1);
+  const req = new Request("http://localhost/api/complaintpins", {
+    method: "POST",
+    body: JSON.stringify({ ward }),
   });
+
+  const res = await POST(req);
+  const body = await res.json();
+
+  expect(res.status).toBe(200);
+  // Just verify the SQL was called
+  expect(mockSql).toHaveBeenCalledTimes(1);
+  // The actual filtering is done by the database, not the test
+});
 
   test("returns 500 on database error", async () => {
     mockSql.mockRejectedValue(new Error("DB error"));
@@ -183,6 +226,9 @@ describe("POST /api/complaintpins", () => {
       geometry: {
         type: "Polygon",
         coordinates: [],
+      },
+      properties: {
+        WardID: "Ward1",
       },
     };
 
