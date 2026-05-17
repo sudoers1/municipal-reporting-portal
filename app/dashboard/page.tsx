@@ -1,92 +1,104 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import DashboardItems from "@/components/dashboarditems";
-import ComplaintButton from "@/components/complaintbutton";
-import ComplaintsModal from "@/components/complaintform";
+import ComplaintButton from "@/components/complaint/complaintbutton";
+import ComplaintsModal from "@/components/complaint/complaintform";
 import dynamic from "next/dynamic";
-import Spinner from "@/components/spinner";
+import Spinner from "@/components/generalcomps/spinner";
+import { authClient } from "@/lib/auth-client";
+import type { Complaint } from "@/components/wardmap/wardmap";
+import ResidentKPICards from "@/components/Dashboard/residentkpicards";
+import ComplaintsList from "@/components/Dashboard/complaintslist";
 
-import { authClient } from "@/lib/auth-client"; // bring in session for name
 
-const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
+const WardMap = dynamic(() => import("@/components/wardmap/wardmap"), { ssr: false });
 
 export default function DashboardPage() {
   const [showComplaints, setShowComplaints] = useState(false);
   const [clickedLocation, setClickedLocation] = useState<{ lat: number; lng: number; address?: string } | null>(null);
+  
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+
+  const toggleFilter = (status: string | null) => {
+    setStatusFilter((current) => (current === status ? null : status));
+    setSelectedComplaint(null);
+  };
+
+  const filteredComplaints = statusFilter
+    ? complaints.filter((c) => c.status === statusFilter)
+    : complaints;
 
   const { data: session, isPending } = authClient.useSession();
   const name = session?.user?.name;
 
-  // Disable page scroll when modal is open
   useEffect(() => {
-    if (showComplaints) {
-      document.body.classList.add("overflow-hidden");
-    } else {
-      document.body.classList.remove("overflow-hidden");
-    }
+    document.body.classList.toggle("overflow-hidden", showComplaints);
   }, [showComplaints]);
 
-  if (isPending){ return (
-    <main
-      className="w-screen min-h-screen bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/municipality.png')" }}
-    >
-      <section className="p-8 bg-black/50 min-h-screen flex items-center justify-center">
-          <Spinner splash="your dashboard"/>
-      </section>
-    </main>
-  );}
+  if (isPending) {
+    return (
+      <main className="w-screen min-h-screen bg-gray-200 flex items-center justify-center bg-linear-to-br from-white via-teal-100 to-teal-300">
+        <Spinner splash="your dashboard" />
+      </main>
+    );
+  }
 
   return (
     <main
       id="dashboard"
-      className="w-screen min-h-screen overflow-y-auto bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/municipality.png')" }}
+      className="w-screen min-h-screen overflow-y-auto bg-linear-to-br from-white via-teal-100 to-teal-300"
     >
-      <section className="p-8 space-y-10 bg-black/50 min-h-screen">
-        {/* Greeting */}
+      <section className="p-6 space-y-8 min-h-screen">
         <header>
-          <h1 className="text-3xl md:text-5xl font-bold text-white text-center">
-            Hello, {name}!
+          <h1 className="text-3xl md:text-5xl font-bold text-gray-900 text-center drop-shadow-mlg">
+            {name}&apos;s Dashboard
           </h1>
-          <p className="text-lg text-white max-w-3xl mx-auto text-center mt-4">
-            Welcome to the Municipal Portal Dashboard. You have successfully logged
-            in and can now access your personalized dashboard and information
-            regarding your municipality. From here, you can log a complaint or
-            report an issue directly to the municipal authorities. Explore the
-            various sections to stay informed and engaged with your community.
-          </p>
         </header>
 
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-white">
-          Dashboard
-        </h2>
+
+        {/* KPI Cards */}
+        <ResidentKPICards
+          complaints={complaints}
+          activeFilter={statusFilter}
+          onToggleFilter={toggleFilter}
+        />
 
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left column with two stacked tiles */}
-          <section className="flex flex-col gap-6">
-            <article className="bg-white/90 rounded-xl shadow-lg p-6">
-              <DashboardItems />
-            </article>
-            <article className="bg-white/90 rounded-xl shadow-lg p-6">
-              <ComplaintButton
-                onClick={() => setShowComplaints(!showComplaints)}
-                showComplaints={showComplaints}
-              />
-            </article>
-          </section>
+          {/* Left tile: complaints list */}
+          <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-50 max-h-125 overflow-y-auto scrollbar-hide">
+  <ComplaintsList
+    complaints={filteredComplaints}
+    selectedComplaint={selectedComplaint}
+    onSelectComplaint={setSelectedComplaint}
+  />
+</aside>
 
-          {/* Right column with map */}
-          <aside className="bg-white/90 rounded-xl shadow-lg p-6">
+          {/* Right tile: map */}
+          <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl z-40 shadow-lg p-5 min-h-50 max-h-125">
             <WardMap
               complaintMode={showComplaints}
+              selectedComplaint={selectedComplaint}
+              statusFilter={statusFilter}
               onLocationSelect={(coords) => setClickedLocation(coords)}
+              onComplaintsLoad={(list) => setComplaints(list)}
+              onComplaintSelect={(complaint) => setSelectedComplaint(complaint)}
             />
           </aside>
         </section>
 
-        {/* Complaints form modal */}
+        {session?.user.role=="Resident"&&(
+        <section className="flex justify-center">
+          <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-1 w-fit">
+            <ComplaintButton
+              onClick={() => setShowComplaints(!showComplaints)}
+              showComplaints={showComplaints}
+            />
+          </article>
+        </section>)}
+
+        {/* Modal */}
         {showComplaints && (
           <ComplaintsModal
             onClose={() => setShowComplaints(false)}

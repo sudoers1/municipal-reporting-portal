@@ -1,30 +1,69 @@
-import DashboardItems from "@/components/dashboarditems";
+"use client";
+
+import { useState } from "react";
+import dynamic from "next/dynamic";
+import type { Complaint } from "@/components/wardmap/wardmap";
+import ResidentKPICards from "@/components/Dashboard/residentkpicards";
+import ComplaintsList from "@/components/Dashboard/complaintslist";
+import TutorialButton from "@/components/tutorial/tutorialButton";
+
+const WardMap = dynamic(() => import("@/components/wardmap/wardmap"), { ssr: false });
 
 export default function Home() {
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+
+  const toggleFilter = (status: string | null) => {
+    setStatusFilter((current) => (current === status ? null : status));
+    // clear selection when filter toggled off
+    setSelectedComplaint(null);
+  };
+
+  const filteredComplaints = statusFilter
+    ? complaints.filter((c) => c.status === statusFilter)
+    : complaints;
+
   return (
     <main
-      className="w-screen min-h-[120vh] overflow-y-auto bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/municipality.png')" }}
+      className="w-screen min-h-screen overflow-y-auto bg-linear-to-br from-white via-teal-100 to-teal-300"
     >
-      <section className="p-8 space-y-10 bg-black/50 min-h-[120vh] flex flex-col justify-start">
-        <h1 className="text-3xl md:text-5xl font-bold text-white text-center">
-          Municipal Portal Landing Page
+      <section className="p-8 space-y-10 min-h-screen">
+        <h1 className="text-3xl md:text-5xl font-bold text-gray-900 text-center drop-shadow-md">
+          General Dashboard
         </h1>
 
-        <p className="text-lg text-white max-w-3xl mx-auto text-center">
-          Welcome to the Municipal Portal. Log in to see your personalized dashboard and information
-          regarding your municipality. You can also log a complaint or report an issue directly from
-          your dashboard.
-        </p>
 
+        {/* KPI Cards */}
+        <ResidentKPICards
+          complaints={complaints}
+          activeFilter={statusFilter}
+          onToggleFilter={toggleFilter}
+        />
 
-      <h2 className="text-2xl space-y-10 md:text-3xl font-bold text-center text-white">
-        General Dashboard
-      </h2>
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left tile: complaints list */}
+                    <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-50 max-h-125 overflow-y-auto scrollbar-hide">
+            <ComplaintsList
+              complaints={filteredComplaints}
+              selectedComplaint={selectedComplaint}
+              onSelectComplaint={setSelectedComplaint}
+            />
+          </aside>
 
-          <DashboardItems />
-     
+          {/* Right tile: map */}
+          <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-55">
+            <WardMap
+              selectedComplaint={selectedComplaint}
+              onComplaintsLoad={(list) => setComplaints(list)}
+              onComplaintSelect={(complaint) => setSelectedComplaint(complaint)}
+              statusFilter={statusFilter}
+            />
+          </aside>
+        </section>
       </section>
+      <TutorialButton href="/tutorial?mode=guest" />
     </main>
   );
 }
+

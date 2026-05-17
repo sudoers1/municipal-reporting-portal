@@ -4,10 +4,16 @@ import { NextResponse } from "next/server";
 
 export const POST = withAuth(["Worker"], async (req: Request, session: any) => {
   try {
-    const workerId = session.user.id;
-    const { complaintid } = await req.json();
+    const workerId = session?.user?.id;
 
-    console.log("Received claim: ", req.body);
+    if (!workerId) {
+      return NextResponse.json(
+        { message: "Missing authenticated user" },
+        { status: 401 }
+      );
+    }
+
+    const { complaintid } = await req.json();
 
     if (!complaintid) {
       return NextResponse.json(
@@ -16,16 +22,48 @@ export const POST = withAuth(["Worker"], async (req: Request, session: any) => {
       );
     }
 
-    await sql`
-      INSERT INTO assignments (complaintid, workerid, status)
-      VALUES (${complaintid}, ${workerId}, 'In progress')
+    const complaintResult = await sql`
+      SELECT userid
+      FROM complaints
+      WHERE complaintid = ${complaintid}
+      LIMIT 1
     `;
 
-    return NextResponse.json({
-      message: "Report claimed successfully",
-      complaintid,
-    });
+    if (complaintResult.length === 0) {
+      return NextResponse.json(
+        { message: "Complaint not found" },
+        { status: 404 }
+      );
+    }
 
+    const complaintOwnerId = complaintResult[0].userid;
+
+    if (String(complaintOwnerId) === String(workerId)) {
+      return NextResponse.json(
+        { message: "You cannot claim a complaint you created" },
+        { status: 403 }
+      );
+    }
+
+    await sql`
+      INSERT INTO assignments (complaintid, workerid, status)
+      VALUES (${complaintid}, ${workerId}, 'Acknowledged')
+    `;
+
+    await sql`
+      UPDATE complaints
+      SET status = 'Acknowledged'
+      WHERE complaintid = ${complaintid}
+    `;
+
+    return NextResponse.json(
+      {
+        message: "Report claimed successfully",
+        complaintid,
+        workerid: workerId,
+      },
+      { status: 200 }
+    );
   } catch (err: any) {
     if (err.code === "23505") {
       return NextResponse.json(
@@ -34,7 +72,8 @@ export const POST = withAuth(["Worker"], async (req: Request, session: any) => {
       );
     }
 
-    console.error(err);
+    console.error("Claim report error:", err);
+
     return NextResponse.json(
       { message: "Failed to claim report" },
       { status: 500 }

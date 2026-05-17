@@ -1,15 +1,3 @@
-// export default function KPICards(){
-//     return(
-//         <section className="m-4 grid grid-cols-5 gap-4">
-//             <section className="bg-slate-300 h-30 rounded-md"></section>
-//             <section className="bg-slate-300 h-30 rounded-md"></section>
-//             <section className="bg-slate-300 h-30 rounded-md"></section>
-//             <section className="bg-slate-300 h-30 rounded-md"></section>
-//             <section className="bg-slate-300 h-30 rounded-md"></section>
-//         </section>
-//     )
-// }
-
 import { AlertCircle, CheckCircle, Clock, Droplets, Hammer } from 'lucide-react';
 
 export default function KPICards({ data = [] }: { data: any[] }) {
@@ -35,23 +23,23 @@ export default function KPICards({ data = [] }: { data: any[] }) {
                     key={i} 
                     className="bg-white border border-slate-200 h-32 rounded-xl p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow"
                 >
-                    <div className="flex justify-between items-start">
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                    <section className="flex justify-between items-start">
+                        <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
                             {stat.label}
-                        </span>
+                        </p>
                         {/* Status icon with matching background pill */}
-                        <div className={`p-1.5 rounded-lg ${stat.bg} ${stat.color}`}>
+                        <section className={`p-1.5 rounded-lg ${stat.bg} ${stat.color}`}>
                             <stat.icon size={18} />
-                        </div>
-                    </div>
-                    <div>
-                        <div className="text-3xl font-extrabold text-slate-900 leading-none">
+                        </section>
+                    </section>
+                    <section>
+                        <section className="text-3xl font-extrabold text-slate-900 leading-none">
                             {stat.value}
-                        </div>
+                        </section>
                         <p className="text-[10px] font-medium text-slate-400 mt-1 uppercase tracking-tighter">
                             Live Metrics
                         </p>
-                    </div>
+                    </section>
                 </section>
             ))}
         </section>

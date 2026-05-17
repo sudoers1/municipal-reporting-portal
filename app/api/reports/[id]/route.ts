@@ -81,30 +81,96 @@ export const PATCH = withAuth(["Worker"], async (req: Request, session: any) => 
       );
     }
 
-    const result = await sql`
-      UPDATE assignments
-      SET 
-        status = ${status},
-        updated_at = NOW()
-      WHERE complaintid = ${complaintid}
-        AND workerid = ${workerId}
-      RETURNING *
+    const existing = await sql`
+      SELECT
+        a.status AS previous_status,
+        c.userid AS resident_id,
+        c.issuetype
+      FROM assignments a
+      JOIN complaints c
+        ON c.complaintid = a.complaintid
+      WHERE a.complaintid = ${complaintid}
+        AND a.workerid = ${workerId}
+      LIMIT 1
     `;
 
-    if (result.length === 0) {
+    if (existing.length === 0) {
       return NextResponse.json(
         { message: "Assignment not found or not authorized" },
         { status: 404 }
       );
     }
 
+    const previousStatus = existing[0].previous_status;
+    const residentId = existing[0].resident_id;
+    const issueType = existing[0].issuetype;
+
+    const result = await sql`
+      UPDATE assignments
+      SET 
+        status = ${status},
+        updated_at = NOW(),
+        started_at = CASE
+          WHEN ${status} = 'In progress' AND started_at IS NULL THEN NOW()
+          ELSE started_at
+        END,
+        resolved_at = CASE
+          WHEN ${status} = 'Resolved' THEN NOW()
+          ELSE NULL
+        END
+      WHERE complaintid = ${complaintid}
+        AND workerid = ${workerId}
+      RETURNING *
+    `;
+
+    await sql`
+      UPDATE complaints
+      SET status = ${status}
+      WHERE complaintid = ${complaintid}
+    `;
+
+    if (status === "In progress" && previousStatus !== "In progress") {
+      await sql`
+        INSERT INTO notifications (
+          user_id,
+          type,
+          title,
+          body
+        )
+        VALUES (
+          ${residentId},
+          'complaint_in_progress',
+          'Complaint in progress',
+          ${`Your ${issueType} complaint is now being worked on.`}
+        )
+      `;
+    }
+
+    if (status === "Resolved" && previousStatus !== "Resolved") {
+      await sql`
+        INSERT INTO notifications (
+          user_id,
+          type,
+          title,
+          body
+        )
+        VALUES (
+          ${residentId},
+          'complaint_resolved',
+          'Complaint resolved',
+          ${`Your ${issueType} complaint has been marked as resolved.`}
+        )
+        
+      `;
+      
+    }
+
     return NextResponse.json({
       message: "Status updated successfully",
       data: result[0],
     });
-
   } catch (error) {
-    console.error(error);
+    console.error("Failed to update status:", error);
 
     return NextResponse.json(
       { message: "Failed to update status" },

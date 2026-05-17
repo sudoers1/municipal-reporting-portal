@@ -13,7 +13,6 @@ import {
   CellContext,
   Row,
 } from "@tanstack/react-table";
-import UserViewer from "@/components/UserManagement/userView";
 import UserFilters from "@/components/UserManagement/userFilters";
 
 type User = {
@@ -51,19 +50,13 @@ const dateRangeFilter = (row: Row<User>, columnId: string, value: any) => {
 const dateCell = (info: CellContext<User, string>) =>
   new Date(info.getValue()).toLocaleString();
 
-const actionsCell =
-  (setSelected: (c: User) => void) => (info: CellContext<User, any>) =>
-    (
-      <button
-        onClick={() => setSelected(info.row.original)}
-        className="bg-brand-accent text-black px-3 py-1 rounded hover:bg-brand-accent/70"
-      >
-        View
-      </button>
-    );
 
-export default function UserTable({ onSuccess, users }: { onSuccess: () => void; users: Record<string, any>[] }) {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+export default function UserTable(
+  { setSelectedUser,users }: 
+  { users: Record<string, any>[] ;setSelectedUser: (c: User) => void;})
+   {
+  
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [dateRange, setDateRange] = useState<{ start?: string; end?: string }>({});
@@ -88,6 +81,18 @@ export default function UserTable({ onSuccess, users }: { onSuccess: () => void;
     };
   }, [users]);
 
+  const actionsCell =
+  (setSelectedUser: (c: User) => void) => (info: CellContext<User, any>) =>
+    (
+      <button
+        onClick={() => setSelectedUser(info.row.original)}
+        className="bg-brand-accent text-black px-3 py-1 rounded hover:bg-brand-accent/70"
+      >
+        View
+      </button>
+    );
+
+
   const columns = useMemo(
     () => [
       {
@@ -103,7 +108,7 @@ export default function UserTable({ onSuccess, users }: { onSuccess: () => void;
       {
         accessorKey: "municipality",
         header: "Municipality",
-        filterFn: filterFns.equals,
+        filterFn: filterFns.includesString,
       },
       {
         accessorKey: "user_types_id",
@@ -143,18 +148,30 @@ export default function UserTable({ onSuccess, users }: { onSuccess: () => void;
   useEffect(() => {
     table.getColumn("createdAt")?.setFilterValue(dateRange);
   }, [dateRange, table]);
+  
+  const filteredRows = table.getRowModel().rows;
+  const hasNoResults = filteredRows.length === 0;
 
   return (
-    <section className="flex flex-col gap-3">
+    <section className="flex flex-col z-30 gap-3">
+      <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-4">
       <UserFilters
         table={table}
         municipalityOptions={municipalityOptions}
         dateRange={dateRange}
         setDateRange={setDateRange}
       />
+      </article>
 
-      <table className="w-[85vw] bg-brand-primary rounded-2xl overflow-hidden text-white">
-        <thead className="bg-brand-accent text-black">
+      {/*<article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg overflow-hidden"></article>*/}
+      <article className="mt-3 rounded-xl  overflow-hidden">
+      {hasNoResults ? (
+              <p  className="p-8 text-center text-lg text-gray-800">
+                No users found
+              </p>
+          ) : (
+      <table className="w-full table-fixed text-sm text-gray-900">
+        <thead className="bg-brand-accent">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -164,7 +181,7 @@ export default function UserTable({ onSuccess, users }: { onSuccess: () => void;
                   <th
                     key={header.id}
                     colSpan={header.colSpan}
-                    className="p-3 text-left border-r last:border-r-0 cursor-pointer"
+                    className="p-3 text-left border-r last:border-r-0 cursor-pointer border-brand-primary/50"
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     {header.isPlaceholder
@@ -185,12 +202,12 @@ export default function UserTable({ onSuccess, users }: { onSuccess: () => void;
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className="border-t hover:bg-brand-secondary border-black"
+              className="border-t hover:bg-brand-accent/30  border-brand-primary/50"
             >
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className="p-3 border-r last:border-r-0 border-black"
+                  className="p-2 truncate max-w-[160px]"
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
@@ -198,15 +215,10 @@ export default function UserTable({ onSuccess, users }: { onSuccess: () => void;
             </tr>
           ))}
         </tbody>
-      </table>
+      </table>)}
+      </article>
 
-      {selectedUser && (
-        <UserViewer
-          user={selectedUser}
-          onClose={() => setSelectedUser(null)}
-          onSuccess={onSuccess}
-        />
-      )}
+
     </section>
   );
 }

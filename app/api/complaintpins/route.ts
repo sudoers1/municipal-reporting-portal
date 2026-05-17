@@ -1,34 +1,34 @@
 // app/api/complaintpins/route.ts
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db/neon";
-import * as turf from "@turf/turf";
 
 export async function POST(req: Request) {
   try {
     const { ward } = await req.json();
     if (!ward) {
-      return NextResponse.json({ error: "Ward polygon required" }, { status: 400 });
+      return NextResponse.json({ error: "Ward object required" }, { status: 400 });
     }
 
-    // Fetch all complaints from DB
+    // Extract WardID from the selected ward's properties
+    const wardId = ward.properties?.WardID;
+    if (!wardId) {
+      return NextResponse.json({ error: "WardID missing in ward properties" }, { status: 400 });
+    }
+
+    // Fetch complaints that match this ward_id, exclude pending pins, and restrict resolved complaints to the last month
     const complaints = await sql`
-      SELECT complaintid, status, issuetype, details, image, coords, address
-      FROM complaints
+      SELECT c.complaintid, c.status, c.issuetype, c.details, c.image, c.coords, c.address, c.ward_id, c.municipality
+      FROM complaints c
+      LEFT JOIN assignments a ON c.complaintid = a.complaintid
+      WHERE c.ward_id = ${wardId}
+        AND LOWER(c.status) != 'pending'
+        AND (
+          LOWER(c.status) != 'resolved'
+          OR a.resolved_at >= NOW() - INTERVAL '1 month'
+        )
     `;
 
-    // Filter server-side
-    const filtered = complaints.filter((c: any) => {
-      if (!c.coords) return false;
-      const [latStr, lngStr] = c.coords.split(",").map((s: string) => s.trim());
-      const lat = parseFloat(latStr);
-      const lng = parseFloat(lngStr);
-      if (isNaN(lat) || isNaN(lng)) return false;
-
-      const point = turf.point([lng, lat]);
-      return turf.booleanPointInPolygon(point, ward);
-    });
-
-    return NextResponse.json(filtered);
+    return NextResponse.json(complaints);
   } catch (error) {
     console.error("Error fetching complaint pins:", error);
     return NextResponse.json(

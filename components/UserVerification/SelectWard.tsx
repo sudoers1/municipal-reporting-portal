@@ -1,0 +1,100 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { insertUserMunicipality } from "@/lib/db/usersneon";
+import dynamic from "next/dynamic";
+import { insertVerification } from "../../lib/db/verifications"; // Adjust path to verifications.ts
+
+
+const WardMap = dynamic(() => import("@/components/wardmap/wardmap"), { ssr: false });
+
+
+export default function ApplyForVerification(
+  { onClose, userName, uid="" }: 
+  { uid:string; userName:string; onClose: () => void; }) {
+const [form, setForm] = useState({
+  name:userName,
+  userid: uid,
+  municipality: "Not Assigned",
+  ward: "Not Assigned",
+});
+
+const getMunicipality = (coords: any) => {
+  console.log("MAP COORDS:", coords);
+
+  setForm((prev) => ({
+    ...prev,
+    municipality: coords.municipality || "Not Assigned",
+    ward: coords.ward_id || "Not Assigned",
+  }));
+};
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+
+    if (form.municipality=="Not Assigned") {
+      toast.error("Please choose a municipality");
+      return;
+    }
+   await insertUserMunicipality(form.userid,form.municipality);
+   await insertVerification(form.userid);
+  toast.success("Municipality assigned successfully.");
+   onClose();
+
+
+  }
+
+  return (
+    <section className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 " onClick={onClose}>
+
+
+      <section className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-8 relative" onClick={(e) => e.stopPropagation()}>
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-600 hover:text-black text-2xl font-bold"
+        >
+          ×
+        </button>
+
+        <header>
+          <h2 className="text-2xl font-bold text-center text-black mb-6">
+             Become a Worker
+          </h2>
+        </header>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+
+        <fieldset>
+          <section className="w-full border rounded-xl text-center px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none">
+              <p >
+                <strong>Name:</strong>{form.name}
+              </p>
+              <p >
+                <strong>Municipality:</strong>{form.municipality}
+              </p>
+              <p >
+                <strong>Ward:</strong>{form.ward}
+              </p>
+          </section>
+         </fieldset>
+          <section className="border rounded-xl overflow-hidden">
+            <section className="h-[300px] w-full">
+              <WardMap complaintMode={true} onLocationSelect={(coords) => getMunicipality(coords)}/>
+            </section>
+          </section>
+
+          <button
+            type="submit"
+            className="w-full bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-md hover:bg-brand-accent hover:text-black transition-colors duration-300"
+          >
+            Apply
+          </button>
+        </form>
+      </section>
+
+      
+    </section>
+  );
+}

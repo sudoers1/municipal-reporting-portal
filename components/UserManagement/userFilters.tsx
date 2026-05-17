@@ -21,7 +21,7 @@ export default function UserFilters({
   setDateRange,
 }: Props) {
   return (
-    <header className="w-[85vw] p-2 flex flex-wrap gap-3 justify-center bg-brand-primary rounded-2xl text-white">
+    <header className="w-[85vw] p-2 flex flex-wrap gap-3 justify-center  rounded-2xl text-white">
 
       <input
         type="text"
@@ -30,6 +30,29 @@ export default function UserFilters({
         value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
         onChange={(e) =>
           table.getColumn("name")?.setFilterValue(
+            e.target.value || undefined
+          )
+        }
+      />
+      <input
+        type="text"
+        placeholder="Search Email..."
+        className="p-2 text-black rounded bg-brand-accent"
+        value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+        onChange={(e) =>
+          table.getColumn("email")?.setFilterValue(
+            e.target.value || undefined
+          )
+        }
+      />
+
+      <input
+        type="text"
+        placeholder="Search Municipality..."
+        className="p-2 text-black rounded bg-brand-accent"
+        value={(table.getColumn("municipality")?.getFilterValue() as string) ?? ""}
+        onChange={(e) =>
+          table.getColumn("municipality")?.setFilterValue(
             e.target.value || undefined
           )
         }
@@ -51,22 +74,7 @@ export default function UserFilters({
         ))}
       </select>
 
-      <select
-        className="p-2 text-black rounded bg-brand-accent"
-        value={(table.getColumn("municipality")?.getFilterValue() as string) ?? ""}
-        onChange={(e) =>
-          table.getColumn("municipality")?.setFilterValue(
-            e.target.value || undefined
-          )
-        }
-      >
-        <option value="">All Municipalities</option>
-        {municipalityOptions.map((m) => (
-          <option key={m} value={m}>
-            {m}
-          </option>
-        ))}
-      </select>
+
 
       <input
         type="date"

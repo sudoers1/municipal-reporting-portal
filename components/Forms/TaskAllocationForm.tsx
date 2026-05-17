@@ -63,8 +63,9 @@ export default function TaskAllocationForm({ complaint,onClose }: TaskAllocation
 
 
     return(
-        <section className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <section className="bg-white w-fit h-125 p-4 shadow-xl rounded-2xl flex flex-col border border-gray-200 relative">
+        <section className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" 
+      onClick={onClose}>
+            <section className="bg-white w-fit h-125 p-4 shadow-xl rounded-2xl flex flex-col border border-gray-200 relative" onClick={(e) => e.stopPropagation()}>
                 <header>
                     <button
                         type="button"

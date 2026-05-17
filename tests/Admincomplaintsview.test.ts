@@ -23,7 +23,7 @@ jest.mock("@/lib/auth-client", () => ({
   },
 }));
 
-jest.mock("@/components/spinner", () => ({
+jest.mock("@/components/generalcomps/spinner", () => ({
   __esModule: true,
   default: ({ splash }: any) =>
     React.createElement("div", { "data-testid": "spinner" }, splash ?? "Loading"),
