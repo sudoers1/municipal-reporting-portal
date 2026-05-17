@@ -15,11 +15,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "WardID missing in ward properties" }, { status: 400 });
     }
 
-    // Fetch complaints that match this ward_id directly
+    // Fetch complaints that match this ward_id and exclude pending pins
     const complaints = await sql`
       SELECT complaintid, status, issuetype, details, image, coords, address, ward_id, municipality
       FROM complaints
       WHERE ward_id = ${wardId}
+        AND LOWER(status) != 'pending'
     `;
 
     return NextResponse.json(complaints);
