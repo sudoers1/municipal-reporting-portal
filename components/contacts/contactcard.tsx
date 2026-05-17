@@ -98,7 +98,7 @@ export default function ContactCard({ municipality }: { municipality: Municipali
       </section>
 
       <footer className="text-sm text-slate-500">
-        Contact information is loaded from the municipality dataset and updated for the selected municipality. Last Updated: 17/05/2026
+      Last Updated: 17/05/2026
       </footer>
     </article>
   );
