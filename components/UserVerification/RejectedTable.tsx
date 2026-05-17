@@ -86,6 +86,8 @@ export default function DeniedVerificationsTable({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
+  const filteredRows = table.getRowModel().rows;
+  const hasNoResults = filteredRows.length === 0;
 
   return (
     <section className="flex flex-col">
@@ -94,40 +96,59 @@ export default function DeniedVerificationsTable({
         <p className=" text-3xl p-8">{data.length} Workers Denied</p>
       </section>
       
-      <section className="flex justify-center overflow-x-auto">
-        <table className="bg-brand-primary/70 w-[85vw] rounded-md overflow-hidden text-white">
-          <thead className="bg-brand-accent text-black">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="p-2 text-left border-r last:border-r-0 cursor-pointer select-none">
-                    {flexRender(header.column.columnDef.header, header.getContext())}
+      <article className="rounded-xl  overflow-hidden shadow-lg p-4">
+      {hasNoResults ? (
+              <p  className="p-8 text-center text-xl text-gray-800">
+                No rejected requests
+              </p>
+          ) : (
+      <table className="w-full table-fixed text-sm text-gray-900">
+        <thead className="bg-brand-accent">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                const sort = header.column.getIsSorted();
+
+                return (
+                  <th
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    className="p-3 text-left border-r last:border-r-0 cursor-pointer border-brand-primary/50"
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                    {sort === "asc" ? " ↑" : sort === "desc" ? " ↓" : null}
                   </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.length > 0 ? (
-              table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="bg-brand-primary/70 text-left hover:bg-brand-secondary transition-colors">
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="p-2 border-r last:border-r-0 border-t border-black">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={columns.length} className="p-10 text-center italic">
-                  No denied requests found.
+                );
+              })}
+            </tr>
+          ))}
+        </thead>
+
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr
+              key={row.id}
+              className="border-t hover:bg-brand-accent/30  border-brand-primary/50"
+            >
+              {row.getVisibleCells().map((cell) => (
+                <td
+                  key={cell.id}
+                  className="p-2 truncate max-w-[160px]"
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </section>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>)}
+      </article>
     </section>
   );
 }
