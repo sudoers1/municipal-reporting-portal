@@ -96,9 +96,18 @@ export default function WardMap({
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
-    const map = L.map(containerRef.current).setView([-26.2041, 28.0473], 10);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    const southAfricaBounds = L.latLngBounds([[-35.5, 16], [-21.5, 33.5]]);
+    const map = L.map(containerRef.current, {
       maxZoom: 24,
+      minZoom: 5,
+      maxBounds: southAfricaBounds.pad(0.5),
+      maxBoundsViscosity: 1.0,
+    }).setView([-26.2041, 28.0473], 10);
+
+    const minZoom = map.getBoundsZoom(southAfricaBounds, false);
+    map.setMinZoom(minZoom);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
     const geojsonLayer = L.layerGroup().addTo(map);
