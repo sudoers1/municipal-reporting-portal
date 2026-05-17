@@ -14,7 +14,7 @@ import type { Notification } from "@/lib/notifications/client";
 export default function Navbar({ initialNotifications = [] }: { initialNotifications?: Notification[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const user = (session as any)?.user;
   const router = useRouter();
 
@@ -36,9 +36,10 @@ export default function Navbar({ initialNotifications = [] }: { initialNotificat
       <nav className="w-full flex items-center justify-between px-6 py-2 z-60 bg-brand-primary shadow">
         <Link
           href={user ? "/dashboard" : "/"}
-          className="text-xl font-bold text-foreground hover:underline"
+          className="flex items-center gap-3 text-xl font-bold text-foreground hover:underline"
         >
-          Municipal Portal Project
+          <Image src="/favicon.ico" alt="Portal logo" width={28} height={28} className="rounded-sm" />
+          <span>Municipal Portal Project</span>
         </Link>
         <section className="flex items-center gap-6 text-white">
           <Hamburger />
@@ -68,14 +69,14 @@ export default function Navbar({ initialNotifications = [] }: { initialNotificat
                 )}
               </figure>
             </>
-          ) : (
+          ) : !isPending ? (
             <button
               className="px-4 py-2 rounded bg-brand-accent text-black hover:bg-brand-primary hover:text-white"
               onClick={handleLogin}
             >
               Login
             </button>
-          )}
+          ) : null}
         </section>
       </nav>
       <LoginModal isOpen={isOpen} onClose={() => setIsOpen(false)} />

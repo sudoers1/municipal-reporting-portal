@@ -6,7 +6,7 @@ export default function Signup({ onBack }: { onBack: () => void }) {
   return (
     <section>
       <header>
-        <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">
+        <h2 className="text-lg font-semibold mb-4 text-black">
           Sign Up
         </h2>
       </header>
