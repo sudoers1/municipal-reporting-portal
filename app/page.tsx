@@ -11,6 +11,17 @@ const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
 export default function Home() {
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+
+  const toggleFilter = (status: string | null) => {
+    setStatusFilter((current) => (current === status ? null : status));
+    // clear selection when filter toggled off
+    setSelectedComplaint(null);
+  };
+
+  const filteredComplaints = statusFilter
+    ? complaints.filter((c) => c.status === statusFilter)
+    : complaints;
 
   return (
     <main
@@ -23,13 +34,17 @@ export default function Home() {
 
 
         {/* KPI Cards */}
-        <ResidentKPICards complaints={complaints} />
+        <ResidentKPICards
+          complaints={complaints}
+          activeFilter={statusFilter}
+          onToggleFilter={toggleFilter}
+        />
 
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left tile: complaints list */}
                     <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-[200px] max-h-[500px] overflow-y-auto scrollbar-hide">
             <ComplaintsList
-              complaints={complaints}
+              complaints={filteredComplaints}
               selectedComplaint={selectedComplaint}
               onSelectComplaint={setSelectedComplaint}
             />
@@ -41,6 +56,7 @@ export default function Home() {
               selectedComplaint={selectedComplaint}
               onComplaintsLoad={(list) => setComplaints(list)}
               onComplaintSelect={(complaint) => setSelectedComplaint(complaint)}
+              statusFilter={statusFilter}
             />
           </aside>
         </section>

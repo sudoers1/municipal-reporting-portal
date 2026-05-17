@@ -38,6 +38,7 @@ interface Props {
   wardsUrl?: string;
   complaintMode?: boolean;
   selectedComplaint?: Complaint | null;
+  statusFilter?: string | null;
   onLocationSelect?: (coords: {
     lat: number;
     lng: number;
@@ -53,6 +54,7 @@ export default function WardMap({
   wardsUrl = "/api/wards",
   complaintMode = false,
   selectedComplaint,
+  statusFilter = null,
   onLocationSelect,
   onComplaintsLoad,
   onComplaintSelect,
@@ -255,6 +257,8 @@ export default function WardMap({
 
           complaints.forEach((c) => {
             if (c.status === "Pending") return;
+            // Apply external status filter if provided
+            if (statusFilter && c.status !== statusFilter) return;
             const [latStr, lngStr] = c.coords.split(",").map((s) => s.trim());
             const lat = parseFloat(latStr);
             const lng = parseFloat(lngStr);
@@ -268,8 +272,9 @@ export default function WardMap({
                 marker.on("click", () => {
                   const alreadySelected = selectedComplaintRef.current?.complaintid === c.complaintid;
                   if (alreadySelected) {
+                    // Clear selection and let the shared selectedComplaint effect
+                    // handle fitting the ward bounds (same flow as Back to list).
                     onComplaintSelectRef.current?.(null);
-                    if (selectedWard) fitWardBounds(selectedWard);
                     return;
                   }
                   onComplaintSelectRef.current?.(c);
@@ -283,11 +288,11 @@ export default function WardMap({
         }
       })();
     }
-  }, [selectedWard, complaintMode, fitWardBounds]);
+  }, [selectedWard, complaintMode, fitWardBounds, statusFilter]);
 
   return (
     <section className="relative w-full h-100 rounded-xl overflow-hidden shadow-lg">
-      <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
+      <section ref={containerRef} style={{ width: "100%", height: "100%" }} />
     </section>
   );
 }
