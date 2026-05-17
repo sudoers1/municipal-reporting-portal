@@ -62,18 +62,18 @@ export default function DeniedVerificationsTable({
           </p>
         ),
       },
-    //   {
-    //     id: "actions",
-    //     header: "Actions",
-    //     cell: (info: any) => (
-    //       <button 
-    //         onClick={() => handleReconsider(info.row.original.user_id)}
-    //         className="bg-green-500 text-green-900 uppercase tracking-widest w-fit px-3 py-1 rounded-full text-xs font-bold border border-green-700/80"
-    //       >
-    //         Approve Anyway
-    //       </button>
-    //     ),
-    //   },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: (info: any) => (
+          <button 
+            onClick={() => handleReconsider(info.row.original.user_id)}
+            className="bg-green-500 text-green-900 uppercase tracking-widest w-fit px-3 py-1 rounded-full text-xs font-bold border border-green-700/80"
+          >
+            Approve Anyway
+          </button>
+        ),
+      },
     ],
     []
   );
