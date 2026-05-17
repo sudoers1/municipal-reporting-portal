@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ResidentKPICards from "@/components/residentkpicards";
 import ComplaintsList from "@/components/complaintslist";
 import type { Complaint } from "@/components/wardmap";
@@ -49,9 +49,11 @@ const buildOverlaySections = (highlight: DOMRect | null) => {
   ];
 };
 
-export default function TutorialPage({ searchParams }: { searchParams?: { mode?: string } }) {
+export default function TutorialPage() {
   const router = useRouter();
-  const mode = searchParams?.mode === "resident" ? "resident" : "guest";
+  const searchParams = useSearchParams();
+
+  const mode = searchParams.get("mode") === "resident" ? "resident" : "guest";
   const [stepIndex, setStepIndex] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
