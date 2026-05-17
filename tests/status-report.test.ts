@@ -1,5 +1,6 @@
+// tests/status-report.test.ts
 import { Priority } from "@/lib/priority";
-import { Report } from "@/lib/report";
+import { Report } from "@/lib/structures/report";
 import { Status } from "@/lib/status";
 
 describe("Status enum", () => {
@@ -23,7 +24,7 @@ describe("Priority enum", () => {
     expect(Priority.Medium).toBe("Medium");
     expect(Priority.Low).toBe("Low");
   });
-})
+});
 
 describe("Report", () => {
   const creationTime = new Date("2024-01-01");
@@ -35,8 +36,9 @@ describe("Report", () => {
     creationtime: Date;
     userid: string;
     priority: Priority;
-    image: string;
-    details: string;
+    complaintid?: string;
+    image?: string;
+    details?: string;
   }>) {
     return new Report(
       overrides?.municipality ?? "Cape Town",
@@ -45,8 +47,9 @@ describe("Report", () => {
       overrides?.creationtime ?? creationTime,
       overrides?.userid ?? "user1",
       overrides?.priority ?? Priority.Low,
-      overrides?.image,
-      overrides?.details,
+      overrides?.complaintid,      // complaintid (7th)
+      overrides?.image,            // image (8th)
+      overrides?.details,          // details (9th)
     );
   }
 
@@ -77,9 +80,9 @@ describe("Report", () => {
     });
 
     test("getPriority returns correct value", () => {
-      const report = makeReport({priority: Priority.Low})
+      const report = makeReport({ priority: Priority.Low });
       expect(report.getPriority()).toBe(Priority.Low);
-    })
+    });
   });
 
   describe("optional fields", () => {
@@ -147,11 +150,12 @@ describe("Report", () => {
       report.setUserID("user99");
       expect(report.getUserID()).toBe("user99");
     });
+
     test("setPriority updates priority", () => {
       const report = makeReport();
       report.setPriority(Priority.Low);
       expect(report.getPriority()).toBe(Priority.Low);
-    })
+    });
   });
 
   describe("status transitions", () => {
