@@ -294,9 +294,5 @@ export default function WardMap({
     <section className="relative w-full h-100 rounded-xl overflow-hidden shadow-lg">
       <section ref={containerRef} style={{ width: "100%", height: "100%" }} />
     </section>
-    <section className="relative w-full h-[500px] rounded-xl overflow-hidden shadow-lg">
-      <section ref={containerRef} style={{ width: "100%", height: "100%" }} />
-    </section>
-    </>
   );
 }

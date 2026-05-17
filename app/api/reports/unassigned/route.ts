@@ -5,35 +5,7 @@ import { sql } from "@/lib/db/neon";
 export const GET = withAuth(["Worker", "Admin"], async (req: Request, session: any) => {
   try {
 
-    const debugCounts = await sql`
-            SELECT
-              COUNT(*) AS total_complaints,
-
-              COUNT(*) FILTER (
-                WHERE TRIM(LOWER(status)) = 'pending'
-              ) AS pending_complaints,
-
-              COUNT(*) FILTER (
-                WHERE NOT EXISTS (
-                  SELECT 1
-                  FROM assignments a
-                  WHERE a.complaintid = complaints.complaintid
-                )
-              ) AS no_assignment_complaints,
-
-              COUNT(*) FILTER (
-                WHERE TRIM(LOWER(status)) = 'pending'
-                  AND NOT EXISTS (
-                    SELECT 1
-                    FROM assignments a
-                    WHERE a.complaintid = complaints.complaintid
-                  )
-              ) AS pending_and_unassigned
-            FROM complaints
-          `;
-
-          console.log("Unassigned debug counts:", debugCounts[0]);
-
+    const workerId = session.user.id;
 
     const complaints = await sql`
       SELECT 
@@ -47,7 +19,10 @@ export const GET = withAuth(["Worker", "Admin"], async (req: Request, session: a
         c.priority,
         c.address
       FROM complaints c
-      WHERE c.status = 'Pending'
+      JOIN user_municipality um
+        ON TRIM(LOWER(um.municipality)) = TRIM(LOWER(c.municipality))
+      WHERE um.userid = ${workerId}
+        AND c.status = 'Pending'
         AND NOT EXISTS (
           SELECT 1
           FROM assignments a
