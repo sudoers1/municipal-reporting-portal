@@ -36,7 +36,7 @@ export default function Navbar({ initialNotifications = [] }: { initialNotificat
       <nav className="w-full flex items-center justify-between px-6 py-2 z-60 bg-brand-primary shadow">
         <Link
           href={user ? "/dashboard" : "/"}
-          className="text-xl text-white font-bold text-foreground hover:underline"
+          className="text-xl font-bold text-foreground hover:underline"
         >
           Municipal Portal Project
         </Link>
@@ -49,9 +49,9 @@ export default function Navbar({ initialNotifications = [] }: { initialNotificat
             <Link href="/reports" className="hover:underline">
               Reports
             </Link>
-            <button onClick={() => handleNotReady("Contact")} className="hover:underline">
+            <Link href="/contact" className="hover:underline">
               Contact
-            </button>
+            </Link>
           </section>
           {user ? (
             <>
