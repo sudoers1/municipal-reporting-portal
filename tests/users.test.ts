@@ -1,74 +1,151 @@
-import { getUserRole, setUserRole, setResident } from "../lib/db/users";
+// tests/lib/db/users.test.ts
+import { Pool } from "pg";
+import { getUserRole, setUserRole, setResident, setAdmin } from "@/lib/db/users";
 
+jest.mock("pg", () => {
+  const mockClient = {
+    query: jest.fn(),
+    release: jest.fn(),
+  };
+  
+  const mockPool = {
+    query: jest.fn(),
+    connect: jest.fn().mockResolvedValue(mockClient),
+  };
+  
+  return { Pool: jest.fn(() => mockPool) };
+});
+
+const mockPool = new Pool() as jest.Mocked<Pool>;
 const mockClient = {
   query: jest.fn(),
   release: jest.fn(),
 };
 
-const mockQuery = jest.fn();
-const mockConnect = jest.fn().mockResolvedValue(mockClient);
-
-jest.mock("pg", () => ({
-  Pool: jest.fn().mockImplementation(() => ({
-    query: jest.fn((...args) => mockQuery(...args)),
-    connect: jest.fn((...args) => mockConnect(...args)),
-  })),
-}));
-
-beforeEach(() => {
-  jest.clearAllMocks();
-  mockClient.query.mockResolvedValue({ rows: [] });
-});
-
-describe("getUserRole", () => {
-  test("returns Resident when no role found", async () => {
-    mockQuery.mockResolvedValueOnce({ rows: [] });
-
-    const result = await getUserRole("user-1");
-    expect(result).toBe("Resident");
+describe("users db functions", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (mockPool.connect as jest.Mock).mockResolvedValue(mockClient);
   });
 
-  test("returns the role name when found", async () => {
-    mockQuery.mockResolvedValueOnce({ rows: [{ type_name: "Worker" }] });
+  describe("getUserRole", () => {
+    it("should return user role when found", async () => {
+      mockPool.query.mockResolvedValue({
+        rows: [{ type_name: "Admin" }],
+      });
 
-    const result = await getUserRole("user-1");
-    expect(result).toBe("Worker");
+      const result = await getUserRole("user-123");
+
+      expect(mockPool.query).toHaveBeenCalledTimes(1);
+      expect(result).toBe("Admin");
+    });
+
+    it("should return 'Resident' as default when no role found", async () => {
+      mockPool.query.mockResolvedValue({ rows: [] });
+
+      const result = await getUserRole("user-123");
+
+      expect(result).toBe("Resident");
+    });
   });
-});
 
-describe("setUserRole", () => {
-  test("throws when role is not found in user_types", async () => {
-    mockClient.query.mockResolvedValueOnce({ rows: [] });
+  describe("setUserRole", () => {
+    it("should set user role successfully", async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [{ id: 2 }] }) // role exists
+        .mockResolvedValueOnce({}) // BEGIN
+        .mockResolvedValueOnce({}) // DELETE
+        .mockResolvedValueOnce({}) // INSERT
+        .mockResolvedValueOnce({}); // COMMIT
 
-    await expect(setUserRole("user-1", "InvalidRole")).rejects.toThrow(
-      "Role 'InvalidRole' not found"
-    );
+      await setUserRole("user-123", "Admin");
+
+      expect(mockClient.query).toHaveBeenCalledWith(
+        expect.stringContaining("SELECT id FROM user_types WHERE type_name = $1"),
+        ["Admin"]
+      );
+      expect(mockClient.query).toHaveBeenCalledWith("BEGIN");
+      expect(mockClient.query).toHaveBeenCalledWith(
+        expect.stringContaining("DELETE FROM roles WHERE user_id = $1"),
+        ["user-123"]
+      );
+      expect(mockClient.release).toHaveBeenCalled();
+    });
+
+    it("should throw error when role not found", async () => {
+      mockClient.query.mockResolvedValueOnce({ rows: [] });
+
+      await expect(setUserRole("user-123", "SuperAdmin")).rejects.toThrow(
+        "Role 'SuperAdmin' not found"
+      );
+
+      expect(mockClient.query).toHaveBeenCalledWith("ROLLBACK");
+      expect(mockClient.release).toHaveBeenCalled();
+    });
+
+    it("should rollback transaction on error", async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [{ id: 2 }] }) // role exists
+        .mockResolvedValueOnce({}) // BEGIN
+        .mockRejectedValueOnce(new Error("DB error"));
+
+      await expect(setUserRole("user-123", "Admin")).rejects.toThrow("DB error");
+
+      expect(mockClient.query).toHaveBeenCalledWith("ROLLBACK");
+      expect(mockClient.release).toHaveBeenCalled();
+    });
   });
 
-  test("runs transaction when role is valid", async () => {
-    mockClient.query
-      .mockResolvedValueOnce({ rows: [{ id: 3 }] })
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce({});
+  describe("setResident", () => {
+    it("should set resident role successfully", async () => {
+      mockPool.query
+        .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // default role
+        .mockResolvedValueOnce({}); // insert
 
-    await setUserRole("user-1", "Worker");
+      await setResident("user-123");
 
-    expect(mockClient.query).toHaveBeenCalledWith("BEGIN");
-    expect(mockClient.query).toHaveBeenCalledWith("COMMIT");
-    expect(mockClient.release).toHaveBeenCalled();
+      expect(mockPool.query).toHaveBeenCalledTimes(2);
+    });
   });
-});
 
-describe("setResident", () => {
-  test("inserts resident role for new user", async () => {
-    mockQuery
-      .mockResolvedValueOnce({ rows: [{ id: 1 }] })
-      .mockResolvedValueOnce({ rows: [] });
+  describe("setAdmin", () => {
+    it("should set admin role successfully", async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [{ id: 2 }] }) // get Admin role
+        .mockResolvedValueOnce({}) // BEGIN
+        .mockResolvedValueOnce({}) // DELETE
+        .mockResolvedValueOnce({}) // INSERT
+        .mockResolvedValueOnce({}); // COMMIT
 
-    await setResident("user-1");
+      await setAdmin("user-123");
 
-    expect(mockQuery).toHaveBeenCalledTimes(2);
+      expect(mockClient.query).toHaveBeenCalledWith(
+        expect.stringContaining("SELECT id FROM user_types WHERE type_name = 'Admin'")
+      );
+      expect(mockClient.release).toHaveBeenCalled();
+    });
+
+    it("should throw error when Admin role not found", async () => {
+      mockClient.query.mockResolvedValueOnce({ rows: [] });
+
+      await expect(setAdmin("user-123")).rejects.toThrow(
+        "Admin role not found in user_types table"
+      );
+
+      expect(mockClient.query).toHaveBeenCalledWith("ROLLBACK");
+      expect(mockClient.release).toHaveBeenCalled();
+    });
+
+    it("should rollback on error during setAdmin", async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [{ id: 2 }] }) // get Admin role
+        .mockResolvedValueOnce({}) // BEGIN
+        .mockRejectedValueOnce(new Error("Delete failed"));
+
+      await expect(setAdmin("user-123")).rejects.toThrow("Delete failed");
+
+      expect(mockClient.query).toHaveBeenCalledWith("ROLLBACK");
+      expect(mockClient.release).toHaveBeenCalled();
+    });
   });
 });
