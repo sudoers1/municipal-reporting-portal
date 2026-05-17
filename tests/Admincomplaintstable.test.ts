@@ -6,12 +6,12 @@ import ComplaintsTable from "../components/AdminComplaints/AdminComplaintsTable"
 // ─── Mock Child Components ────────────────────────────────────────────────────
 // Isolate ComplaintsTable logic from child component internals.
 
-jest.mock("@/components/complaintView", () => ({
+jest.mock("@/components/complaint/complaintView", () => ({
   __esModule: true,
   default: () => null,
 }));
 
-jest.mock("@/components/complaintsFilters", () => ({
+jest.mock("@/components/complaint/complaintsFilters", () => ({
   __esModule: true,
   default: ({ table, dateRange, setDateRange }: any) => (
     React.createElement("div", { "data-testid": "complaints-filters" })
