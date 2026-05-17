@@ -1,6 +1,7 @@
-import { renderHook, act } from '@testing-library/react';
+// tests/lib/notifications/client.test.ts
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useNotifications } from '@/lib/notifications/client';
-import type { Notification } from '@/lib/notifications/types';
+import type { Notification } from '@/lib/notifications/client';
 
 const mockMarkAllRead = jest.fn().mockImplementation(() => Promise.resolve(undefined));
 const mockMarkOneRead = jest.fn().mockImplementation(() => Promise.resolve(undefined));
@@ -19,15 +20,20 @@ const mockNotification: Notification = {
   created_at: new Date().toISOString(),
 };
 
-const mockEventSource = {
-  onmessage: null as any,
-  onerror: null as any,
-  close: jest.fn(),
-};
+let mockEventSourceInstance: any = null;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  (global as any).EventSource = jest.fn(() => mockEventSource);
+  mockEventSourceInstance = {
+    onmessage: null as any,
+    onerror: null as any,
+    close: jest.fn(),
+  };
+  (global as any).EventSource = jest.fn(() => mockEventSourceInstance);
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 describe('useNotifications', () => {
@@ -64,7 +70,7 @@ describe('useNotifications', () => {
     );
 
     act(() => {
-      mockEventSource.onmessage({ data: JSON.stringify(mockNotification) });
+      mockEventSourceInstance.onmessage({ data: JSON.stringify(mockNotification) });
     });
 
     expect(result.current.notifications).toHaveLength(1);
@@ -79,7 +85,7 @@ describe('useNotifications', () => {
     );
 
     act(() => {
-      mockEventSource.onmessage({
+      mockEventSourceInstance.onmessage({
         data: JSON.stringify({ ...mockNotification, id: 'new' }),
       });
     });
@@ -129,19 +135,82 @@ describe('useNotifications', () => {
     expect(result.current.unreadCount).toBe(0);
   });
 
+  it('creates EventSource on mount with correct URL', () => {
+    renderHook(() => useNotifications([], mockActions));
+    expect(global.EventSource).toHaveBeenCalledWith('/api/notifications/stream');
+  });
+
   it('closes EventSource on unmount', () => {
     const { unmount } = renderHook(() =>
       useNotifications([], mockActions)
     );
     unmount();
-    expect(mockEventSource.close).toHaveBeenCalled();
+    expect(mockEventSourceInstance.close).toHaveBeenCalled();
   });
 
   it('closes EventSource on error', () => {
     renderHook(() => useNotifications([], mockActions));
+    
     act(() => {
-      mockEventSource.onerror(new Event('error'));
+      mockEventSourceInstance.onerror(new Event('error'));
     });
-    expect(mockEventSource.close).toHaveBeenCalled();
+    
+    expect(mockEventSourceInstance.close).toHaveBeenCalled();
+  });
+
+  it('handles multiple SSE messages correctly', () => {
+    const { result } = renderHook(() =>
+      useNotifications([], mockActions)
+    );
+
+    act(() => {
+      mockEventSourceInstance.onmessage({ data: JSON.stringify({ ...mockNotification, id: '1' }) });
+      mockEventSourceInstance.onmessage({ data: JSON.stringify({ ...mockNotification, id: '2' }) });
+      mockEventSourceInstance.onmessage({ data: JSON.stringify({ ...mockNotification, id: '3' }) });
+    });
+
+    expect(result.current.notifications).toHaveLength(3);
+    expect(result.current.unreadCount).toBe(3);
+    expect(result.current.notifications[0].id).toBe('3');
+    expect(result.current.notifications[2].id).toBe('1');
+  });
+
+  it('handles markAllRead after receiving new notifications', async () => {
+    const { result } = renderHook(() =>
+      useNotifications([], mockActions)
+    );
+
+    act(() => {
+      mockEventSourceInstance.onmessage({ data: JSON.stringify(mockNotification) });
+    });
+
+    expect(result.current.unreadCount).toBe(1);
+
+    await act(async () => {
+      await result.current.markAllRead();
+    });
+
+    expect(result.current.unreadCount).toBe(0);
+    expect(result.current.notifications[0].read).toBe(true);
+  });
+
+  it('handles markOneRead after receiving multiple notifications', async () => {
+    const { result } = renderHook(() =>
+      useNotifications([], mockActions)
+    );
+
+    act(() => {
+      mockEventSourceInstance.onmessage({ data: JSON.stringify({ ...mockNotification, id: '1' }) });
+      mockEventSourceInstance.onmessage({ data: JSON.stringify({ ...mockNotification, id: '2' }) });
+    });
+
+    expect(result.current.unreadCount).toBe(2);
+
+    await act(async () => {
+      await result.current.markOneRead('2');
+    });
+
+    expect(result.current.notifications.find(n => n.id === '2')?.read).toBe(true);
+    expect(result.current.unreadCount).toBe(1);
   });
 });

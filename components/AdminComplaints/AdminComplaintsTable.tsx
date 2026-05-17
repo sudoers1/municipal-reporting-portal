@@ -13,11 +13,11 @@ import {
   CellContext,
   Row,
 } from "@tanstack/react-table";
-import ComplaintsFilters from "@/components/complaintsFilters";
+import ComplaintsFilters from "@/components/complaint/complaintsFilters";
 import AdminComplaintsDetails from "./AdminComplaintsDetails";
-import { ReportsBleed } from "@/lib/structures/reportsbleed";
+import { Report } from "@/lib/structures/report";
 
-type ComplaintRow = ReturnType<ReportsBleed["toPlainObject"]>;
+type ComplaintRow = ReturnType<Report["toPlainObject"]>;
 
 const dateRangeFilter = (
   row: Row<ComplaintRow>,
@@ -62,7 +62,7 @@ export default function AdminComplaintsTable({
 
   const { data, issueTypeOptions } = useMemo(() => {
     const rows: ComplaintRow[] = complaints
-      .map((d) => ReportsBleed.fromRecord(d).toPlainObject());
+      .map((d) => Report.fromRecord(d).toPlainObject());
 
     return {
       data: rows,

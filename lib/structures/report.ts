@@ -1,7 +1,7 @@
-import { Priority } from "../priority";
-import { Status } from "../status";
+import { Priority } from "@/lib/priority";
+import { Status } from "@/lib/status";
 
-export class ReportsBleed {
+export class Report {
   constructor(
     private municipality: string,
     private status: Status,
@@ -72,8 +72,8 @@ export class ReportsBleed {
     };
   }
 
-  static fromRecord(d: Record<string, any>): ReportsBleed {
-    return new ReportsBleed(
+  static fromRecord(d: Record<string, any>): Report {
+    return new Report(
       d.municipality,
       d.status as Status,
       d.issuetype,

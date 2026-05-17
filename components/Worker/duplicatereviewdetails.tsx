@@ -1,4 +1,4 @@
-import Card from "../card";
+import Card from "../generalcomps/card";
 
 type Report = {
   complaintid: number;

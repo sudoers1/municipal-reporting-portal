@@ -4,11 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import LoginModal from "@/components/login";
+import LoginModal from "@/components/navcomponents/login";
 import toast from "react-hot-toast";
-import Hamburger from "@/components/hamburgerMenu";
-import ProfilePopup from "@/components/profile";
-import { NotificationBell } from "@/components/notificationBell";
+import Hamburger from "@/components/navcomponents/hamburgerMenu";
+import ProfilePopup from "@/components/navcomponents/profile";
+import { NotificationBell } from "@/components/navcomponents/notificationBell";
 import type { Notification } from "@/lib/notifications/client";
 
 export default function Navbar({ initialNotifications = [] }: { initialNotifications?: Notification[] }) {

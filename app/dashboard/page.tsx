@@ -1,17 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import ComplaintButton from "@/components/complaintbutton";
-import ComplaintsModal from "@/components/complaintform";
+import ComplaintButton from "@/components/complaint/complaintbutton";
+import ComplaintsModal from "@/components/complaint/complaintform";
 import dynamic from "next/dynamic";
-import Spinner from "@/components/spinner";
+import Spinner from "@/components/generalcomps/spinner";
 import { authClient } from "@/lib/auth-client";
-import type { Complaint } from "@/components/wardmap";
-import ResidentKPICards from "@/components/residentkpicards";
-import ComplaintsList from "@/components/complaintslist";
-import TutorialButton from "@/components/tutorialButton";
+import type { Complaint } from "@/components/wardmap/wardmap";
+import ResidentKPICards from "@/components/Dashboard/residentkpicards";
+import ComplaintsList from "@/components/Dashboard/complaintslist";
 
-const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
+
+const WardMap = dynamic(() => import("@/components/wardmap/wardmap"), { ssr: false });
 
 export default function DashboardPage() {
   const [showComplaints, setShowComplaints] = useState(false);

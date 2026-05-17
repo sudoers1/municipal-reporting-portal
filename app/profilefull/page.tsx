@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import ComplaintsTable from "@/components/complaintsTable";
-import ComplaintViewer from "@/components/complaintView";
+import ComplaintsTable from "@/components/complaint/complaintsTable";
+import ComplaintViewer from "@/components/complaint/complaintView";
 import { readMyComplaints } from "@/lib/db/complaints";
-import Spinner from "@/components/spinner";
+import Spinner from "@/components/generalcomps/spinner";
 import ApplyForVerification from "@/components/UserVerification/SelectWard";
 
 
@@ -93,10 +93,14 @@ export default function Home() {
             
           </section>
           
-              <button className="p-3 bg-brand-secondary text-white text-sm font-semibold rounded-md shadow-md"
-               onClick={()=>{setShowApplyForm(true)}}>
+           {(!session?.user?.role || session?.user?.role === "Resident") && (
+              <button 
+                className="p-3 bg-brand-secondary text-white text-sm font-semibold rounded-md shadow-md"
+                onClick={() => setShowApplyForm(true)}
+              >
                 Become a Worker
-               </button>
+              </button>
+            )}
 
 
           </section>

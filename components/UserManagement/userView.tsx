@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import MunicipalityAssignModal from "@/components/UserManagement/municipalityassignmodal";
-import Spinner from "@/components/spinner";
+import Spinner from "@/components/generalcomps/spinner";
 
 export default function UserViewer({
   onSuccess,

@@ -3,7 +3,7 @@ import KPICards from "@/components/Dashboard/KPIcard";
 import { readComplaints } from "../../../lib/db/complaints";
 import StatusAnalytics from "@/components/Dashboard/StatusLegend";
 import { readAssignments } from "@/lib/db/assignments";
-import Spinner from "@/components/spinner";
+import Spinner from "@/components/generalcomps/spinner";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { useState,useEffect } from "react";

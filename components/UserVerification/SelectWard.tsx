@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { insertVerification } from "../../lib/db/verifications"; // Adjust path to verifications.ts
 
 
-const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
+const WardMap = dynamic(() => import("@/components/wardmap/wardmap"), { ssr: false });
 
 
 export default function ApplyForVerification(

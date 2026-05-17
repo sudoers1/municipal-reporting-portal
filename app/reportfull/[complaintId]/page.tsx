@@ -9,7 +9,7 @@ import FeedbackViewer from "@/components/feedback/feedbackView";
 import { Feedback } from "@/lib/structures/feedback";
 import { readFeedback } from "@/lib/db/feedback";
 import { getCompDate, readoneComplaint } from "@/lib/db/complaints";
-import Spinner from "@/components/spinner";
+import Spinner from "@/components/generalcomps/spinner";
 import { Status } from "@/lib/status";
 
 type FeedbackRow = ReturnType<Feedback["toPlainObject"]>;

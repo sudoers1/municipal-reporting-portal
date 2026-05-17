@@ -1,5 +1,5 @@
 import { CheckCircle, Clock, Hammer } from "lucide-react";
-import type { Complaint } from "@/components/wardmap";
+import type { Complaint } from "@/components/wardmap/wardmap";
 
 export default function ResidentKPICards({
   complaints = [],
