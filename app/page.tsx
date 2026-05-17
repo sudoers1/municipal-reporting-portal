@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import type { Complaint } from "@/components/wardmap";
 import ResidentKPICards from "@/components/residentkpicards";
 import ComplaintsList from "@/components/complaintslist";
+import TutorialButton from "@/components/tutorialButton";
 
 const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
 
@@ -25,7 +26,7 @@ export default function Home() {
 
   return (
     <main
-      className="w-screen min-h-screen overflow-y-auto bg-gradient-to-br from-white via-teal-100 to-teal-300"
+      className="w-screen min-h-screen overflow-y-auto bg-linear-to-br from-white via-teal-100 to-teal-300"
     >
       <section className="p-8 space-y-10 min-h-screen">
         <h1 className="text-3xl md:text-5xl font-bold text-gray-900 text-center drop-shadow-md">
@@ -42,7 +43,7 @@ export default function Home() {
 
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left tile: complaints list */}
-                    <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-[200px] max-h-[500px] overflow-y-auto scrollbar-hide">
+                    <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-50 max-h-125 overflow-y-auto scrollbar-hide">
             <ComplaintsList
               complaints={filteredComplaints}
               selectedComplaint={selectedComplaint}
@@ -51,7 +52,7 @@ export default function Home() {
           </aside>
 
           {/* Right tile: map */}
-          <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-[220px]">
+          <aside className="bg-white/30 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-5 min-h-55">
             <WardMap
               selectedComplaint={selectedComplaint}
               onComplaintsLoad={(list) => setComplaints(list)}
@@ -61,6 +62,7 @@ export default function Home() {
           </aside>
         </section>
       </section>
+      <TutorialButton href="/tutorial?mode=guest" />
     </main>
   );
 }
