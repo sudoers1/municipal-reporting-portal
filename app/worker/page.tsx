@@ -296,9 +296,9 @@ export default function WorkerDashboard() {
             worker={{
               name: session?.user?.name ?? "",
               email: session?.user?.email,
-              municipality: municipality ?? "poes",
+              municipality: municipality ?? "Unknown Municipality",
             }}
-            statusData={statusData}      // the state arrays you already have
+            statusData={statusData}      
             resolvedData={resolvedData}
             statusChartRef={statusChartRef}
             resolvedChartRef={resolvedChartRef}

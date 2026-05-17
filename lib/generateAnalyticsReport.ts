@@ -136,6 +136,17 @@ function drawLineChart(
   });
 }
 
+async function loadImageAsBase64(url: string): Promise<string> {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
 export async function generateAnalyticsReport(
   data: ReportData,
   statusChartEl: HTMLElement | null,
@@ -155,11 +166,15 @@ export async function generateAnalyticsReport(
   const timeStr = generatedAt.toLocaleTimeString("en-ZA", {
     hour: "2-digit", minute: "2-digit",
   });
+  const logoBase64 = await loadImageAsBase64("/favicon.png");
+  const logoH = 14;
+  const logoW = 14;
+
 
   // ── Header bar ──────────────────────────────────────────────────────────
-  doc.setFillColor(15, 23, 42);
+  doc.setFillColor(0, 128, 128);
   doc.rect(0, 0, pageW, 28, "F");
-
+  doc.addImage(logoBase64, "PNG", pageW - margin - logoW, 5, logoW, logoH);
   doc.setFontSize(16);
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
@@ -169,7 +184,6 @@ export async function generateAnalyticsReport(
   doc.setFont("helvetica", "normal");
   doc.setTextColor(148, 163, 184);
   doc.text(`Generated ${dateStr} at ${timeStr}`, margin, 20);
-  doc.text("Municipality Reporting Portal", pageW - margin, 20, { align: "right" });
 
   cursor = 38;
 
@@ -189,14 +203,14 @@ export async function generateAnalyticsReport(
   doc.setFontSize(11);
   doc.setTextColor(15, 23, 42);
   doc.setFont("helvetica", "bold");
-  doc.text(data.worker.name || "—", margin + 6, cursor + 16);
-  doc.text(data.worker.municipality || "—", margin + contentW / 2, cursor + 16);
+  doc.text(data.worker.name || "—", margin + 6, cursor + 14);
+  doc.text(data.worker.municipality || "—", margin + contentW / 2, cursor + 14);
 
   if (data.worker.email) {
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 116, 139);
-    doc.text(data.worker.email, margin + 6, cursor + 21);
+    doc.text(data.worker.email, margin + 6, cursor + 18);
   }
 
   cursor += 30;
@@ -288,56 +302,11 @@ export async function generateAnalyticsReport(
     }
   }
 
-  // ── Status table ─────────────────────────────────────────────────────────
-  sectionHeading("Status breakdown");
 
   const colWidths = [60, 30, 30, 30];
   const headers   = ["Status", "Count", "% of total", ""];
   const rowH      = 8;
-
-  // Header row
-  doc.setFillColor(15, 23, 42);
-  doc.rect(margin, cursor, contentW, rowH, "F");
-  doc.setFontSize(7.5);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(255, 255, 255);
   let colX = margin + 3;
-  headers.forEach((h, i) => {
-    doc.text(h, colX, cursor + 5.5);
-    colX += colWidths[i];
-  });
-  cursor += rowH;
-
-  // Data rows
-  data.statusData.forEach((row, idx) => {
-    const pct = total > 0 ? Math.round((row.count / total) * 100) : 0;
-    const bg  = idx % 2 === 0 ? [255, 255, 255] : [248, 250, 252];
-    doc.setFillColor(...(bg as [number, number, number]));
-    doc.rect(margin, cursor, contentW, rowH, "F");
-    doc.setDrawColor(226, 232, 240);
-    doc.setLineWidth(0.2);
-    doc.line(margin, cursor + rowH, margin + contentW, cursor + rowH);
-
-    // Status colour dot
-    const [r, g, b] = STATUS_COLORS[row.status] ?? FALLBACK_COLOR;
-    doc.setFillColor(r, g, b);
-    doc.circle(margin + 5, cursor + rowH / 2, 2, "F");
-
-    doc.setFontSize(8);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(15, 23, 42);
-    doc.text(row.status, margin + 10, cursor + 5.5);
-
-    doc.setFont("helvetica", "bold");
-    doc.text(String(row.count), margin + colWidths[0] + 3, cursor + 5.5);
-
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 116, 139);
-    doc.text(`${pct}%`, margin + colWidths[0] + colWidths[1] + 3, cursor + 5.5);
-
-    cursor += rowH;
-  });
-
   cursor += 10;
 
   // ── Resolved over time ───────────────────────────────────────────────────
@@ -410,7 +379,7 @@ export async function generateAnalyticsReport(
     doc.setFontSize(7);
     doc.setTextColor(148, 163, 184);
     doc.setFont("helvetica", "normal");
-    doc.text("Municipality Management System — Confidential", margin, pageH - 3.5);
+    doc.text("https://github.com/sudoers1 — © sudoers1. All rights reserved.", margin, pageH - 3.5);
     doc.text(`Page ${i} of ${totalPages}`, pageW - margin, pageH - 3.5, { align: "right" });
   }
 
