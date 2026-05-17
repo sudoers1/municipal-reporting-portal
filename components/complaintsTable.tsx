@@ -58,6 +58,7 @@ export default function ComplaintsTable({
   const [dateRange, setDateRange] = useState<{ start?: string; end?: string }>(
     {}
   );
+  
 
   const { data, issueTypeOptions } = useMemo(() => {
     const rows: ComplaintRow[] = complaints
@@ -100,6 +101,7 @@ export default function ComplaintsTable({
     ],
     []
   );
+  
 
   const table = useReactTable({
     data,
@@ -115,6 +117,8 @@ export default function ComplaintsTable({
   useEffect(() => {
     table.getColumn("creationtime")?.setFilterValue(dateRange);
   }, [dateRange, table]);
+  const filteredRows = table.getRowModel().rows;
+  const hasNoResults = filteredRows.length === 0;
 
   return (
     <section className="flex flex-col z-30 gap-3">
@@ -127,18 +131,25 @@ export default function ComplaintsTable({
         />
       </article>
 
-      <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg overflow-hidden"></article>
+
+      <article className="mt-3 rounded-xl  overflow-hidden">
+      {hasNoResults ? (
+              <p  className="p-8 text-center text-xl text-gray-800">
+                No reports found
+              </p>
+          ) : (
       <table className="w-full table-fixed text-sm text-gray-900">
-        <thead className="bg-brand-accent text-black">
+        <thead className="bg-brand-accent">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 const sort = header.column.getIsSorted();
+
                 return (
                   <th
                     key={header.id}
                     colSpan={header.colSpan}
-                    className="p-3 text-left border-r last:border-r-0  font-semibold cursor-pointer select-none"
+                    className="p-3 text-left border-r last:border-r-0 cursor-pointer border-brand-primary/50"
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     {header.isPlaceholder
@@ -154,25 +165,26 @@ export default function ComplaintsTable({
             </tr>
           ))}
         </thead>
+
         <tbody>
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-                className="border-t border-white/20 hover:bg-white/10 transition-colors"
-              >
+              className="border-t hover:bg-brand-accent/30  border-brand-primary/50"
+            >
               {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    className="p-2 truncate max-w-[160px]"
-                    //title={String(cell.getValue())}
-                  >
+                <td
+                  key={cell.id}
+                  className="p-2 truncate max-w-[160px]"
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
             </tr>
           ))}
         </tbody>
-      </table>
+      </table>)}
+      </article>
 
     </section>
   );

@@ -12,7 +12,7 @@ export default function FeedbackFilters({
   setDateRange,
 }: Props) {
   return (
-    <header className="w-[85vw] p-2 flex gap-3 justify-center bg-brand-primary rounded-2xl text-white">
+    <header className="w-[85vw] p-2 flex gap-3 justify-center rounded-2xl text-white">
             <input
         type="text"
         placeholder="Search Respondant..."

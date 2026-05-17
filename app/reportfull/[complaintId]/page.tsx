@@ -8,8 +8,9 @@ import FeedbackTable from "@/components/feedback/feedbackTable";
 import FeedbackViewer from "@/components/feedback/feedbackView";
 import { Feedback } from "@/lib/structures/feedback";
 import { readFeedback } from "@/lib/db/feedback";
-import { readoneComplaint } from "@/lib/db/complaints";
+import { getCompDate, readoneComplaint } from "@/lib/db/complaints";
 import Spinner from "@/components/spinner";
+import { Status } from "@/lib/status";
 
 type FeedbackRow = ReturnType<Feedback["toPlainObject"]>;
 
@@ -28,6 +29,7 @@ export default function ReportFull({
   const [complaint, setComplaint] = useState<Record<string, any> | null>(null);
   const [feedback, setFeedback] = useState<Record<string, any>[]>([]);
   const [selectedFeedback, setSelectedFeedback] = useState<FeedbackRow | null>(null);
+  const [compdate, setCompDate] = useState("");
 
   useEffect(() => {
     if (isPending) return;
@@ -37,7 +39,11 @@ export default function ReportFull({
         readoneComplaint(complaintId),
         readFeedback(complaintId),
       ]);
-
+      /*
+      if(complaintData.status==Status.Resolved){
+        const cdate=await getCompDate(complaintId);
+        setCompDate(cdate.toLocaleString());
+      }*/
       setComplaint(complaintData);
       setFeedback(feedbackData);
       setLoading(false);
@@ -73,7 +79,10 @@ export default function ReportFull({
           <section className="flex flex-col gap-6 flex-1">
             <section className="border-[3px] rounded-xl border-brand-primary p-6 space-y-2 bg-white/30 backdrop-blur-md shadow-lg">
               <p><strong>Municipality:</strong> {complaint.municipality}</p>
-              <p><strong>Status:</strong> {complaint.status === "Resolved" ? "Completed" : "Pending"}</p>
+              <p><strong>Status:</strong> {complaint.status}</p>
+              {/*complaint.status === "Resolved" && (
+                <p><strong>Resolved On: </strong>{compdate}</p>
+              )*/}
               <p><strong>Issue:</strong> {complaint.issuetype}</p>
               <p>
                 <strong>Time of report:</strong>{" "}
@@ -81,6 +90,7 @@ export default function ReportFull({
                   {new Date(complaint.creationtime).toLocaleString()}
                 </time>
               </p>
+              <p className="border-[2px] rounded-xl mt-2 border-brand-secondary p-3 bg-white/80 shadow-sm"><strong>Address:</strong> {complaint.address}</p>
             </section>
 
             <section className="border-[3px] rounded-xl border-brand-primary p-6 bg-white/20 backdrop-blur-md shadow-inner min-h-[200px]">
@@ -92,7 +102,7 @@ export default function ReportFull({
           {/* Complaint image */}
           {complaint.image && (
             <section className="flex-1 flex">
-              <figure className="relative w-full min-h-[300px] lg:min-h-full bg-white/20 backdrop-blur-md rounded-xl overflow-hidden border-[3px] border-brand-secondary flex items-center justify-center shadow-lg">
+              <figure className="relative w-full min-h-[300px] lg:min-h-full bg-white/80 backdrop-blur-md rounded-xl overflow-hidden border-[3px] border-brand-secondary flex items-center justify-center shadow-lg">
                 {imgLoading && <Spinner />}
                 <Image
                   src={complaint.image}

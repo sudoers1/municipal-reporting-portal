@@ -91,5 +91,11 @@ export async function updateComplaintStatus(complaintid: string, status: string)
     WHERE complaintid = ${complaintid}
   `;
 }
+export async function getCompDate(cid: string | undefined) {
+  const result = await sql`
+    SELECT resolved_at FROM assignments WHERE complaintid = ${cid}
+  `;
+    return new Date(result[0].resolved_at);
+}
 
 //end here
