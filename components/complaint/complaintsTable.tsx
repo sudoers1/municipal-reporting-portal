@@ -13,7 +13,7 @@ import {
   CellContext,
   Row,
 } from "@tanstack/react-table";
-import ComplaintsFilters from "@/components/complaintsFilters";
+import ComplaintsFilters from "@/components/complaint/complaintsFilters";
 import { Report } from "@/lib/structures/report";
 
 type ComplaintRow = ReturnType<Report["toPlainObject"]>;

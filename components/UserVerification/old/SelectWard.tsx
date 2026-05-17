@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import dynamic from "next/dynamic";
 
 // Dynamically load the WardMap just like municipalityassignmodal.tsx
-const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
+const WardMap = dynamic(() => import("@/components/wardmap/wardmap"), { ssr: false });
 
 
 interface ApplyButtonProps {

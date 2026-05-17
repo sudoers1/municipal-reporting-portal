@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import Signup from "@/components/signup";
+import Signup from "@/components/navcomponents/signup";
 
 export default function LoginModal({
   isOpen,

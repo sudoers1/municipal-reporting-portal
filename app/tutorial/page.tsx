@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
-import ResidentKPICards from "@/components/residentkpicards";
-import ComplaintsList from "@/components/complaintslist";
-import type { Complaint } from "@/components/wardmap";
+import ResidentKPICards from "@/components/Dashboard/residentkpicards";
+import ComplaintsList from "@/components/Dashboard/complaintslist";
+import type { Complaint } from "@/components/wardmap/wardmap";
 import { X, ArrowRight, MousePointer } from "lucide-react";
 
-const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
+const WardMap = dynamic(() => import("@/components/wardmap/wardmap"), { ssr: false });
 
 const sampleComplaints: Complaint[] = [
   {
@@ -289,7 +289,7 @@ export default function TutorialPage() {
 
       <button
         onClick={nextStep}
-        className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 rounded-full bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-2xl shadow-orange-500/30 transition hover:bg-orange-400"
+        className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 rounded-full bg-teal-500 px-5 py-3 text-sm font-semibold text-white shadow-2xl shadow-blue-500/30 transition hover:bg-blue-400"
       >
         <span>{stepIndex < steps.length - 1 ? "Next" : "Finish"}</span>
         <ArrowRight className="h-4 w-4" />
