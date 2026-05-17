@@ -160,7 +160,9 @@ export const PATCH = withAuth(["Worker"], async (req: Request, session: any) => 
           'Complaint resolved',
           ${`Your ${issueType} complaint has been marked as resolved.`}
         )
+        
       `;
+      
     }
 
     return NextResponse.json({
