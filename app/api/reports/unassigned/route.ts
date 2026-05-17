@@ -31,18 +31,11 @@ export const GET = withAuth(["Worker", "Admin"], async (req: Request, session: a
       ORDER BY c.creationtime DESC
     `;
 
-    console.log("Fetched unassigned complaints:", {
-      count: complaints.length,
-      sample: complaints[0] || null,
-    });
-
     return NextResponse.json({
       message: "Unassigned reports fetched successfully",
       data: complaints,
     });
   } catch (error) {
-    console.error("Error fetching unassigned complaints:", error);
-
     return NextResponse.json(
       { message: "Failed to fetch unassigned reports" },
       { status: 500 }
