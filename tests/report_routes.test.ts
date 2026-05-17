@@ -189,30 +189,31 @@ describe("/api/reports/[id]", () => {
       });
     });
 
-    it("updates report status successfully", async () => {
-      const updatedAssignment = {
-        id: 1,
-        complaintid: 1,
-        workerid: 10,
-        status: "Resolved",
-      };
+it("updates report status successfully", async () => {
+  const updatedAssignment = {
+    id: 1,
+    complaintid: 1,
+    workerid: 10,
+    status: "Resolved",
+  };
 
-      mockSql.mockResolvedValueOnce([updatedAssignment]);
+  mockSql.mockResolvedValue([]); // fallback for extra SQL calls
+  mockSql.mockResolvedValueOnce([updatedAssignment]); // main update query
 
-      const req = makeRequest("http://localhost/api/reports/1", "PATCH", {
-        complaintid: 1,
-        status: "Resolved",
-      });
+  const req = makeRequest("http://localhost/api/reports/1", "PATCH", {
+    complaintid: 1,
+    status: "Resolved",
+  });
 
-      const res = await ReportByIdRoute.PATCH(req);
-      const data = await readJson(res);
+  const res = await ReportByIdRoute.PATCH(req);
+  const data = await readJson(res);
 
-      expect(data.status).toBe(200);
-      expect(data.body).toEqual({
-        message: "Status updated successfully",
-        data: updatedAssignment,
-      });
-    });
+  expect(data.status).toBe(200);
+  expect(data.body).toEqual({
+    message: "Status updated successfully",
+    data: updatedAssignment,
+  });
+});
 
     it("returns 500 when status update fails", async () => {
       mockSql.mockRejectedValueOnce(new Error("DB error"));
@@ -599,7 +600,7 @@ describe("/api/reports/unassigned", () => {
 
       expect(data.status).toBe(200);
       expect(data.body).toEqual({
-        message: "Reports fetched successfully",
+        message: "Unassigned reports fetched successfully",
         data: complaints,
       });
     });
@@ -614,7 +615,7 @@ describe("/api/reports/unassigned", () => {
 
       expect(data.status).toBe(500);
       expect(data.body).toEqual({
-        message: "Failed to fetch reports",
+        message: "Failed to fetch unassigned reports",
       });
     });
   });
