@@ -58,6 +58,7 @@ export default function ComplaintsTable({
   const [dateRange, setDateRange] = useState<{ start?: string; end?: string }>(
     {}
   );
+  
 
   const { data, issueTypeOptions } = useMemo(() => {
     const rows: ComplaintRow[] = complaints
