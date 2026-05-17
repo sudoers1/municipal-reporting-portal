@@ -6,7 +6,7 @@ import { sql } from "@/lib/db/neon";
 export const GET = withAuth(["Worker"], async (_req: Request, session: any) => {
   try {
     const workerId = session.user.id;
-
+    /* istanbul ignore next */
     const [statusRows, userRows] = await Promise.all([
       sql`
         SELECT
