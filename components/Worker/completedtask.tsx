@@ -18,9 +18,9 @@ export default function CompletedTasksCard({ tasks }: any) {
                   {task.issuetype}
                 </h3>
 
-                <span className="text-xs bg-green-500/20 text-green-200 px-2 py-1 rounded-full">
+                <p className="text-xs bg-green-500/20 text-green-200 px-2 py-1 rounded-full">
                   Resolved
-                </span>
+                </p>
               </header>
 
               <p className="mt-2 text-sm text-gray-200 line-clamp-2">
