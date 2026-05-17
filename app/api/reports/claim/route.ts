@@ -14,6 +14,29 @@ export const POST = withAuth(["Worker"], async (req: Request, session: any) => {
       );
     }
 
+    const complaintResult = await sql`
+      SELECT userid
+      FROM complaints
+      WHERE complaintid = ${complaintid}
+      LIMIT 1
+    `;
+
+    if (complaintResult.length === 0) {
+      return NextResponse.json(
+        { message: "Complaint not found" },
+        { status: 404 }
+      );
+    }
+
+    const complaintOwnerId = complaintResult[0].userid;
+
+    if (String(complaintOwnerId) === String(workerId)) {
+      return NextResponse.json(
+        { message: "You cannot claim a complaint you created" },
+        { status: 403 }
+      );
+    }
+
     await sql`
       INSERT INTO assignments (complaintid, workerid, status)
       VALUES (${complaintid}, ${workerId}, 'Acknowledged')
