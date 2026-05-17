@@ -3,7 +3,7 @@
 import { readUsers } from "@/lib/db/usersneon";
 import UsersTable from "@/components/UserManagement/userTable";
 import { useState, useEffect } from "react";
-import Spinner from "@/components/spinner";
+import Spinner from "@/components/generalcomps/spinner";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import UserViewer from "@/components/UserManagement/userView";

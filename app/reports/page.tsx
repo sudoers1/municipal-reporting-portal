@@ -1,10 +1,10 @@
 "use client";
 
 import { readComplaints } from "@/lib/db/complaints";
-import ComplaintsTable from "@/components/complaintsTable";
-import ComplaintViewer from "@/components/complaintView";
+import ComplaintsTable from "@/components/complaint/complaintsTable";
+import ComplaintViewer from "@/components/complaint/complaintView";
 import { useState, useEffect } from "react";
-import Spinner from "@/components/spinner";
+import Spinner from "@/components/generalcomps/spinner";
 
 export default function Reports() {
   const [complaints, setComplaints] = useState<Record<string, any>[]>([]);

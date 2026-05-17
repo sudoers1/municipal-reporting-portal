@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import type { Complaint } from "@/components/wardmap";
-import ResidentKPICards from "@/components/residentkpicards";
-import ComplaintsList from "@/components/complaintslist";
-import TutorialButton from "@/components/tutorialButton";
+import type { Complaint } from "@/components/wardmap/wardmap";
+import ResidentKPICards from "@/components/Dashboard/residentkpicards";
+import ComplaintsList from "@/components/Dashboard/complaintslist";
+import TutorialButton from "@/components/tutorial/tutorialButton";
 
-const WardMap = dynamic(() => import("@/components/wardmap"), { ssr: false });
+const WardMap = dynamic(() => import("@/components/wardmap/wardmap"), { ssr: false });
 
 export default function Home() {
   const [complaints, setComplaints] = useState<Complaint[]>([]);

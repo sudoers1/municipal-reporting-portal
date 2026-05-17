@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Card from "../card";
+import Card from "../generalcomps/card";
 
 export default function UpdateStatusCard({ report, onUpdate }: any) {
   if (!report) return null;

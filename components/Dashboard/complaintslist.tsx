@@ -1,6 +1,6 @@
 "use client";
 
-import type { Complaint } from "@/components/wardmap";
+import type { Complaint } from "@/components/wardmap/wardmap";
 
 interface ComplaintsListProps {
   complaints: Complaint[];

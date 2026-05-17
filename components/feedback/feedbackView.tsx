@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
-import Spinner from "@/components/spinner";
+import Spinner from "@/components/generalcomps/spinner";
 import { Feedback } from "@/lib/structures/feedback";
 
 export default function FeedbackViewer({
