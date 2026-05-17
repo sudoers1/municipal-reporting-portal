@@ -41,7 +41,7 @@ export default function ComplaintViewer({
   } else {
     return (
       <section
-        className="fixed inset-0 bg-white/40 backdrop-blur-md flex items-center justify-center z-50"
+        className="fixed inset-0 bg-white/40 backdrop-blur-md flex items-center justify-center z-60"
         role="dialog"
         aria-modal="true"
         onClick={onClose}
