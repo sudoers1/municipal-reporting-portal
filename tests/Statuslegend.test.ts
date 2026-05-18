@@ -24,41 +24,49 @@ function renderCard(assignments: any[]) {
 
 // Reads the resolved count, active count, resolution %, and top worker
 // directly from the rendered text to keep assertions tied to real output.
+function getNumberNearLabel(label: RegExp): number {
+  const labelEl = screen.getByText(label);
+
+  let current: HTMLElement | null = labelEl.parentElement;
+
+  while (current && current !== document.body) {
+    const numberEl = Array.from(current.querySelectorAll("p, span, div")).find(
+      (el) => /^\d+$/.test(el.textContent?.trim() ?? "")
+    );
+
+    if (numberEl) {
+      return parseInt(numberEl.textContent?.trim() ?? "0", 10);
+    }
+
+    current = current.parentElement;
+  }
+
+  throw new Error(`Could not find numeric value near label: ${label}`);
+}
+
 function getRenderedValues() {
-  // Resolution % is the only element matching "N%"
   const percentEl = screen.getByText(/^\d+%$/);
   const percent = parseInt(percentEl.textContent ?? "0", 10);
 
-  // Resolved and Active: the label <span> sits inside an inner flex <section>
-  // alongside the icon. The count <p> is a sibling of that inner section,
-  // both inside the card <section>. Walk up two levels: span -> inner section
-  // -> card section, then grab the first <p> which holds the numeric value.
-  const resolvedLabel = screen.getByText(/^resolved$/i);
-  const resolvedCard = resolvedLabel.closest("section")?.parentElement as HTMLElement;
-  const resolvedCount = parseInt(
-    resolvedCard.querySelector("p")?.textContent ?? "0",
-    10
-  );
+  const resolvedCount = getNumberNearLabel(/^resolved$/i);
+  const activeCount = getNumberNearLabel(/^active$/i);
 
-  const activeLabel = screen.getByText(/^active$/i);
-  const activeCard = activeLabel.closest("section")?.parentElement as HTMLElement;
-  const activeCount = parseInt(
-    activeCard.querySelector("p")?.textContent ?? "0",
-    10
-  );
-
-  // Worker card: querySelectorAll("p") returns:
-  //   [0] label p ("Highest Resolution Rate" + icon text)
-  //   [1] worker name p
-  //   [2] completed count p
   const rateLabel = screen.getByText(/highest resolution rate/i);
   const workerCard = rateLabel.closest("section") as HTMLElement;
+
   const allPs = workerCard.querySelectorAll("p");
   const workerName = allPs[1]?.textContent?.trim() ?? "";
+
   const completedText = allPs[2]?.textContent ?? "";
   const completedCount = parseInt(completedText.match(/\d+/)?.[0] ?? "0", 10);
 
-  return { percent, resolvedCount, activeCount, workerName, completedCount };
+  return {
+    percent,
+    resolvedCount,
+    activeCount,
+    workerName,
+    completedCount,
+  };
 }
 
 // ─── Default prop ─────────────────────────────────────────────────────────────

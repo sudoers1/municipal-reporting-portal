@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/generalcomps/spinner";
@@ -18,63 +18,51 @@ import WorkerStatusAnalytics from "@/components/Worker/statuslegend";
 import ResolvedChartCard from "@/components/Worker/ResolvedChartCard";
 import StatusChartCard from "@/components/Worker/StatusChartCard";
 
-
 export default function WorkerDashboard() {
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
 
   const statusChartRef = useRef<HTMLElement>(null);
   const resolvedChartRef = useRef<HTMLElement>(null);
+  const duplicateReviewRef = useRef<HTMLDivElement | null>(null);
+
   const [municipality, setMunicipality] = useState<string | null>(null);
   const [assigned, setAssigned] = useState<any[]>([]);
   const [unassigned, setUnassigned] = useState<any[]>([]);
   const [completed, setCompleted] = useState<any[]>([]);
   const [duplicates, setDuplicates] = useState<any[]>([]);
-  const [statusData, setStatusData] = useState<{ status: string; count: number }[]>([]);
-  const [resolvedData, setResolvedData] = useState<{ week: string; resolved: number; avg_hours?: number | null }[]>([]);
+  const [statusData, setStatusData] = useState<
+    { status: string; count: number }[]
+  >([]);
+  const [resolvedData, setResolvedData] = useState<
+    { week: string; resolved: number; avg_hours?: number | null }[]
+  >([]);
+
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [selectedDuplicateReview, setSelectedDuplicateReview] =
     useState<any>(null);
-
-  const duplicateReviewRef = useRef<HTMLDivElement | null>(null);
+  const [statsKey, setStatsKey] = useState(0);
 
   const dashboardReports = [...assigned, ...unassigned, ...completed];
   const workerReports = [...assigned, ...completed];
 
-  useEffect(() => {
-    if (!isPending && !session) {
-      router.push("/");
-    }
-  }, [session, isPending, router]);
-
-  useEffect(() => {
-    if (session) {
-      fetchData();
-    }
-  }, [session]);
-
-  useEffect(() => {
-    if (selectedDuplicateReview) {
-      setTimeout(() => {
-        duplicateReviewRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }, 100);
-    }
-  }, [selectedDuplicateReview]);
-
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     try {
-      const [assignedRes, unassignedRes, completedRes, duplicatesRes, statusRes, resolvedRes] =
-        await Promise.all([
-          fetch("/api/reports/assigned"),
-          fetch("/api/reports/unassigned"),
-          fetch("/api/reports/completed"),
-          fetch("/api/duplicates/pending"),
-          fetch("/api/reports/analytics/status"),
-          fetch("/api/reports/analytics/resolved"),
-        ]);
+      const [
+        assignedRes,
+        unassignedRes,
+        completedRes,
+        duplicatesRes,
+        statusRes,
+        resolvedRes,
+      ] = await Promise.all([
+        fetch("/api/reports/assigned"),
+        fetch("/api/reports/unassigned"),
+        fetch("/api/reports/completed"),
+        fetch("/api/duplicates/pending"),
+        fetch("/api/reports/analytics/status"),
+        fetch("/api/reports/analytics/resolved"),
+      ]);
 
       if (
         !assignedRes.ok ||
@@ -89,6 +77,8 @@ export default function WorkerDashboard() {
           unassigned: unassignedRes.status,
           completed: completedRes.status,
           duplicates: duplicatesRes.status,
+          status: statusRes.status,
+          resolved: resolvedRes.status,
         });
 
         throw new Error("Failed to fetch dashboard data");
@@ -98,28 +88,45 @@ export default function WorkerDashboard() {
       const unassignedData = await unassignedRes.json();
       const completedData = await completedRes.json();
       const duplicatesData = await duplicatesRes.json();
+      const statusJson = await statusRes.json();
+      const resolvedJson = await resolvedRes.json();
 
       setAssigned(assignedData.data ?? []);
       setUnassigned(unassignedData.data ?? []);
       setCompleted(completedData.data ?? []);
       setDuplicates(duplicatesData.data ?? []);
-      const statusJson = await statusRes.json();
       setStatusData(statusJson.data ?? []);
       setMunicipality(statusJson.municipality ?? null);
-      setResolvedData((await resolvedRes.json()).data ?? []);
+      setResolvedData(resolvedJson.data ?? []);
     } catch (error) {
       console.error("Dashboard fetch error:", error);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    if (!isPending && !session) {
+      router.push("/");
+    }
+  }, [session, isPending, router]);
 
   useEffect(() => {
     if (session) {
       fetchData();
     }
-  }, [session]);
+  }, [session, fetchData]);
 
-  const [statsKey, setStatsKey] = useState(0);
-  async function handleClaim(id: string) {
+  useEffect(() => {
+    if (selectedDuplicateReview) {
+      setTimeout(() => {
+        duplicateReviewRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, [selectedDuplicateReview]);
+
+    async function handleClaim(id: number) {
     try {
       const response = await fetch("/api/reports/claim", {
         method: "POST",
@@ -132,7 +139,8 @@ export default function WorkerDashboard() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to claim report");
+        const errorBody = await response.json().catch(() => null);
+        throw new Error(errorBody?.message ?? "Failed to claim report");
       }
 
       await fetchData();
@@ -210,7 +218,7 @@ export default function WorkerDashboard() {
     setSelectedDuplicateReview(review);
   }
 
-  if (isPending) {
+  if (isPending || !session) {
     return (
       <main
         className="w-screen min-h-screen bg-cover bg-center"
@@ -246,9 +254,13 @@ export default function WorkerDashboard() {
             />
           </section>
 
-          <WorkerInfoCard worker={session?.user} />
+          <WorkerInfoCard worker={session.user} />
 
-          <UnassignedTasksCard tasks={unassigned} onClaim={handleClaim} />
+          <UnassignedTasksCard
+            tasks={unassigned}
+            onClaim={handleClaim}
+            currentUserId={session.user.id}
+          />
 
           <PossibleDuplicatesCard
             duplicates={duplicates}
@@ -277,7 +289,10 @@ export default function WorkerDashboard() {
 
           {selectedReport && (
             <>
-              <UpdateStatusCard report={selectedReport} onUpdate={handleStatus} />
+              <UpdateStatusCard
+                report={selectedReport}
+                onUpdate={handleStatus}
+              />
 
               <ReportDetailsCard
                 report={selectedReport}
@@ -285,13 +300,18 @@ export default function WorkerDashboard() {
               />
             </>
           )}
+
           <article ref={statusChartRef}>
             <StatusChartCard statusData={statusData} refreshKey={statsKey} />
           </article>
 
           <article ref={resolvedChartRef}>
-            <ResolvedChartCard resolvedData={resolvedData} refreshKey={statsKey} />
+            <ResolvedChartCard
+              resolvedData={resolvedData}
+              refreshKey={statsKey}
+            />
           </article>
+
           <ExportReportButton
             worker={{
               name: session?.user?.name ?? "",

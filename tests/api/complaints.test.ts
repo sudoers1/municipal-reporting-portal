@@ -1,4 +1,7 @@
 // tests/api/complaints.test.ts
+
+let mockSession: any;
+
 // Mock Next.js server modules FIRST before importing the route
 jest.mock("next/server", () => ({
   NextResponse: {
@@ -15,7 +18,6 @@ jest.mock("next/server", () => ({
 jest.mock("@/lib/auth/server", () => ({
   withAuth: jest.fn((_roles: string[], handler: Function) => {
     return (req: Request, context?: any) => {
-      const mockSession = { user: { id: "user-123", role: "Resident" } };
       return handler(req, mockSession, context);
     };
   }),
@@ -32,7 +34,10 @@ global.Request = class {
   body: any;
   headers: Headers;
 
-  constructor(url: string, options?: { method?: string; body?: string; headers?: HeadersInit }) {
+  constructor(
+    url: string,
+    options?: { method?: string; body?: string; headers?: HeadersInit }
+  ) {
     this.url = url;
     this.method = options?.method || "GET";
     this.body = options?.body;
@@ -49,7 +54,6 @@ import { sql } from "@/lib/db/neon";
 
 const mockSql = sql as jest.Mock;
 
-// Helper to create request
 const makeRequest = (body: unknown, method: string = "POST"): Request => {
   return new Request("http://localhost/api/complaints", {
     method,
@@ -60,7 +64,15 @@ const makeRequest = (body: unknown, method: string = "POST"): Request => {
 
 describe("POST /api/complaints", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    mockSql.mockReset();
+
+    mockSession = {
+      user: {
+        id: "user-123",
+        role: "Resident",
+      },
+    };
+
     jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
@@ -81,15 +93,7 @@ describe("POST /api/complaints", () => {
   };
 
   it("returns 401 when user is not authenticated", async () => {
-    // Override the mock for this test
-    (require("@/lib/auth/server").withAuth as jest.Mock).mockImplementationOnce(
-      (_roles: string[], handler: Function) => {
-        return async (req: Request) => {
-          const mockSession = null;
-          return handler(req, mockSession);
-        };
-      }
-    );
+    mockSession = null;
 
     const req = makeRequest(validComplaint);
     const res = await POST(req);
@@ -97,84 +101,110 @@ describe("POST /api/complaints", () => {
 
     expect(res.status).toBe(401);
     expect(data).toEqual({ message: "Missing authenticated user" });
+    expect(mockSql).not.toHaveBeenCalled();
   });
 
   it("returns 400 when municipality is missing", async () => {
     const { municipality, ...invalidComplaint } = validComplaint;
+
     const req = makeRequest(invalidComplaint);
     const res = await POST(req);
     const data = await res.json();
 
     expect(res.status).toBe(400);
-    expect(data).toEqual({ message: "Missing municipality, issuetype, or details" });
+    expect(data).toEqual({
+      message: "Missing municipality, issuetype, or details",
+    });
     expect(mockSql).not.toHaveBeenCalled();
   });
 
   it("returns 400 when issuetype is missing", async () => {
     const { issuetype, ...invalidComplaint } = validComplaint;
+
     const req = makeRequest(invalidComplaint);
     const res = await POST(req);
     const data = await res.json();
 
     expect(res.status).toBe(400);
-    expect(data).toEqual({ message: "Missing municipality, issuetype, or details" });
+    expect(data).toEqual({
+      message: "Missing municipality, issuetype, or details",
+    });
+    expect(mockSql).not.toHaveBeenCalled();
   });
 
   it("returns 400 when details is missing", async () => {
     const { details, ...invalidComplaint } = validComplaint;
+
     const req = makeRequest(invalidComplaint);
     const res = await POST(req);
     const data = await res.json();
 
     expect(res.status).toBe(400);
-    expect(data).toEqual({ message: "Missing municipality, issuetype, or details" });
+    expect(data).toEqual({
+      message: "Missing municipality, issuetype, or details",
+    });
+    expect(mockSql).not.toHaveBeenCalled();
   });
 
   it("returns 400 when latitude is missing", async () => {
     const { latitude, ...invalidComplaint } = validComplaint;
+
     const req = makeRequest(invalidComplaint);
     const res = await POST(req);
     const data = await res.json();
 
     expect(res.status).toBe(400);
     expect(data).toEqual({ message: "Missing latitude or longitude" });
+    expect(mockSql).not.toHaveBeenCalled();
   });
 
   it("returns 400 when longitude is missing", async () => {
     const { longitude, ...invalidComplaint } = validComplaint;
+
     const req = makeRequest(invalidComplaint);
     const res = await POST(req);
     const data = await res.json();
 
     expect(res.status).toBe(400);
     expect(data).toEqual({ message: "Missing latitude or longitude" });
+    expect(mockSql).not.toHaveBeenCalled();
   });
 
   it("returns 400 when latitude is invalid", async () => {
     const req = makeRequest({ ...validComplaint, latitude: "invalid" });
+
     const res = await POST(req);
     const data = await res.json();
 
     expect(res.status).toBe(400);
     expect(data).toEqual({ message: "Invalid latitude or longitude" });
+    expect(mockSql).not.toHaveBeenCalled();
   });
 
   it("returns 400 when latitude is out of range", async () => {
     const req = makeRequest({ ...validComplaint, latitude: -100 });
+
     const res = await POST(req);
     const data = await res.json();
 
     expect(res.status).toBe(400);
-    expect(data).toEqual({ message: "Latitude or longitude is out of range" });
+    expect(data).toEqual({
+      message: "Latitude or longitude is out of range",
+    });
+    expect(mockSql).not.toHaveBeenCalled();
   });
 
   it("returns 400 when longitude is out of range", async () => {
     const req = makeRequest({ ...validComplaint, longitude: -200 });
+
     const res = await POST(req);
     const data = await res.json();
 
     expect(res.status).toBe(400);
-    expect(data).toEqual({ message: "Latitude or longitude is out of range" });
+    expect(data).toEqual({
+      message: "Latitude or longitude is out of range",
+    });
+    expect(mockSql).not.toHaveBeenCalled();
   });
 
   it("creates complaint successfully without duplicate detection", async () => {
@@ -253,6 +283,7 @@ describe("POST /api/complaints", () => {
       possibleDuplicateCount: 1,
       possibleDuplicates: mockDuplicates,
     });
+    expect(mockSql).toHaveBeenCalledTimes(2);
   });
 
   it("returns 500 when database insert fails", async () => {
