@@ -6,13 +6,14 @@ export default function Signup({ onBack }: { onBack: () => void }) {
   return (
     <section>
       <header>
-        <h2 className="text-lg font-semibold mb-4 text-black">
+        <h2 className="text-2xl font-bold mb-6 text-slate-900 text-center drop-shadow-sm">
           Sign Up
         </h2>
       </header>
+
       <main className="flex flex-col gap-3">
         <button
-          className="px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-900"
+          className="px-4 py-2 rounded-lg bg-gray-800 text-white font-semibold shadow hover:bg-gray-900 transition"
           onClick={() =>
             authClient.signIn.social({
               provider: "github",
@@ -24,7 +25,7 @@ export default function Signup({ onBack }: { onBack: () => void }) {
         </button>
 
         <button
-          className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+          className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 transition"
           onClick={() =>
             authClient.signIn.social({
               provider: "google",
@@ -36,7 +37,7 @@ export default function Signup({ onBack }: { onBack: () => void }) {
         </button>
 
         <button
-          className="px-4 py-2 rounded bg-blue-700 text-white hover:bg-blue-800"
+          className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold shadow hover:bg-indigo-700 transition"
           onClick={() =>
             authClient.signIn.social({
               provider: "discord",
@@ -48,7 +49,7 @@ export default function Signup({ onBack }: { onBack: () => void }) {
         </button>
 
         <button
-          className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+          className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
           onClick={() =>
             authClient.signIn.social({
               provider: "facebook",
@@ -60,7 +61,7 @@ export default function Signup({ onBack }: { onBack: () => void }) {
         </button>
 
         <button
-          className="px-4 py-2 rounded bg-sky-500 text-white hover:bg-sky-600"
+          className="px-4 py-2 rounded-lg bg-sky-500 text-white font-semibold shadow hover:bg-sky-600 transition"
           onClick={() =>
             authClient.signIn.social({
               provider: "linkedin",
@@ -71,10 +72,14 @@ export default function Signup({ onBack }: { onBack: () => void }) {
           Sign up with LinkedIn
         </button>
       </main>
-      <footer className="mt-4">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+
+      <footer className="mt-6 text-center">
+        <p className="text-sm text-slate-700">
           Already have an account?{" "}
-          <button className="text-blue-600 hover:underline" onClick={onBack}>
+          <button
+            className="text-teal-600 font-semibold hover:underline"
+            onClick={onBack}
+          >
             Login
           </button>
         </p>

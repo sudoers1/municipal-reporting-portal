@@ -56,7 +56,7 @@ function ReportComparePanel({
   report: Report;
 }) {
   return (
-    <article className="bg-black/20 rounded-xl p-4 border border-white/10 space-y-3">
+    <article className="bg-black/20 rounded-xl p-4 border border-black/10 space-y-3">
       <header>
         <h3 className="font-semibold text-lg">{title}</h3>
         <p className="text-xs text-gray-300">
@@ -68,23 +68,23 @@ function ReportComparePanel({
         <img
           src={report.image}
           alt={`${title} image`}
-          className="w-full h-40 object-cover rounded-lg border border-white/10"
+          className="w-full h-40 object-cover rounded-lg border border-black/10"
         />
       )}
 
-      <section className="space-y-2 text-sm text-gray-200">
+      <section className="space-y-2 text-sm text-black-200">
         <p>
-          <span className="text-gray-400">Issue:</span>{" "}
+          <span className="text-black-400">Issue:</span>{" "}
           {report.issuetype}
         </p>
 
         <p>
-          <span className="text-gray-400">Status:</span>{" "}
+          <span className="text-black-400">Status:</span>{" "}
           {report.status}
         </p>
 
         <p>
-          <span className="text-gray-400">Priority:</span>{" "}
+          <span className="text-black-400">Priority:</span>{" "}
           {priorityLabel(report.priority)}
         </p>
 
@@ -118,7 +118,7 @@ function ReportComparePanel({
 
       <section>
         <h4 className="text-sm font-semibold mb-1">Details</h4>
-        <p className="text-sm text-gray-200 whitespace-pre-wrap">
+        <p className="text-sm text-gray-200 blackspace-pre-wrap">
           {report.details || "No details provided."}
         </p>
       </section>

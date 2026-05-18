@@ -218,113 +218,106 @@ export default function WorkerDashboard() {
     setSelectedDuplicateReview(review);
   }
 
-  if (isPending || !session) {
-    return (
-      <main
-        className="w-screen min-h-screen bg-cover bg-center"
-        style={{ backgroundImage: "url('/municipality.png')" }}
-      >
-        <section className="p-8 bg-black/50 min-h-screen flex items-center justify-center">
-          <Spinner splash="Worker Dashboard" />
-        </section>
-      </main>
-    );
-  }
-
+if (isPending || !session) {
   return (
-    <main
-      className="w-screen min-h-screen bg-cover bg-center"
-      style={{ backgroundImage: "url('/municipality.png')" }}
-    >
-      <section className="p-6 bg-black/50 min-h-screen space-y-8">
-        <header>
-          <h1 className="text-3xl md:text-5xl font-bold text-white text-center">
-            Worker Dashboard
-          </h1>
-        </header>
-
-        <KPICards data={dashboardReports} />
-
-        <section className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-          <section className="md:col-span-2 xl:col-span-3">
-            <WorkerStatusAnalytics
-              assignments={workerReports}
-              duplicates={duplicates}
-              availableTasks={unassigned}
-            />
-          </section>
-
-          <WorkerInfoCard worker={session.user} />
-
-          <UnassignedTasksCard
-            tasks={unassigned}
-            onClaim={handleClaim}
-            currentUserId={session.user.id}
-          />
-
-          <PossibleDuplicatesCard
-            duplicates={duplicates}
-            onConfirm={handleConfirmDuplicate}
-            onReject={handleRejectDuplicate}
-            onViewReview={handleViewDuplicateReview}
-          />
-
-          <AssignedTasksCard tasks={assigned} onSelect={handleSelectReport} />
-
-          <CompletedTasksCard tasks={completed} />
-
-          {selectedDuplicateReview && (
-            <section
-              ref={duplicateReviewRef}
-              className="md:col-span-2 xl:col-span-3 scroll-mt-6"
-            >
-              <DuplicateReviewDetails
-                review={selectedDuplicateReview}
-                onClose={() => setSelectedDuplicateReview(null)}
-                onConfirm={handleConfirmDuplicate}
-                onReject={handleRejectDuplicate}
-              />
-            </section>
-          )}
-
-          {selectedReport && (
-            <>
-              <UpdateStatusCard
-                report={selectedReport}
-                onUpdate={handleStatus}
-              />
-
-              <ReportDetailsCard
-                report={selectedReport}
-                onClose={() => setSelectedReport(null)}
-              />
-            </>
-          )}
-
-          <article ref={statusChartRef}>
-            <StatusChartCard statusData={statusData} refreshKey={statsKey} />
-          </article>
-
-          <article ref={resolvedChartRef}>
-            <ResolvedChartCard
-              resolvedData={resolvedData}
-              refreshKey={statsKey}
-            />
-          </article>
-
-          <ExportReportButton
-            worker={{
-              name: session?.user?.name ?? "",
-              email: session?.user?.email,
-              municipality: municipality ?? "Unknown Municipality",
-            }}
-            statusData={statusData}      
-            resolvedData={resolvedData}
-            statusChartRef={statusChartRef}
-            resolvedChartRef={resolvedChartRef}
-          />
-        </section>
+    <main className="w-screen min-h-screen bg-gradient-to-br from-white via-teal-100 to-teal-300">
+      <section className="p-8 bg-black/40 min-h-screen flex items-center justify-center">
+        <Spinner splash="Worker Dashboard" />
       </section>
     </main>
   );
+}
+
+return (
+  <main className="w-screen min-h-screen bg-gradient-to-br from-white via-teal-100 to-teal-300">
+    <section className="p-6 min-h-screen space-y-8">
+      <header>
+        <h1 className="text-3xl md:text-5xl font-bold text-slate-900 text-center">
+          Worker Dashboard
+        </h1>
+      </header>
+
+      <KPICards data={dashboardReports} />
+
+      <section className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <section className="md:col-span-2 xl:col-span-3 dashboard-card">
+          <WorkerStatusAnalytics
+            assignments={workerReports}
+            duplicates={duplicates}
+            availableTasks={unassigned}
+          />
+        </section>
+
+        <WorkerInfoCard worker={session.user}  />
+
+        <UnassignedTasksCard
+          tasks={unassigned}
+          onClaim={handleClaim}
+          currentUserId={session.user.id}
+          className="dashboard-card"
+        />
+
+        <PossibleDuplicatesCard
+          duplicates={duplicates}
+          onConfirm={handleConfirmDuplicate}
+          onReject={handleRejectDuplicate}
+          onViewReview={handleViewDuplicateReview}
+        />
+
+        <AssignedTasksCard tasks={assigned} onSelect={handleSelectReport}  />
+
+        <CompletedTasksCard tasks={completed}  />
+
+        {selectedDuplicateReview && (
+          <section
+            ref={duplicateReviewRef}
+            className="md:col-span-2 xl:col-span-3 dashboard-card scroll-mt-6"
+          >
+            <DuplicateReviewDetails
+              review={selectedDuplicateReview}
+              onClose={() => setSelectedDuplicateReview(null)}
+              onConfirm={handleConfirmDuplicate}
+              onReject={handleRejectDuplicate}
+            />
+          </section>
+        )}
+
+        {selectedReport && (
+          <>
+            <UpdateStatusCard
+              report={selectedReport}
+              onUpdate={handleStatus}
+            />
+
+            <ReportDetailsCard
+              report={selectedReport}
+              onClose={() => setSelectedReport(null)}
+            />
+          </>
+        )}
+
+        <article ref={statusChartRef} className="dashboard-card">
+          <StatusChartCard statusData={statusData} refreshKey={statsKey} />
+        </article>
+
+        <article ref={resolvedChartRef} className="dashboard-card">
+          <ResolvedChartCard resolvedData={resolvedData} refreshKey={statsKey} />
+        </article>
+
+        <ExportReportButton
+          worker={{
+            name: session?.user?.name ?? "",
+            email: session?.user?.email,
+            municipality: municipality ?? "Unknown Municipality",
+          }}
+          statusData={statusData}
+          resolvedData={resolvedData}
+          statusChartRef={statusChartRef}
+          resolvedChartRef={resolvedChartRef}
+          className="dashboard-card"
+        />
+      </section>
+    </section>
+  </main>
+);
 }

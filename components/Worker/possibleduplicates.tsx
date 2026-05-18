@@ -60,20 +60,20 @@ export default function PossibleDuplicatesCard({
     <Card title="Possible Duplicate Reports">
       <ul className="space-y-3 max-h-[400px] overflow-y-auto">
         {duplicates.length === 0 && (
-          <p className="text-gray-300 text-sm">
+          <p className="text-slate-600 text-sm">
             No pending duplicate reviews.
           </p>
         )}
 
         {duplicates.map((item) => (
           <li key={item.id}>
-            <article className="bg-black/20 rounded-xl p-3 border border-white/10">
+            <article className="bg-white/30 backdrop-blur-sm rounded-xl p-3 border border-slate-200 hover:border-slate-300 transition">
               <header className="mb-2">
-                <h3 className="font-semibold text-lg">
+                <h3 className="font-semibold text-lg text-slate-900">
                   {item.duplicate_issuetype}
                 </h3>
 
-                <p className="text-xs text-gray-300">
+                <p className="text-xs text-slate-600">
                   Review #{item.id} ·{" "}
                   {item.distance_meters === null
                     ? "Unknown distance"
@@ -85,25 +85,25 @@ export default function PossibleDuplicatesCard({
                 <button
                   type="button"
                   onClick={() => onViewReview(item)}
-                  className="text-left bg-black/20 rounded-lg p-3 border border-white/10 hover:bg-black/30 hover:border-white/30 transition"
+                  className="text-left bg-white/30 backdrop-blur-sm rounded-lg p-3 border border-slate-200 hover:border-slate-300 transition"
                 >
-                  <h4 className="text-sm font-semibold mb-1">
+                  <h4 className="text-sm font-semibold mb-1 text-slate-900">
                     Original Report
                   </h4>
 
-                  <p className="text-xs text-gray-300 mb-1">
+                  <p className="text-xs text-slate-600 mb-1">
                     Complaint #{item.original_id}
                   </p>
 
-                  <p className="text-sm text-gray-200 line-clamp-2">
+                  <p className="text-sm text-slate-800 line-clamp-2">
                     {item.original_details || "No details provided."}
                   </p>
 
-                  <p className="text-xs text-gray-400 mt-2 line-clamp-1">
+                  <p className="text-xs text-slate-600 mt-2 line-clamp-1">
                     {item.original_address || "No address"}
                   </p>
 
-                  <p className="text-xs text-blue-300 mt-2">
+                  <p className="text-xs text-blue-600 mt-2">
                     Click to view details
                   </p>
                 </button>
@@ -111,53 +111,55 @@ export default function PossibleDuplicatesCard({
                 <button
                   type="button"
                   onClick={() => onViewReview(item)}
-                  className="text-left bg-black/20 rounded-lg p-3 border border-white/10 hover:bg-black/30 hover:border-white/30 transition"
+                  className="text-left bg-white/30 backdrop-blur-sm rounded-lg p-3 border border-slate-200 hover:border-slate-300 transition"
                 >
-                  <h4 className="text-sm font-semibold mb-1">
+                  <h4 className="text-sm font-semibold mb-1 text-slate-900">
                     Possible Duplicate
                   </h4>
 
-                  <p className="text-xs text-gray-300 mb-1">
+                  <p className="text-xs text-slate-600 mb-1">
                     Complaint #{item.duplicate_id}
                   </p>
 
-                  <p className="text-sm text-gray-200 line-clamp-2">
+                  <p className="text-sm text-slate-800 line-clamp-2">
                     {item.duplicate_details || "No details provided."}
                   </p>
 
-                  <p className="text-xs text-gray-400 mt-2 line-clamp-1">
+                  <p className="text-xs text-slate-600 mt-2 line-clamp-1">
                     {item.duplicate_address || "No address"}
                   </p>
 
-                  <p className="text-xs text-blue-300 mt-2">
+                  <p className="text-xs text-blue-600 mt-2">
                     Click to view details
                   </p>
                 </button>
               </section>
 
-              <div className="mt-3 flex items-center justify-between gap-2">
-                <span className="text-xs text-gray-400">
+              <footer className="mt-3 flex items-center justify-between gap-2">
+                <time
+                  dateTime={item.duplicate_creationtime}
+                  className="text-xs text-slate-600"
+                >
                   {new Date(item.duplicate_creationtime).toLocaleDateString()}
-                </span>
+                </time>
 
-                <div className="flex gap-2">
+                <section className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => onConfirm(item.id)}
-                    className="px-3 py-1 rounded-lg bg-green-600 hover:bg-green-500 text-sm"
+                    className="px-3 py-1 rounded-lg bg-green-600 hover:bg-green-500 text-sm font-semibold text-white"
                   >
                     Confirm
                   </button>
-
                   <button
                     type="button"
                     onClick={() => onReject(item.id)}
-                    className="px-3 py-1 rounded-lg bg-red-600 hover:bg-red-500 text-sm"
+                    className="px-3 py-1 rounded-lg bg-red-600 hover:bg-red-500 text-sm font-semibold text-white"
                   >
                     Reject
                   </button>
-                </div>
-              </div>
+                </section>
+              </footer>
             </article>
           </li>
         ))}
