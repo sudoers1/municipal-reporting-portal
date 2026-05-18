@@ -1,33 +1,32 @@
 import Card from "../generalcomps/card";
 
-export default function CompletedTasksCard({ tasks }: any) {
+export default function CompletedTasksCard({ tasks }: { tasks: any[] }) {
   return (
     <Card title="Completed Reports">
       <ul className="space-y-3 max-h-[400px] overflow-y-auto">
         {tasks.length === 0 && (
-          <p className="text-gray-300 text-sm">
-            No completed reports.
-          </p>
+          <li>
+            <p className="text-sm text-slate-700">No completed reports.</p>
+          </li>
         )}
 
-        {tasks.map((task: any) => (
+        {tasks.map((task) => (
           <li key={task.complaintid}>
-            <article className="bg-black/20 rounded-xl p-3 border border-green-500/20">
-              <header className="flex items-center justify-between">
-                <h3 className="font-semibold">
+            <article className="bg-white/30 backdrop-blur-sm rounded-xl p-3 border border-green-200 hover:border-green-300 transition">
+              <header className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-lg text-slate-900">
                   {task.issuetype}
                 </h3>
-
-                <p className="text-xs bg-green-500/20 text-green-200 px-2 py-1 rounded-full">
+                <span className="text-xs bg-green-100/70 text-green-700 px-2 py-1 rounded-full">
                   Resolved
-                </p>
+                </span>
               </header>
 
-              <p className="mt-2 text-sm text-gray-200 line-clamp-2">
+              <p className="mt-2 text-sm text-slate-800 line-clamp-2">
                 {task.details}
               </p>
 
-              <footer className="mt-3 text-xs text-gray-400">
+              <footer className="mt-3 text-xs text-slate-600">
                 #{task.complaintid}
               </footer>
             </article>

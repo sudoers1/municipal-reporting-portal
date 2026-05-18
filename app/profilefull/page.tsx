@@ -108,7 +108,7 @@ export default function Home() {
 
       <section>
           <h2 className="mb-6 text-3xl md:text-5xl font-bold text-gray-900 text-center drop-shadow-md">
-            My Reports
+            My Report History
           </h2>
           <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-4">
             <ComplaintsTable complaints={complaints} onSelectComplaint={setSelectedComplaint} />

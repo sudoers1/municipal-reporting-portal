@@ -42,4 +42,17 @@ body {
     width: 0;
     height: 0;
   }
+  
+.dashboard-card {
+  background-color: rgba(255, 255, 255, 0.3); /* light frosted glass */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.08); /* subtle border */
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* soft shadow */
+  padding: 1.25rem;
+  color: #1f2937; /* default dark text for readability */
+}
+
+
 }

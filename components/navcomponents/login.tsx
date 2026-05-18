@@ -17,16 +17,16 @@ export default function LoginModal({
 
   return (
     <section
-      className="fixed inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm z-50"
+      className="fixed inset-0 flex items-center justify-center bg-white/40 backdrop-blur-md z-50"
       onClick={onClose}
     >
       <article
-        className="bg-white/30  backdrop-blur-md border border-white/20 rounded-xl shadow-2xl w-96 relative p-6"
+        className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] w-96 relative p-8"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
-          className="absolute top-3 right-3 text-gray-700  text-xl font-bold"
+          className="absolute top-3 right-3 text-slate-700 text-xl font-bold hover:text-slate-900 transition"
           onClick={onClose}
         >
           ×
@@ -35,14 +35,14 @@ export default function LoginModal({
         {!showSignup ? (
           <>
             <header>
-              <h2 className="text-2xl font-bold mb-4 text-gray-900 text-center drop-shadow-sm">
+              <h2 className="text-2xl font-bold mb-6 text-slate-900 text-center drop-shadow-sm">
                 Login
               </h2>
             </header>
 
             <main className="flex flex-col gap-3">
               <button
-                className="px-4 py-2 rounded-lg bg-gray-800 text-white font-semibold shadow hover:bg-gray-900 transition-colors"
+                className="px-4 py-2 rounded-lg bg-gray-800 text-white font-semibold shadow hover:bg-gray-900 transition"
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "github",
@@ -53,7 +53,7 @@ export default function LoginModal({
                 Continue with GitHub
               </button>
               <button
-                className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 transition-colors"
+                className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 transition"
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "google",
@@ -64,7 +64,7 @@ export default function LoginModal({
                 Continue with Google
               </button>
               <button
-                className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold shadow hover:bg-indigo-700 transition-colors"
+                className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold shadow hover:bg-indigo-700 transition"
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "discord",
@@ -75,7 +75,7 @@ export default function LoginModal({
                 Continue with Discord
               </button>
               <button
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "facebook",
@@ -86,7 +86,7 @@ export default function LoginModal({
                 Continue with Facebook
               </button>
               <button
-                className="px-4 py-2 rounded-lg bg-sky-500 text-white font-semibold shadow hover:bg-sky-600 transition-colors"
+                className="px-4 py-2 rounded-lg bg-sky-500 text-white font-semibold shadow hover:bg-sky-600 transition"
                 onClick={() =>
                   authClient.signIn.social({
                     provider: "linkedin",
@@ -99,7 +99,7 @@ export default function LoginModal({
             </main>
 
             <footer className="mt-6 text-center">
-              <p className="text-sm text-gray-700 dark:text-gray-400">
+              <p className="text-sm text-slate-700">
                 Don’t have an account?{" "}
                 <button
                   className="text-teal-600 font-semibold hover:underline"

@@ -3,38 +3,40 @@ import Card from "../generalcomps/card";
 export default function AssignedTasksCard({
   tasks,
   onSelect,
-}: any) {
+}: {
+  tasks: any[];
+  onSelect: (task: any) => void;
+}) {
   return (
     <Card title="Assigned Reports">
       <ul className="space-y-3 max-h-[400px] overflow-y-auto">
         {tasks.length === 0 && (
-          <p className="text-gray-300 text-sm">
-            No assigned reports.
-          </p>
+          <li>
+            <p className="text-sm text-slate-700">No assigned reports.</p>
+          </li>
         )}
 
-        {tasks.map((task: any) => (
+        {tasks.map((task) => (
           <li key={task.complaintid}>
             <button
               onClick={() => onSelect(task)}
               className="w-full text-left"
             >
-              <article className="bg-black/20 rounded-xl p-3 border border-white/10 hover:border-white/30 transition">
+              <article className="bg-white/30 backdrop-blur-sm rounded-xl p-3 border border-slate-200 hover:border-slate-300 transition">
                 <header className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-lg">
+                  <h3 className="font-semibold text-lg text-slate-900">
                     {task.issuetype}
                   </h3>
-
-                  <p className="text-xs bg-yellow-500/20 text-yellow-200 px-2 py-1 rounded-full">
+                  <span className="text-xs bg-yellow-100/70 text-yellow-700 px-2 py-1 rounded-full">
                     {task.assignment_status}
-                  </p>
+                  </span>
                 </header>
 
-                <p className="text-sm text-gray-200 line-clamp-2">
+                <p className="text-sm text-slate-800 line-clamp-2">
                   {task.details}
                 </p>
 
-                <footer className="mt-3 text-xs text-gray-400">
+                <footer className="mt-3 text-xs text-slate-600">
                   #{task.complaintid}
                 </footer>
               </article>
