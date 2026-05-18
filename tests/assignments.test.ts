@@ -48,7 +48,7 @@ describe("POST /api/assignments", () => {
 
     expect(res.status).toBe(400);
     expect(body).toEqual({
-      error: "Missing complaintid or workerid",
+      error: "Missing complaintid or workerid or priority",
     });
 
     expect(mockSql).not.toHaveBeenCalled();
@@ -64,7 +64,7 @@ describe("POST /api/assignments", () => {
 
     expect(res.status).toBe(400);
     expect(body).toEqual({
-      error: "Missing complaintid or workerid",
+      error: "Missing complaintid or workerid or priority",
     });
 
     expect(mockSql).not.toHaveBeenCalled();
@@ -88,10 +88,10 @@ describe("POST /api/assignments", () => {
     const res = await POST(req);
     const body = await res.json();
 
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(201);
     expect(body).toEqual(assignment);
 
-    expect(mockSql).toHaveBeenCalledTimes(1);
+    expect(mockSql).toHaveBeenCalledTimes(2);
   });
 
   test("returns 500 when database insert fails", async () => {

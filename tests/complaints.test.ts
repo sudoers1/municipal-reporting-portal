@@ -8,6 +8,7 @@ import {
   claimComplaint,
   updateComplaintStatus,
   getCompDate,
+  readUnassignedComplaints
 } from "@/lib/db/complaints";
 import { sql } from "@/lib/db/neon";
 
@@ -223,4 +224,81 @@ describe("complaints db functions", () => {
       expect(result).toBeNull();
     });
   });
+
+describe("readUnassignedComplaints", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should return only complaints without assignments", async () => {
+    const mockComplaints = [
+      {
+        complaintid: 1,
+        municipality: "Emfuleni",
+        status: "Pending",
+        issuetype: "Potholes",
+        details: "Large pothole on Main St",
+        creationtime: new Date(),
+      },
+      {
+        complaintid: 3,
+        municipality: "Midvaal",
+        status: "Pending",
+        issuetype: "Water Leak",
+        details: "Pipe burst on Oak Ave",
+        creationtime: new Date(),
+      },
+    ];
+
+    mockedSql.mockResolvedValue(mockComplaints);
+
+    const result = await readUnassignedComplaints();
+
+    expect(mockedSql).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(mockComplaints);
+  });
+
+  it("should return empty array when all complaints have assignments", async () => {
+    mockedSql.mockResolvedValue([]);
+
+    const result = await readUnassignedComplaints();
+
+    expect(result).toEqual([]);
+  });
+
+  it("should exclude complaints that have assignments", async () => {
+    // This test verifies the SQL logic - we mock the DB response
+    const unassignedComplaints = [
+      {
+        complaintid: 2,
+        municipality: "Johannesburg",
+        status: "Pending",
+        issuetype: "Electricity",
+        details: "Power outage",
+        creationtime: new Date(),
+      },
+    ];
+
+    mockedSql.mockResolvedValue(unassignedComplaints);
+
+    const result = await readUnassignedComplaints();
+
+    // Verify the SQL query contains the NOT EXISTS clause
+    const sqlCall = mockedSql.mock.calls[0][0];
+    const sqlString = Array.isArray(sqlCall) ? sqlCall.join('') : sqlCall;
+    
+    expect(sqlString).toContain("NOT EXISTS");
+    expect(sqlString).toContain("SELECT 1 FROM assignments");
+    expect(sqlString).toContain("a.complaintid = c.complaintid");
+    
+    expect(result).toEqual(unassignedComplaints);
+  });
+
+  it("should handle database errors", async () => {
+    const dbError = new Error("Database connection failed");
+    mockedSql.mockRejectedValue(dbError);
+
+    await expect(readUnassignedComplaints()).rejects.toThrow("Database connection failed");
+  });
+});
 });
