@@ -59,6 +59,18 @@ export async function readComplaints() {
   return result;
 }
 
+export async function readUnassignedComplaints() {
+  const result = await sql`
+    SELECT * FROM complaints c
+    WHERE NOT EXISTS (
+      SELECT 1 FROM assignments a 
+      WHERE a.complaintid = c.complaintid
+    )
+  `;
+  return result;
+}
+
+
 // Read complaints by user
 export async function readMyComplaints(userid: string | undefined) {
   const result = await sql`

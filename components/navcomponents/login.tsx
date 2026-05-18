@@ -35,7 +35,7 @@ export default function LoginModal({
         {!showSignup ? (
           <>
             <header>
-              <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white text-center drop-shadow-sm">
+              <h2 className="text-2xl font-bold mb-4 text-gray-900 text-center drop-shadow-sm">
                 Login
               </h2>
             </header>

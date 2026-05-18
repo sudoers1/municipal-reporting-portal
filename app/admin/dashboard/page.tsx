@@ -40,16 +40,15 @@ export default function AdminDashboard(){
               getComplaints();
           }
         }, [session, isPending, router]);
-        
-
     
       if(isPending||loading){return (
-        <main className="w-screen min-h-screenbg-linear-to-br from-white via-teal-100 to-teal-300">
-            <section className="p-8 bg-black/15  min-h-screen flex items-center justify-center">
-                <Spinner splash="Dashboard" />
-            </section>
-        </main>
-      );}
+              <main className="w-screen min-h-screen bg-linear-to-br from-white via-teal-100 to-teal-300">
+                <section className="p-8 min-h-screen bg-black/15 flex items-center justify-center">
+                  <Spinner splash="Analytics" />
+                </section>
+              </main>
+            );}
+
 
     return(
             <main className="text-center text-gray-900 p-4 flex bg-linear-to-br from-white via-teal-100 to-teal-300 flex-col gap-4">

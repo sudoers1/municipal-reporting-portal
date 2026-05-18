@@ -75,15 +75,15 @@ export default function FeedbackViewer({
                 <strong>Respondent:</strong> {feedbackInstance.getName()}
               </p>
 
-              <p>
+              <section>
                 <strong>Rating:</strong> 
-                <span className="text-white text-xl ml-2">
+                <p className=" inline-block text-black text-lg text-sm ml-2">
                   {feedbackInstance.getRatingStars()}
-                </span>
-                <span className="text-md text-black ml-2">
+                </p>
+                <p className=" inline-block text-black text-md ml-2">
                   ({feedbackInstance.getRating()}/5)
-                </span>
-              </p>
+                </p>
+              </section>
 
               <p>
                 <strong>Time of Feedback:</strong>{" "}
