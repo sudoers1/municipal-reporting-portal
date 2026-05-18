@@ -22,6 +22,7 @@ export async function POST(req: Request) {
       LEFT JOIN assignments a ON c.complaintid = a.complaintid
       WHERE c.ward_id = ${wardId}
         AND LOWER(c.status) != 'pending'
+        AND LOWER(c.status) != 'duplicate'
         AND (
           LOWER(c.status) != 'resolved'
           OR a.resolved_at >= NOW() - INTERVAL '1 month'
