@@ -5,6 +5,7 @@ import Spinner from "@/components/generalcomps/spinner";
 import FeedbackModal from "@/components/feedback/feedbackform";
 import Link from "next/link";
 import { Status } from "@/lib/status";
+import { generateComplaintReport } from "@/lib/generateComplaintReport";
 
 export default function ComplaintViewer({
   onClose,
@@ -17,6 +18,7 @@ export default function ComplaintViewer({
   const [idloading, setIdLoading] = useState(true);
   const [showFeedback, setShowFeedback] = useState(false);
   const [uid, setUid] = useState<string>("");
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     async function loadSession() {
@@ -29,7 +31,26 @@ export default function ComplaintViewer({
     loadSession();
   }, []);
   console.log(complaint);
-  
+
+  async function handleExport() {
+    setExporting(true);
+    try {
+      await generateComplaintReport({
+        complaintid:  complaint.complaintid,
+        municipality: complaint.municipality,
+        status:       complaint.status,
+        issuetype:    complaint.issuetype,
+        details:      complaint.details,
+        creationtime: complaint.creationtime,
+        address:      complaint.address,
+        image:        complaint.image,
+      });
+    } finally {
+      setExporting(false);
+    }
+  }
+
+
   if (idloading) {
     return (
       <section
@@ -50,8 +71,8 @@ export default function ComplaintViewer({
       >
         <article
           className={`bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl overflow-hidden relative p-8
-            ${complaint.image ? "min-w-[60%] md:max-w-4xl" : "md:max-w-lg" }
-          `}  onClick={(e) => e.stopPropagation()}
+            ${complaint.image ? "min-w-[60%] md:max-w-4xl" : "md:max-w-lg"}
+          `} onClick={(e) => e.stopPropagation()}
         >
           <header>
             <button
@@ -98,9 +119,8 @@ export default function ComplaintViewer({
                     alt="Complaint evidence"
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
-                    className={`object-contain transition-opacity duration-300 p-2 ${
-                      loading ? "opacity-0" : "opacity-100"
-                    }`}
+                    className={`object-contain transition-opacity duration-300 p-2 ${loading ? "opacity-0" : "opacity-100"
+                      }`}
                     onLoad={() => setLoading(false)}
                   />
                 </figure>
@@ -117,20 +137,48 @@ export default function ComplaintViewer({
                 Submit Feedback
               </button>
             )}
+
+            {uid === complaint.userid && (
+              <button
+                onClick={handleExport}
+                disabled={exporting}
+                className="flex-1 flex items-center justify-center gap-2 bg-white/30 border border-white/40 text-black font-semibold py-3 rounded-xl shadow-md hover:bg-white/50 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Export complaint as PDF"
+              >
+                {exporting ? (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" style={{ animation: "spin 0.8s linear infinite" }}>
+                      <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                      <path d="M12 2a10 10 0 0 1 10 10" />
+                    </svg>
+                    Generating…
+                  </>
+                ) : (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <path d="M12 15V3m0 12-4-4m4 4 4-4" />
+                      <path d="M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17" />
+                    </svg>
+                    Export PDF
+                  </>
+                )}
+              </button>
+            )}
+
             {complaint.status === Status.Duplicate ? (
-            <Link
-              href={`/reportfull/${complaint.linked_complaint_id}`}
-              className="flex-1 bg-brand-secondary text-black font-semibold py-3 rounded-xl shadow-md hover:bg-brand-primary hover:text-white transition-colors duration-300 text-center"
-            >
-              View Original Report
-            </Link>
-            ):(
-            <Link
-              href={`/reportfull/${complaint.complaintid}`}
-              className="flex-1 bg-brand-secondary text-black font-semibold py-3 rounded-xl shadow-md hover:bg-brand-primary hover:text-white transition-colors duration-300 text-center"
-            >
-              View Full Report
-            </Link>)}
+              <Link
+                href={`/reportfull/${complaint.linked_complaint_id}`}
+                className="flex-1 bg-brand-secondary text-black font-semibold py-3 rounded-xl shadow-md hover:bg-brand-primary hover:text-white transition-colors duration-300 text-center"
+              >
+                View Original Report
+              </Link>
+            ) : (
+              <Link
+                href={`/reportfull/${complaint.complaintid}`}
+                className="flex-1 bg-brand-secondary text-black font-semibold py-3 rounded-xl shadow-md hover:bg-brand-primary hover:text-white transition-colors duration-300 text-center"
+              >
+                View Full Report
+              </Link>)}
           </section>
         </article>
 
