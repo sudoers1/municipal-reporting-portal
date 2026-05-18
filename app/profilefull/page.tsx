@@ -108,7 +108,7 @@ export default function Home() {
 
       <section>
           <h2 className="mb-6 text-3xl md:text-5xl font-bold text-gray-900 text-center drop-shadow-md">
-            My Reports
+            My Report History
           </h2>
           <article className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-4">
             <ComplaintsTable complaints={complaints} onSelectComplaint={setSelectedComplaint} />
@@ -120,8 +120,7 @@ export default function Home() {
               />
           )}
         </section>
-
-      </section>
+        
       {showApplyForm&&(
                 <section className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
       
@@ -129,6 +128,8 @@ export default function Home() {
 
                 </section>
                 )}
+
+      </section>
   
     
     </main>

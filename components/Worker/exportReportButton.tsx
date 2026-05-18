@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { generateAnalyticsReport, ReportData } from "@/lib/generateAnalyticsReport";
 
 type Props = {
@@ -9,10 +9,11 @@ type Props = {
     email?: string;
     municipality?: string;
   };
-  statusData:  { status: string; count: number }[];
+  statusData: { status: string; count: number }[];
   resolvedData: { week: string; resolved: number; avg_hours?: number | null }[];
-  statusChartRef:  React.RefObject<HTMLElement | null>;
+  statusChartRef: React.RefObject<HTMLElement | null>;
   resolvedChartRef: React.RefObject<HTMLElement | null>;
+  className?: string;
 };
 
 export default function ExportReportButton({
@@ -21,6 +22,7 @@ export default function ExportReportButton({
   resolvedData,
   statusChartRef,
   resolvedChartRef,
+  className,
 }: Props) {
   const [loading, setLoading] = useState(false);
 
@@ -47,32 +49,22 @@ export default function ExportReportButton({
     <button
       onClick={handleExport}
       disabled={loading}
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "0.5rem",
-        background: loading ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.12)",
-        border: "1px solid rgba(255,255,255,0.2)",
-        borderRadius: "0.5rem",
-        color: "#fff",
-        fontSize: "0.875rem",
-        fontWeight: 500,
-        padding: "0.5rem 1rem",
-        cursor: loading ? "not-allowed" : "pointer",
-        transition: "background 0.15s",
-      }}
+      className={`inline-flex items-center gap-2 rounded-lg border border-black/20 px-4 py-2 text-sm font-medium text-black transition 
+        ${loading ? "bg-black/10 cursor-not-allowed" : "bg-black/20 hover:bg-black/30"} 
+        ${className ?? ""}`}
       aria-label="Export analytics report as PDF"
     >
       {loading ? (
         <>
           <svg
-            width="14" height="14"
+            width="14"
+            height="14"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
             aria-hidden="true"
-            style={{ animation: "spin 0.8s linear infinite" }}
+            className="animate-spin"
           >
             <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
             <path d="M12 2a10 10 0 0 1 10 10" />
@@ -82,7 +74,8 @@ export default function ExportReportButton({
       ) : (
         <>
           <svg
-            width="14" height="14"
+            width="14"
+            height="14"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -95,7 +88,6 @@ export default function ExportReportButton({
           Export PDF report
         </>
       )}
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </button>
   );
 }

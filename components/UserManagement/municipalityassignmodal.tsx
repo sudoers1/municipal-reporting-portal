@@ -14,6 +14,7 @@ const [form, setForm] = useState({
   municipality: "Not Assigned",
   ward: "Not Assigned",
 });
+const [isSubmitting, setIsSubmitting] = useState(false);
 
 const getMunicipality = (coords: any) => {
   console.log("MAP COORDS:", coords);
@@ -27,14 +28,18 @@ const getMunicipality = (coords: any) => {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setIsSubmitting(true);
 
 
     if (form.municipality=="Not Assigned") {
       toast.error("Please choose a municipality");
+      setIsSubmitting(false);
       return;
     }
+
    await insertUserMunicipality(form.userid,form.municipality);
   toast.success("Municipality assigned successfully.");
+  setIsSubmitting(false);
    onSuccess?.();
    onClose();
 
@@ -42,10 +47,12 @@ const getMunicipality = (coords: any) => {
   }
 
   return (
-    <section className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 " onClick={onClose}>
+    <section className="fixed inset-0 bg-white/20 backdrop-blur-md flex items-center justify-center z-60"
+        role="dialog"
+        aria-modal="true"
+         onClick={onClose}>
 
-
-      <section className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-8 relative" onClick={(e) => e.stopPropagation()}>
+      <section className="bg-white/30 backdrop-blur-lg shadow-2xl border border-white/30 relative rounded-2xl w-full max-w-lg p-8 relative" onClick={(e) => e.stopPropagation()}>
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-600 hover:text-black text-2xl font-bold"
@@ -64,7 +71,7 @@ const getMunicipality = (coords: any) => {
             
 
         <fieldset>
-          <section className="w-full border rounded-xl text-center px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none">
+          <section className="w-full border border-brand-secondary border-2 bg-white rounded-xl text-center px-4 py-3 text-black focus:ring-2 focus:ring-brand-accent focus:outline-none">
               <p >
                 <strong>Municipality:</strong>{form.municipality}
               </p>
@@ -73,7 +80,7 @@ const getMunicipality = (coords: any) => {
               </p>
           </section>
          </fieldset>
-          <section className="border rounded-xl overflow-hidden">
+          <section className="border border-brand-secondary border-2 rounded-xl overflow-hidden">
             <section className="h-[300px] w-full">
               <WardMap complaintMode={true} onLocationSelect={(coords) => getMunicipality(coords)}/>
             </section>
@@ -81,6 +88,7 @@ const getMunicipality = (coords: any) => {
 
           <button
             type="submit"
+            disabled={isSubmitting}
             className="w-full bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-md hover:bg-brand-accent hover:text-black transition-colors duration-300"
           >
             Assign

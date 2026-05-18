@@ -66,7 +66,7 @@ export default function ContactPage() {
         try {
           const wardRes = await fetch(`/api/wards?lat=${latitude}&lng=${longitude}`);
           if (!wardRes.ok) {
-            setStatusMessage("Location found, but could not determine your municipality. Choose from the list below.");
+            setStatusMessage("Location found, but could not determine your municipality. Choose from the list above.");
             return;
           }
 

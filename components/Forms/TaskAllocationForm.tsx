@@ -1,21 +1,24 @@
 "use client"
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface TaskAllocationFormProps {
     complaint: any;
     onClose: () => void;
+    onSuccess: () => void;
 }
 
-export default function TaskAllocationForm({ complaint,onClose }: TaskAllocationFormProps){
+export default function TaskAllocationForm({ complaint,onClose,onSuccess }: TaskAllocationFormProps){
 
     const [employees, setEmployees] = useState<any[]>([]);
     const [selectedEmployee, setSelectedEmployee] = useState("");
+    const [priority, setPriority] = useState<string>("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         const fetchEmployees = async () => {
             try {
                 const response = await fetch("/api/workers");
-                console.log(response);
                 const data = await response.json();
 
                 setEmployees(data);
@@ -32,41 +35,58 @@ export default function TaskAllocationForm({ complaint,onClose }: TaskAllocation
         ) => {
         e.preventDefault();
 
+        if (!selectedEmployee || !priority) {
+            console.error("Missing required fields");
+            return;
+        }
+        setIsSubmitting(true);
+
         try {
             const response = await fetch("/api/assignments", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                complaintid: complaint.complaintid,
-                workerid: selectedEmployee,
-            }),
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    complaintid: complaint.complaintid,
+                    workerid: selectedEmployee,
+                    priority: parseInt(priority),
+                }),
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-            console.error(data.error);
-            return;
+                console.error(data.error);
+                return;
             }
 
-            console.log("Assignment created:", data);
-
+            toast.success("Assignment created");
+            onSuccess();
             onClose();
 
         } catch (error) {
-            console.error("Allocation failed:", error);
+            toast.error("Allocation failed:");
+        } finally {
+            setIsSubmitting(false);
         }
-        };
+    };
 
 
 
     return(
-        <section className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" 
-      onClick={onClose}>
-            <section className="bg-white w-fit h-125 p-4 shadow-xl rounded-2xl flex flex-col border border-gray-200 relative" onClick={(e) => e.stopPropagation()}>
-                <header>
+    <section
+        className="fixed inset-0 bg-white/20 backdrop-blur-md flex items-center justify-center z-60"
+        role="dialog"
+        aria-modal="true"
+        onClick={onClose}
+      >
+        <article
+          className={`bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl overflow-hidden relative p-8
+            ${complaint.image ? "min-w-[60%] md:max-w-4xl" : "md:max-w-lg" }
+          `}  onClick={(e) => e.stopPropagation()}
+        >
+            <header>
                     <button
                         type="button"
                         onClick={onClose}
@@ -79,13 +99,13 @@ export default function TaskAllocationForm({ complaint,onClose }: TaskAllocation
                         Task Allocation Form
                     </h1>
                 </header>
-                <section className="flex-1 overflow-y-auto">
+                <section className="flex-1 overflow-y-auto ">
                     <section className="w-100 p-4">
                     <form
                     onSubmit={handleAllocate}
                     className="flex flex-col gap-4"
                     >
-                        <section className="bg-brand-secondary/30 p-2">
+                        <section className="border-[2px] rounded-xl mt-2 border-brand-secondary p-2 bg-white/80">
                             {complaint ? (
                                     <>
                                         <p><strong>Complaint ID:</strong> {complaint.complaintid}</p>
@@ -103,7 +123,7 @@ export default function TaskAllocationForm({ complaint,onClose }: TaskAllocation
                             name="Employee"
                             value={selectedEmployee}
                             onChange={(e) => setSelectedEmployee(e.target.value)}
-                            className="p-2 border border-gray-400"
+                            className="border-[2px] rounded-xl border-brand-secondary p-2 bg-white/80"
                         >
                             <option value="">Select employee</option>
 
@@ -127,22 +147,27 @@ export default function TaskAllocationForm({ complaint,onClose }: TaskAllocation
                             <option value="">Human Settelments</option>
                             <option value="">Disaster Management</option>
                         </select> */}
-                        <label htmlFor="">Priortiy Level</label>
-                        <select name="" id="" className="p-2 border  border-gray-400">
-                            <option value="">Priortiy Level</option>
-                            <option value="">Low</option>
-                            <option value="">Medium</option>
-                            <option value="">High</option>
+                        <label htmlFor="">Priority Level</label>
+                        <select name="" id="" className="border-[2px] rounded-xl border-brand-secondary p-2 bg-white/80"
+                           value={priority}
+                            onChange={(e) => setPriority(e.target.value)} >
+                            <option value="">Priority Level</option>
+                            <option value="0">Low</option>
+                            <option value="1">Medium</option>
+                            <option value="2">High</option>
+                            <option value="3">Critical</option>
                         </select>
+                        {/*
                         <label htmlFor="">Completion Deadline</label>
-                        <input type="date" className="p-2 border  border-gray-400"/>
-                        {/* <label htmlFor="">Notes</label>
+                        
+                        <input type="date" className="border-[2px] rounded-xl mt-2 border-brand-secondary p-2 bg-white/80"/>
+                         <label htmlFor="">Notes</label>
                         <textarea name="" id="" rows={2} className="p-2 border  border-gray-400"></textarea> */}
                         <section className="flex justify-center-safe item">
                             <button
                             type="submit"
-                            disabled={!selectedEmployee}
-                            className="bg-brand-secondary text-white w-24 px-2 py-1 rounded-md disabled:opacity-50"
+                            disabled={!selectedEmployee||!priority||isSubmitting}
+                            className="bg-brand-secondary text-white w-24 px-2 py-1 rounded-md disabled:bg-gray-500"
                             >
                             Allocate
                             </button>
@@ -151,9 +176,10 @@ export default function TaskAllocationForm({ complaint,onClose }: TaskAllocation
                     </form>
                 </section>
                 </section>
+                
+            </article>
             </section>
                 
-        </section>
         
     )
 }

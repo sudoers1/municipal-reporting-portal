@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -11,24 +10,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-type ResolvedRow = {
-  week: string;
-  resolved: number;
-  avg_hours: number | null;
-};
-
 type Props = {
   resolvedData: { week: string; resolved: number; avg_hours?: number | null }[];
   refreshKey: number;
-};
-
-const cardStyle: React.CSSProperties = {
-  background: "rgba(0,0,0,0.55)",
-  border: "1px solid rgba(255,255,255,0.12)",
-  backdropFilter: "blur(12px)",
-  WebkitBackdropFilter: "blur(12px)",
-  borderRadius: "1rem",
-  padding: "1.25rem",
 };
 
 function formatWeek(dateStr: string) {
@@ -41,83 +25,53 @@ const LineTooltip = ({ active, payload, label }: any) => {
   const resolved = payload.find((p: any) => p.dataKey === "resolved");
   const avgHours = payload.find((p: any) => p.dataKey === "avg_hours");
   return (
-    <output
-      style={{
-        display: "block",
-        background: "rgba(0,0,0,0.75)",
-        border: "1px solid rgba(255,255,255,0.15)",
-        borderRadius: "0.5rem",
-        padding: "0.375rem 0.75rem",
-        fontSize: "0.875rem",
-        color: "#fff",
-      }}
-    >
-      <small style={{ color: "rgba(255,255,255,0.5)", display: "block", marginBottom: "0.25rem" }}>
-        Week of {label}
-      </small>
+    <output className="block bg-black/80 border border-white/20 rounded-lg p-2 text-sm text-white">
+      <small className="block mb-1 text-white/70">Week of {label}</small>
       {resolved && (
-        <p style={{ margin: "0 0 0.125rem" }}>
-          Resolved: <strong style={{ color: "#4ade80" }}>{resolved.value}</strong>
+        <p className="m-0">
+          Resolved: <strong className="text-green-400">{resolved.value}</strong>
         </p>
       )}
       {avgHours && avgHours.value != null && (
-        <p style={{ margin: 0 }}>
-          Avg resolution: <strong style={{ color: "#60a5fa" }}>{avgHours.value}h</strong>
+        <p className="m-0">
+          Avg resolution: <strong className="text-blue-400">{avgHours.value}h</strong>
         </p>
       )}
     </output>
   );
 };
 
-export default function ResolvedChartCard({ resolvedData, refreshKey }: Props) {
-
+export default function ResolvedChartCard({ resolvedData }: Props) {
   const totalResolved = resolvedData.reduce((s, r) => s + r.resolved, 0);
   const overallAvgHours =
-  resolvedData.length > 0
-    ? Math.round(resolvedData.reduce((s, r) => s + (r.avg_hours ?? 0), 0) / resolvedData.length)
-    : null;
+    resolvedData.length > 0
+      ? Math.round(resolvedData.reduce((s, r) => s + (r.avg_hours ?? 0), 0) / resolvedData.length)
+      : null;
+
   return (
-    <article style={cardStyle}>
-      <header
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
-          marginBottom: "1rem",
-          gap: "1rem",
-        }}
-      >
-        <h2 style={{ color: "#fff", fontWeight: 600, fontSize: "1.125rem", margin: 0 }}>
-          Resolved over time
-        </h2>
+    <article className="bg-black/50 border border-white/20 backdrop-blur-md rounded-xl p-5 text-white">
+      <header className="flex items-start justify-between mb-4 gap-4">
+        <h2 className="font-semibold text-lg">Resolved over time</h2>
         {resolvedData.length > 0 && (
-          <aside aria-label="All-time resolved count" style={{ textAlign: "right" }}>
-            <strong style={{ fontSize: "1.5rem", color: "#fff", display: "block", lineHeight: 1 }}>
-              {totalResolved}
-            </strong>
-            <small style={{ color: "rgba(255,255,255,0.4)" }}>all time</small>
+          <aside aria-label="All-time resolved count" className="text-right">
+            <strong className="block text-2xl leading-none">{totalResolved}</strong>
+            <small className="text-white/70">all time</small>
           </aside>
         )}
       </header>
 
       {resolvedData.length === 0 ? (
-        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.875rem", margin: 0 }}>
-          No resolved complaints yet.
-        </p>
+        <p className="text-white/70 text-sm">No resolved complaints yet.</p>
       ) : (
-        <figure aria-label="Line chart of weekly resolved complaints" style={{ margin: 0 }}>
+        <figure aria-label="Line chart of weekly resolved complaints" className="m-0">
           <figcaption className="sr-only">
             Weekly resolved complaints over time. Total resolved: {totalResolved}.
             {overallAvgHours !== null && ` Average resolution time: ${overallAvgHours} hours.`}
           </figcaption>
-          <section style={{ position: "relative", width: "100%", height: 220 }}>
+          <section className="relative w-full h-[220px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={resolvedData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="rgba(255,255,255,0.07)"
-                  vertical={false}
-                />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.07)" vertical={false} />
                 <XAxis
                   dataKey="week"
                   tick={{ fontSize: 11, fill: "rgba(255,255,255,0.35)" }}
@@ -153,23 +107,15 @@ export default function ResolvedChartCard({ resolvedData, refreshKey }: Props) {
               </LineChart>
             </ResponsiveContainer>
           </section>
-          <footer
-            style={{
-              display: "flex",
-              gap: "1.25rem",
-              marginTop: "0.75rem",
-              fontSize: "0.75rem",
-              color: "rgba(255,255,255,0.45)",
-            }}
-          >
-            <p style={{ display: "flex", alignItems: "center", gap: "0.375rem", margin: 0 }}>
-              <svg width="20" height="4" aria-hidden="true" focusable="false">
+          <footer className="flex gap-5 mt-3 text-xs text-white/70">
+            <p className="flex items-center gap-1 m-0">
+              <svg width="20" height="4" aria-hidden="true">
                 <line x1="0" y1="2" x2="20" y2="2" stroke="#4ade80" strokeWidth="2" />
               </svg>
               Resolved per week
             </p>
-            <p style={{ display: "flex", alignItems: "center", gap: "0.375rem", margin: 0 }}>
-              <svg width="20" height="4" aria-hidden="true" focusable="false">
+            <p className="flex items-center gap-1 m-0">
+              <svg width="20" height="4" aria-hidden="true">
                 <line x1="0" y1="2" x2="20" y2="2" stroke="#60a5fa" strokeWidth="2" strokeDasharray="4 3" />
               </svg>
               Avg resolution (hours)
@@ -179,5 +125,4 @@ export default function ResolvedChartCard({ resolvedData, refreshKey }: Props) {
       )}
     </article>
   );
-
 }

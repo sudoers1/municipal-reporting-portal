@@ -5,11 +5,11 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { complaintid, workerid } = body;
+    const { complaintid, workerid, priority} = body;
 
-    if (!complaintid || !workerid) {
+    if (!complaintid || !workerid||priority === null) {
       return NextResponse.json(
-        { error: "Missing complaintid or workerid" },
+        { error: "Missing complaintid or workerid or priority" },
         { status: 400 }
       );
     }
@@ -27,8 +27,15 @@ export async function POST(req: Request) {
       )
       RETURNING *
     `;
+    await sql`
+      UPDATE complaints
+      SET 
+        priority = ${priority},
+        status = 'Acknowledged'
+      WHERE complaintid = ${complaintid}
+`;
 
-    return NextResponse.json(result[0]);
+    return NextResponse.json(result[0],{ status: 201 });
 
   } catch (error) {
     console.error(error);
